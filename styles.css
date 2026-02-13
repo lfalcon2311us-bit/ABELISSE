@@ -48,7 +48,7 @@ body::before {
   justify-content: space-between;
   padding: 0.8rem 2rem;
   background: var(--blanco);
-  border-bottom: 1px solid #f1d7e4;
+  border-bottom: 1px solid transparent;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -97,7 +97,7 @@ body::before {
 
 .search {
   border-radius: 999px;
-  border: 1px solid #e6cfe0;
+  border: 1px solid transparent;
   padding: 0.35rem 0.8rem;
   font-size: 0.85rem;
   min-width: 180px;
@@ -106,7 +106,7 @@ body::before {
 .btn-icon {
   border-radius: 999px;
   border: none;
-  background: var(--rosa-intenso);
+  background: rgba(255, 255, 255);
   color: var(--blanco);
   padding: 0.4rem 0.7rem;
   cursor: pointer;
@@ -132,7 +132,7 @@ body::before {
 .btn-secondary {
   background: var(--blanco);
   color: var(--rosa-intenso);
-  border: 1px solid var(--rosa-intenso);
+  border: 1px solid transparent;
 }
 
 /* Hero */
@@ -216,7 +216,7 @@ body::before {
   border-radius: 14px;
   padding: 1rem;
   text-align: center;
-  border: 1px solid #f1d7e4;
+  border: 1px solid transparent;
   font-size: 0.95rem;
 }
 
@@ -231,7 +231,7 @@ body::before {
   background: var(--blanco);
   border-radius: 18px;
   padding: 1rem;
-  border: 1px solid #f1d7e4;
+  border: 1px solid transparent;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -283,7 +283,7 @@ body::before {
   background: var(--blanco);
   border-radius: 16px;
   padding: 1rem;
-  border: 1px solid #f1d7e4;
+  border: 1px solid transparent;
   font-size: 0.9rem;
 }
 
@@ -378,6 +378,7 @@ body::before {
   }
 
 }
+
 
 
 
