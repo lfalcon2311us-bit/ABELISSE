@@ -23,7 +23,7 @@ body {
   line-height: 1.5;
 
   /* Fondo con tu imagen */
-  background-image: url('https://raw.githubusercontent.com/lfalcon2311us-bit/ABELISSE/main/fondo-abelisse.jpg');
+  background-image: url(https://raw.githubusercontent.com/lfalcon2311us-bit/ABELISSE/main/fondo-abelisse.jpg);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -378,5 +378,6 @@ body::before {
   }
 
 }
+
 
 
