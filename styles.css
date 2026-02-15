@@ -1,4 +1,4 @@
-ABELISS.css
+styles.css
 :root {
   --rosa-fondo: #f9c7d9;
   --rosa-intenso: #f28ab5;
@@ -359,4 +359,3 @@ body {
   .section {
     padding: 1.5rem 1rem;
   }
-}
