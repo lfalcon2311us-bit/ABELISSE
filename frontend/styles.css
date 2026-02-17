@@ -22,6 +22,9 @@ body {
   background-position: center;
   background-attachment: fixed;
 }
+html {
+  background: transparent;
+}
 
 /* Header */
 .header {
