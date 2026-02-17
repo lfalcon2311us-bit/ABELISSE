@@ -195,7 +195,10 @@ body {
 
 /* Secciones generales */
 .section {
-  padding: 2rem 2rem;
+  background: transparent;
+}
+main {
+  background: transparent;
 }
 
 .section h2 {
