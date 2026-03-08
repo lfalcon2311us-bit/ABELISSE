@@ -1,0 +1,58 @@
+.navbar {
+  width: 100%;
+  background: #ffffff;
+  padding: 14px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.brand-text {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #111;
+}
+
+.brand-logo {
+  width: 42px;
+  height: auto;
+  margin-top: 4px;
+  opacity: 0.95;
+}
+
+.menu {
+  display: flex;
+  gap: 26px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #111;
+  font-size: 15px;
+  font-weight: 500;
+  position: relative;
+}
+
+.menu a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #111;
+  transition: 0.3s ease;
+}
+
+.menu a:hover::after {
+  width: 100%;
+}
