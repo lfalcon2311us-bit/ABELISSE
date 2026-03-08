@@ -1,0 +1,36 @@
+.categorias-section {
+  padding: 60px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.categorias-section h2 {
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #111;
+}
+
+.grid-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.categoria-card {
+  background: #f8f4fb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: center;
+  font-weight: 600;
+  color: #3b2645;
+  border: 1px solid #e3d6f5;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.categoria-card:hover {
+  background: #f1e7ff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}

@@ -1,5 +1,13 @@
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
+
+// Importaremos estos componentes cuando los crees
+import Categorias from "./components/Categorias/Categorias";
+import Productos from "./components/Productos/Productos";
+import Ofertas from "./components/Ofertas/Ofertas";
+import Contacto from "./components/Contacto/Contacto";
+import Footer from "./components/Footer/Footer";
+
 import "./App.css";
 
 function App() {
@@ -12,57 +20,20 @@ function App() {
       {/* HERO PRINCIPAL */}
       <Hero />
 
-      {/* CATEGORÍAS DESTACADAS */}
-      <section className="categories" id="maquillaje">
-        <h2>Categorías destacadas</h2>
-        <div className="categories-grid">
-          <article className="category-card">Maquillaje</article>
-          <article className="category-card">Cuidado de la piel</article>
-          <article className="category-card">Fragancias</article>
-          <article className="category-card">Accesorios</article>
-        </div>
-      </section>
+      {/* CATEGORÍAS */}
+      <Categorias />
 
       {/* PRODUCTOS DESTACADOS */}
-      <section className="featured-products">
-        <h2>Favoritos de ABELISSE</h2>
-        <div className="products-grid">
-          {/* Aquí van tus cards de producto */}
-        </div>
-      </section>
+      <Productos />
 
-      {/* COMUNIDAD / NEWSLETTER */}
-      <section className="community">
-        <div className="community-content">
-          <h2>Únete a la comunidad ABELISSE</h2>
-          <p>Accede a lanzamientos exclusivos, tips de belleza y beneficios especiales.</p>
-          <form className="newsletter-form">
-            <input type="email" placeholder="Tu correo electrónico" />
-            <button type="submit" className="primary-btn">Unirme</button>
-          </form>
-        </div>
-      </section>
+      {/* OFERTAS */}
+      <Ofertas />
+
+      {/* CONTACTO / NEWSLETTER */}
+      <Contacto />
 
       {/* FOOTER */}
-      <footer className="main-footer">
-        <div className="footer-columns">
-          <div>
-            <h3>ABELISSE</h3>
-            <p>Cosmética y belleza con intención.</p>
-          </div>
-          <div>
-            <h3>Ayuda</h3>
-            <a href="#contacto">Contacto</a><br />
-            <a href="#faq">Preguntas frecuentes</a>
-          </div>
-          <div>
-            <h3>Síguenos</h3>
-            <a href="#">Instagram</a><br />
-            <a href="#">TikTok</a>
-          </div>
-        </div>
-        <p className="footer-copy">© 2026 ABELISSE. Todos los derechos reservados.</p>
-      </footer>
+      <Footer />
 
     </div>
   );
