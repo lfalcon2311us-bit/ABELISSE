@@ -3,9 +3,8 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* Eliminado color-scheme porque forzaba dark mode */
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #213547;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -27,8 +26,6 @@ a:hover {
 /* Body */
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -61,18 +58,50 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Modo claro opcional (sin interferir con tu diseño) */
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* Contenedor global para alinear todo con el Navbar */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Teléfonos pequeños */
+@media (max-width: 480px) {
+  h1, h2, h3 {
+    font-size: 90%;
   }
 
-  a:hover {
-    color: #747bff;
+  .menu a {
+    font-size: 14px;
   }
 
-  button {
-    background-color: #f9f9f9;
+  .hero-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .menu {
+    display: none; /* luego activamos hamburguesa */
+  }
+
+  .brand-text {
+    font-size: 1.4rem;
+  }
+}
+
+/* Laptops */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 900px;
+  }
+}
+
+/* Monitores grandes */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
   }
 }
