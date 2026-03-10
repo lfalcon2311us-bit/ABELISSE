@@ -1,40 +1,52 @@
+import { Routes, Route } from "react-router-dom";
+
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
 
-// Importaremos estos componentes cuando los crees
 import Categorias from "./components/Categorias/Categorias";
 import Productos from "./components/Productos/Productos";
 import Ofertas from "./components/Ofertas/Ofertas";
 import Contacto from "./components/Contacto/Contacto";
-import Footer from "./components/Footer/Footer";
+import Reseñas from "./components/Reseñas/Reseñas";
 
 import "./App.css";
 
 function App() {
   return (
     <div className="abelisse-body">
-
-      {/* NAVBAR */}
       <Navbar />
 
-      {/* HERO PRINCIPAL */}
-      <Hero />
+      <Routes>
+        {/* INICIO */}
+        <Route
+          path="/"
+          element={
+            <>
+              <Hero />
+              <Categorias />
+              <Productos />
+              <Ofertas />
+              <Contacto />
+              <Reseñas />
+            </>
+          }
+        />
 
-      {/* CATEGORÍAS */}
-      <Categorias />
+        {/* PRODUCTOS */}
+        <Route path="/productos" element={<Productos />} />
 
-      {/* PRODUCTOS DESTACADOS */}
-      <Productos />
+        {/* OFERTAS */}
+        <Route path="/ofertas" element={<Ofertas />} />
 
-      {/* OFERTAS */}
-      <Ofertas />
+        {/* CATEGORÍAS */}
+        <Route path="/categorias" element={<Categorias />} />
 
-      {/* CONTACTO / NEWSLETTER */}
-      <Contacto />
+        {/* CONTACTO */}
+        <Route path="/contacto" element={<Contacto />} />
 
-      {/* FOOTER */}
-      <Footer />
-
+        {/* RESEÑAS */}
+        <Route path="/reseñas" element={<Reseñas />} />
+      </Routes>
     </div>
   );
 }

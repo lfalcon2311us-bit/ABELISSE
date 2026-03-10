@@ -1,4 +1,5 @@
 import "./Hero.css";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -8,7 +9,10 @@ export default function Hero() {
         <p className="hero-subtitle">
           Cosmética premium inspirada en elegancia, tecnología y cuidado real.
         </p>
-        <button className="hero-button">Explorar productos</button>
+
+        <Link to="/productos" className="hero-button">
+          Explorar productos
+        </Link>
       </div>
     </section>
   );

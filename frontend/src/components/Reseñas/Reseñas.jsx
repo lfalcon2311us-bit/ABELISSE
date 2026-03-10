@@ -1,22 +1,22 @@
-import "./Footer.css";
+import "./Reseñas.css";
 
-export default function Footer() {
+export default function Reseñas() {
   return (
-    <footer className="footer">
-      <div className="footer-top">
+    <section className="reseñas" id="reseñas">
+      <div className="reseñas-top">
 
-        <div className="footer-col">
+        <div className="reseñas-col">
           <h3>ABELISSE</h3>
           <p>Cosmética y belleza con intención.</p>
         </div>
 
-        <div className="footer-col">
+        <div className="reseñas-col">
           <h4>Ayuda</h4>
           <a href="#contacto">Contacto</a>
           <a href="#faq">Preguntas frecuentes</a>
         </div>
 
-        <div className="footer-col">
+        <div className="reseñas-col">
           <h4>Síguenos</h4>
           <a href="#">Instagram</a>
           <a href="#">TikTok</a>
@@ -24,9 +24,9 @@ export default function Footer() {
 
       </div>
 
-      <div className="footer-bottom">
+      <div className="reseñas-bottom">
         <p>© 2026 ABELISSE. Todos los derechos reservados.</p>
       </div>
-    </footer>
+    </section>
   );
 }
