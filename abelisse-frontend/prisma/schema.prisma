@@ -1,0 +1,22 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id          String   @id
+  nombre      String
+  marca       String?
+  descripcion String?
+  categoria   String
+  tamano      String?
+  imagen      String?
+  precio      Float     @default(0)
+  stock       Int       @default(0)
+  stockMinimo Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

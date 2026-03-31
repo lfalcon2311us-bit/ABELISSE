@@ -1,0 +1,36 @@
+# --- PYTHON / DJANGO ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+venv/
+.env
+staticfiles/
+media/
+
+# --- NODE / NEXT.JS ---
+node_modules/
+.next/
+out/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# --- PRISMA ---
+prisma/migrations/
+*.db
+
+# --- TYPESCRIPT ---
+*.tsbuildinfo
+next-env.d.ts
+
+# --- SISTEMA OPERATIVO ---
+.DS_Store
+Thumbs.db
+
+# --- MISC ---
+*.pem

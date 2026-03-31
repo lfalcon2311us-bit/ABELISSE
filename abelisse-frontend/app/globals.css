@@ -1,0 +1,89 @@
+/* -------------------------------------------------- */
+/* 🔥 TAILWIND – CONFIGURACIÓN CORRECTA PARA NEXT.JS */
+/* -------------------------------------------------- */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -------------------------------------------------- */
+/* 🎨 VARIABLES DE COLOR */
+/* -------------------------------------------------- */
+
+:root {
+  --background: #ffffff;
+  --foreground: #000000; /* ← COLOR NEGRO REAL */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* -------------------------------------------------- */
+/* 🧱 ESTILOS BASE */
+/* -------------------------------------------------- */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* -------------------------------------------------- */
+/* 🌬️ ANIMACIÓN FLOTANTE */
+/* -------------------------------------------------- */
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* -------------------------------------------------- */
+/* ✨ FADE-IN SUAVE */
+/* -------------------------------------------------- */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1.2s ease-out forwards;
+}
+
+/* -------------------------------------------------- */
+/* 💎 TARJETAS PREMIUM – HOVER RESTAURADO */
+/* -------------------------------------------------- */
+
+.product-card-premium {
+  border: 1px solid transparent !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card-premium:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+/* -------------------------------------------------- */
+/* 🧼 ELIMINAR BORDE NEGRO DE LOS BOTONES */
+/* -------------------------------------------------- */
+
+button {
+  border-color: transparent !important;
+}
+
+button:focus,
+button:active {
+  outline: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
