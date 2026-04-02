@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCartStore } from "@/store/cartStore";
 
 const links = [
   { href: "/", label: "Inicio" },
@@ -13,16 +14,18 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const cart = useCartStore((state) => state.cart);
+
+  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <header className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b">
       <nav className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 gap-4">
         
-        {/* TEXTO ABELISSE */}
+        {/* LOGO */}
         <Link
           href="/"
-          className="text-2xl font-semibold tracking-[0.25em]"
-          style={{ color: "#2A2A2A" }}
+          className="text-2xl font-semibold tracking-[0.25em] text-gray-900"
         >
           ABELISSE
         </Link>
@@ -35,7 +38,7 @@ export default function Navbar() {
             className="
               w-full px-4 py-2 
               rounded-full 
-              border border-gray-400 
+              border border-gray-300 
               bg-gray-100 
               text-sm text-gray-800 
               placeholder-gray-500
@@ -69,9 +72,14 @@ export default function Navbar() {
           {/* Carrito */}
           <Link
             href="/carrito"
-            className="ml-2 px-4 py-1.5 rounded-full border border-pink-500 text-pink-600 text-sm hover:bg-pink-50 transition"
+            className="ml-2 px-4 py-1.5 rounded-full border border-pink-500 text-pink-600 text-sm hover:bg-pink-50 transition flex items-center gap-2"
           >
             Carrito
+            {cartCount > 0 && (
+              <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {cartCount}
+              </span>
+            )}
           </Link>
         </div>
       </nav>

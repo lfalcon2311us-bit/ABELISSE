@@ -6,7 +6,7 @@ from rest_framework import routers
 from inventario.views import (
     CategoriaViewSet,
     ProductoViewSet,
-    ProductosDestacados,   # ← nuevo endpoint
+    ProductosDestacados,
 )
 
 # Comunidad
@@ -14,13 +14,12 @@ from comunidad.views import suscribirse
 
 # Stripe
 from pagos.views_stripe import create_checkout_session
-from pagos.webhook import stripe_webhook
+from pagos.webhook import stripe_webhook, paypal_webhook, yape_webhook
 
-# PayPal
+# PayPal (FUNCIONES)
 from pagos.views_paypal import paypal_create_order, paypal_capture_order
 
 
-# Router para la API REST
 router = routers.DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
 router.register(r'productos', ProductoViewSet)
@@ -29,13 +28,13 @@ router.register(r'productos', ProductoViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # API de inventario
+    # API REST
     path('api/', include(router.urls)),
 
-    # 🔥 Nuevo endpoint de productos destacados
+    # Productos destacados
     path("api/productos-destacados/", ProductosDestacados.as_view()),
 
-    # API de suscripción
+    # Suscripción
     path('api/suscribirse/', suscribirse),
 
     # Stripe
@@ -45,4 +44,8 @@ urlpatterns = [
     # PayPal
     path("api/paypal/create-order/", paypal_create_order),
     path("api/paypal/capture-order/", paypal_capture_order),
+    path("api/paypal/webhook/", paypal_webhook),
+
+    # Yape (placeholder listo)
+    path("api/yape/webhook/", yape_webhook),
 ]

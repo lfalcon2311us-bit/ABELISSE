@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cartStore";
 import { useCountryStore, useDetectCountry } from "@/store/countryStore";
-import { iniciarPago } from "@/lib/stripe";
 import PayPalButton from "@/components/PayPalButton";
 
 export default function CarritoPage() {
@@ -24,13 +23,6 @@ export default function CarritoPage() {
       (isPeru ? item.precio_soles : item.precio_usd) * item.quantity,
     0
   );
-
-  // Stripe recibe la moneda correcta
-  const stripeItems = cart.map((item) => ({
-    name: item.nombre,
-    price: isPeru ? item.precio_soles : item.precio_usd,
-    quantity: item.quantity,
-  }));
 
   if (cart.length === 0) {
     return (
@@ -87,6 +79,11 @@ export default function CarritoPage() {
                 <p className="text-pink-600 font-semibold">
                   {symbol} {price.toFixed(2)}
                 </p>
+
+                {/* Cantidad */}
+                <p className="text-sm text-gray-500">
+                  Cantidad: {item.quantity}
+                </p>
               </div>
 
               <button
@@ -100,40 +97,51 @@ export default function CarritoPage() {
         })}
       </div>
 
-      <div className="flex items-center justify-between">
+      {/* RESUMEN */}
+      <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-sm !text-black">Total</p>
 
-          {/* Total dinámico */}
           <p className="text-2xl font-semibold text-pink-600">
             {symbol} {total.toFixed(2)}
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 items-end">
-          {isPeru ? (
-            <>
-              {/* 🔥 MÉTODO DE PAGO PARA PERÚ */}
-              <button className="px-6 py-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition text-sm">
-                Pagar con Yape
-              </button>
-            </>
-          ) : (
-            <>
-              {/* 🔥 MÉTODOS DE PAGO INTERNACIONALES */}
-              <button
-                onClick={() => iniciarPago(stripeItems)}
-                className="px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition text-sm"
-              >
-                Pagar con Stripe
-              </button>
+        <button
+          onClick={clearCart}
+          className="text-sm px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+        >
+          Vaciar carrito
+        </button>
+      </div>
 
-              <div className="w-full">
-                <PayPalButton total={total} currency="USD" />
-              </div>
-            </>
-          )}
-        </div>
+      {/* MÉTODOS DE PAGO */}
+      <div className="flex flex-col gap-3 items-end">
+        {isPeru ? (
+          <>
+            {/* 🔥 MÉTODO DE PAGO PARA PERÚ */}
+            <button
+              onClick={() => alert("Yape estará disponible pronto")}
+              className="px-6 py-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition text-sm"
+            >
+              Pagar con Yape
+            </button>
+          </>
+        ) : (
+          <>
+            {/* 🔥 MÉTODOS DE PAGO INTERNACIONALES */}
+            <button
+              onClick={() => (window.location.href = "/checkout")}
+              className="px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition text-sm"
+            >
+              Pagar con Stripe
+            </button>
+
+            <div className="w-full">
+              <PayPalButton total={total} currency="USD" />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

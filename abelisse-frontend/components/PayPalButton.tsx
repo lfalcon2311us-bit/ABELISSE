@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useCartStore } from "@/store/cartStore";
 
 declare global {
   interface Window {
@@ -11,61 +12,97 @@ declare global {
 export default function PayPalButton({
   total,
   currency = "USD",
+  email,
+  nombre,
 }: {
   total: number;
   currency?: string;
+  email?: string;
+  nombre?: string;
 }) {
+  const cart = useCartStore((state) => state.cart);
+
   useEffect(() => {
     // Limpiar contenedor
     const container = document.getElementById("paypal-button-container");
     if (container) container.innerHTML = "";
 
-    // Eliminar script previo
+    // Eliminar SDK previo
     const oldScript = document.getElementById("paypal-sdk");
     if (oldScript) oldScript.remove();
 
-    // Crear script nuevo
+    // Crear nuevo SDK
     const script = document.createElement("script");
     script.id = "paypal-sdk";
+
+    // ⭐ CLIENT ID SANDBOX (cámbialo por el tuyo real)
     script.src = `https://www.paypal.com/sdk/js?client-id=Abd0yZtKk0bHc8Yt8X8Jt3Yt9Jt8Yt7Jt6Yt5Yt4Yt3Yt2Yt1&currency=${currency}`;
     script.async = true;
 
     script.onload = () => {
       if (!window.paypal) return;
 
-      // 🔥 Asegurar que el contenedor existe
-      if (!document.getElementById("paypal-button-container")) return;
-
       window.paypal
         .Buttons({
+          // ---------------------------------------------------------
+          // 🔥 CREAR ORDEN
+          // ---------------------------------------------------------
           createOrder: async () => {
             const res = await fetch(
-              "http://localhost:8000/api/paypal/create-order/",
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/paypal/create-order/`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ total }),
+                body: JSON.stringify({
+                  total,
+                  carrito: cart,
+                  email,
+                  nombre,
+                }),
               }
             );
 
             const data = await res.json();
-            return data.payment_id;
+
+            // PayPal devuelve order.id
+            return data.id;
           },
 
+          // ---------------------------------------------------------
+          // 🔥 CAPTURAR ORDEN
+          // ---------------------------------------------------------
           onApprove: async (data: any) => {
             const res = await fetch(
-              `http://localhost:8000/api/paypal/capture-order/?paymentId=${data.paymentID}&PayerID=${data.payerID}`
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/paypal/capture-order/`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  orderID: data.orderID,
+                }),
+              }
             );
 
-            const result = await res.json();
-            alert("Pago completado con éxito");
+            if (res.ok) {
+              // Redirección profesional
+              window.location.href = "/pago-exitoso";
+            } else {
+              window.location.href = "/pago-fallido";
+            }
+          },
+
+          // ---------------------------------------------------------
+          // 🔥 ERROR EN BOTÓN
+          // ---------------------------------------------------------
+          onError: () => {
+            window.location.href = "/pago-fallido";
           },
         })
         .render("#paypal-button-container");
     };
 
     document.body.appendChild(script);
-  }, [total, currency]);
+  }, [total, currency, cart, email, nombre]);
 
   return <div id="paypal-button-container" className="w-full min-h-[50px]"></div>;
 }

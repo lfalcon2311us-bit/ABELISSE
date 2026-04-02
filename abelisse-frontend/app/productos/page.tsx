@@ -16,7 +16,7 @@ export default function ProductosPage() {
   const [search, setSearch] = useState("");
   const [marca, setMarca] = useState("");
   const [precioMin, setPrecioMin] = useState(0);
-  const [precioMax, setPrecioMax] = useState(""); // string para permitir vacío
+  const [precioMax, setPrecioMax] = useState(""); 
   const [precioMaxDefault, setPrecioMaxDefault] = useState(0);
   const [soloDescuento, setSoloDescuento] = useState(false);
   const [orden, setOrden] = useState("");
@@ -26,7 +26,8 @@ export default function ProductosPage() {
   useEffect(() => {
     async function fetchProductos() {
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/productos/");
+        const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const res = await fetch(`${backend}/api/productos/`);
         const data = await res.json();
 
         setProductos(data);
@@ -201,15 +202,10 @@ export default function ProductosPage() {
             placeholder={String(precioMaxDefault)}
             className="w-full border rounded px-3 py-2"
             value={precioMax}
-            onChange={(e) => {
-              // Permitir borrar completamente
-              setPrecioMax(e.target.value);
-            }}
+            onChange={(e) => setPrecioMax(e.target.value)}
             onBlur={corregirPrecioMax}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                corregirPrecioMax();
-              }
+              if (e.key === "Enter") corregirPrecioMax();
             }}
           />
         </div>
@@ -260,18 +256,7 @@ export default function ProductosPage() {
       {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {filtered.map((p: any) => (
-          <ProductCardPremium
-            key={p.id}
-            id={p.id}
-            nombre={p.nombre}
-            precio_venta_soles={p.precio_venta_soles}
-            precio_mercado={p.precio_mercado}
-            descuento_porcentaje={p.descuento_porcentaje}
-            imagen_principal={p.imagen_principal}
-            precio_venta_usd={p.precio_venta_usd}
-            descripcion={p.descripcion}
-            calificacion_promedio={p.calificacion_promedio}
-          />
+          <ProductCardPremium key={p.id} {...p} />
         ))}
       </div>
     </main>

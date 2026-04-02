@@ -1,8 +1,10 @@
-import ProductCardPremium from "@/components/ProductCardPremium";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
+// 🔥 Fetch del backend real
 async function getProducto(id: string) {
-  const res = await fetch(`http://127.0.0.1:8000/api/productos/${id}/`, {
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const res = await fetch(`${backend}/api/productos/${id}/`, {
     cache: "no-store",
   });
 
@@ -12,6 +14,55 @@ async function getProducto(id: string) {
   }
 
   return res.json();
+}
+
+// 🔥 SEO dinámico PRO
+export async function generateMetadata({ params }: any) {
+  const producto = await getProducto(params.id);
+
+  if (!producto) {
+    return {
+      title: "Producto no encontrado | ABELISSE",
+      description: "Este producto no existe o fue retirado.",
+    };
+  }
+
+  const nombre = producto.nombre || "Producto";
+  const descripcion =
+    producto.descripcion?.slice(0, 150) ||
+    "Producto de belleza y cosmética premium.";
+  const imagen = producto.imagen_principal || "/og-image.jpg";
+
+  return {
+    title: `${nombre} | ABELISSE`,
+    description: descripcion,
+
+    openGraph: {
+      title: nombre,
+      description: descripcion,
+      type: "product",
+      url: `https://www.abelisse.com/productos/${params.id}`,
+      images: [
+        {
+          url: imagen,
+          width: 1200,
+          height: 630,
+          alt: nombre,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: nombre,
+      description: descripcion,
+      images: [imagen],
+    },
+
+    alternates: {
+      canonical: `https://www.abelisse.com/productos/${params.id}`,
+    },
+  };
 }
 
 export default async function ProductoPage({ params }: any) {
@@ -34,7 +85,6 @@ export default async function ProductoPage({ params }: any) {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">
-
       {/* BREADCRUMBS */}
       <Breadcrumbs
         items={[
@@ -43,12 +93,11 @@ export default async function ProductoPage({ params }: any) {
           categoriaNombre && categoriaSlug
             ? { label: categoriaNombre, href: `/categorias/${categoriaSlug}` }
             : null,
-          { label: producto.nombre }
+          { label: producto.nombre },
         ].filter(Boolean) as any}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-
         {/* IMAGEN PRINCIPAL */}
         <div>
           <img

@@ -19,6 +19,7 @@ ALLOWED_HOSTS = ["*"]  # Render asigna dominio dinámico
 
 # Apps
 INSTALLED_APPS = [
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -26,11 +27,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Terceros
     'rest_framework',
     'corsheaders',
 
+    # Apps internas
     'comunidad',
     'inventario',
+    'pagos',   # ←🔥 NECESARIO PARA QUE DJANGO RECONOZCA TU MODELO ORDEN
 ]
 
 # Middleware

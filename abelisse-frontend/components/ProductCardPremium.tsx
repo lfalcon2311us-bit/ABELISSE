@@ -14,7 +14,7 @@ interface Props {
   imagen_principal: string | null;
   precio_venta_usd?: number | string | null;
   descripcion?: string;
-  calificacion_promedio?: number | null; // ⭐ rating opcional
+  calificacion_promedio?: number | null;
 }
 
 export default function ProductCardPremium(props: Props) {

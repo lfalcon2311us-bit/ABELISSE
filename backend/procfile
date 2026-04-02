@@ -1,1 +1,1 @@
-web: gunicorn abelise.wsgi
+web: gunicorn abelisse.wsgi

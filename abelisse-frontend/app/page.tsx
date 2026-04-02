@@ -2,9 +2,11 @@ import HeroPremium from "@/components/HeroPremium";
 import ProductCardPremium from "@/components/ProductCardPremium";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
 
-// 🔥 Nuevo fetch: productos destacados
+// 🔥 Fetch de productos destacados desde backend real
 async function getFeatured() {
-  const res = await fetch("http://127.0.0.1:8000/api/productos-destacados/", {
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  const res = await fetch(`${backend}/api/productos-destacados/`, {
     cache: "no-store",
   });
 
@@ -77,18 +79,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {masVendidos.map((p: any) => (
-              <ProductCardPremium
-                key={p.id}
-                id={p.id}
-                nombre={p.nombre}
-                precio_venta_soles={p.precio_venta_soles}
-                precio_mercado={p.precio_mercado}
-                descuento_porcentaje={p.descuento_porcentaje}
-                imagen_principal={p.imagen_principal}
-                precio_venta_usd={p.precio_venta_usd}
-                descripcion={p.descripcion}
-                calificacion_promedio={p.calificacion_promedio}
-              />
+              <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
         </div>
@@ -101,18 +92,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {masBuscados.map((p: any) => (
-              <ProductCardPremium
-                key={p.id}
-                id={p.id}
-                nombre={p.nombre}
-                precio_venta_soles={p.precio_venta_soles}
-                precio_mercado={p.precio_mercado}
-                descuento_porcentaje={p.descuento_porcentaje}
-                imagen_principal={p.imagen_principal}
-                precio_venta_usd={p.precio_venta_usd}
-                descripcion={p.descripcion}
-                calificacion_promedio={p.calificacion_promedio}
-              />
+              <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
         </div>
@@ -125,18 +105,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {nuevos.map((p: any) => (
-              <ProductCardPremium
-                key={p.id}
-                id={p.id}
-                nombre={p.nombre}
-                precio_venta_soles={p.precio_venta_soles}
-                precio_mercado={p.precio_mercado}
-                descuento_porcentaje={p.descuento_porcentaje}
-                imagen_principal={p.imagen_principal}
-                precio_venta_usd={p.precio_venta_usd}
-                descripcion={p.descripcion}
-                calificacion_promedio={p.calificacion_promedio}
-              />
+              <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
         </div>
@@ -149,18 +118,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {mejorCalificados.map((p: any) => (
-              <ProductCardPremium
-                key={p.id}
-                id={p.id}
-                nombre={p.nombre}
-                precio_venta_soles={p.precio_venta_soles}
-                precio_mercado={p.precio_mercado}
-                descuento_porcentaje={p.descuento_porcentaje}
-                imagen_principal={p.imagen_principal}
-                precio_venta_usd={p.precio_venta_usd}
-                descripcion={p.descripcion}
-                calificacion_promedio={p.calificacion_promedio}
-              />
+              <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
         </div>

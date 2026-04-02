@@ -1,37 +1,65 @@
+import json
 import stripe
 from django.conf import settings
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Orden
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-@api_view(["POST"])
+
+# ---------------------------------------------------------
+# 🔥 CREAR CHECKOUT SESSION (PROFESIONAL)
+# ---------------------------------------------------------
+@csrf_exempt
 def create_checkout_session(request):
     try:
-        items = request.data.get("items", [])
+        body = json.loads(request.body)
 
-        line_items = []
-        for item in items:
-            line_items.append({
-                "price_data": {
-                    "currency": "usd",
-                    "product_data": {
-                        "name": item["name"],
-                    },
-                    "unit_amount": int(float(item["price"]) * 100),
-                },
-                "quantity": item["quantity"],
-            })
+        total = body.get("total")
+        carrito = body.get("carrito", [])
+        email = body.get("email")
+        nombre = body.get("nombre")
 
+        if not total or float(total) <= 0:
+            return JsonResponse({"error": "Total inválido"}, status=400)
+
+        # Crear sesión de Stripe
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
-            line_items=line_items,
             mode="payment",
-            success_url=f"{settings.FRONTEND_URL}/success",
-            cancel_url=f"{settings.FRONTEND_URL}/cancel",
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "usd",
+                        "product_data": {
+                            "name": "Compra en ABELISSE",
+                        },
+                        "unit_amount": int(float(total) * 100),
+                    },
+                    "quantity": 1,
+                }
+            ],
+            success_url=f"{settings.FRONTEND_URL}/pago-exitoso",
+            cancel_url=f"{settings.FRONTEND_URL}/pago-fallido",
         )
 
-        return Response({"url": session.url})
+        # ---------------------------------------------------------
+        # 🔥 GUARDAR ORDEN EN LA BASE DE DATOS
+        # ---------------------------------------------------------
+        Orden.objects.create(
+            stripe_session_id=session.id,
+            monto=float(total),
+            moneda="USD",
+            metodo="stripe",
+            estado="CREADA",
+            carrito=carrito,
+            email=email,
+            nombre=nombre,
+        )
+
+        return JsonResponse({"sessionId": session.id})
 
     except Exception as e:
-        return Response({"error": str(e)}, status=400)
+        print("❌ Error creando sesión Stripe:", e)
+        return JsonResponse({"error": "Error interno"}, status=500)
