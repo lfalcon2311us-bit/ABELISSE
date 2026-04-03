@@ -25,15 +25,15 @@ def limpiar_entero(valor):
 
 
 class Command(BaseCommand):
-    help = "Importa productos desde inventario.csv"
+    help = "Importa productos desde inventario_utf8.csv"
 
     def add_arguments(self, parser):
         parser.add_argument(
             "archivo_csv",
             type=str,
             nargs="?",
-            default="inventario.csv",
-            help="Ruta del archivo CSV"
+            default="inventario_utf8.csv",
+            help="Ruta del archivo CSV (por defecto inventario_utf8.csv)"
         )
 
     def handle(self, *args, **kwargs):
