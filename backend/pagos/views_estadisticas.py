@@ -2,10 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils import timezone
 from datetime import timedelta
+from django.db import models
+
 from pagos.models import Orden
 from inventario.models import Producto
-from comunidad.models import Suscriptor  # si existe
-from django.db import models
 
 
 class EstadisticasView(APIView):
@@ -32,19 +32,16 @@ class EstadisticasView(APIView):
             estado="COMPLETADA"
         ).aggregate(total=models.Sum("monto"))["total"] or 0
 
-        # Ventas por método
         ventas_por_metodo = {
             "stripe": Orden.objects.filter(metodo="stripe", estado="COMPLETADA").aggregate(total=models.Sum("monto"))["total"] or 0,
             "paypal": Orden.objects.filter(metodo="paypal", estado="COMPLETADA").aggregate(total=models.Sum("monto"))["total"] or 0,
             "yape": Orden.objects.filter(metodo="yape", estado="COMPLETADA").aggregate(total=models.Sum("monto"))["total"] or 0,
         }
 
-        # Últimas órdenes
         ultimas_ordenes = Orden.objects.order_by("-fecha")[:10].values(
             "id", "nombre", "email", "monto", "metodo", "estado", "fecha"
         )
 
-        # Ticket promedio
         total_ventas = Orden.objects.filter(estado="COMPLETADA").aggregate(total=models.Sum("monto"))["total"] or 0
         total_ordenes = Orden.objects.filter(estado="COMPLETADA").count()
         ticket_promedio = total_ventas / total_ordenes if total_ordenes > 0 else 0
@@ -61,18 +58,12 @@ class EstadisticasView(APIView):
         )
 
         # -----------------------------
-        # COMUNIDAD
+        # COMUNIDAD (SIN MODELO)
         # -----------------------------
-        try:
-            nuevos_suscriptores_dia = Suscriptor.objects.filter(fecha__date=hoy).count()
-            nuevos_suscriptores_semana = Suscriptor.objects.filter(fecha__date__gte=inicio_semana).count()
-            nuevos_suscriptores_mes = Suscriptor.objects.filter(fecha__date__gte=inicio_mes).count()
-            total_suscriptores = Suscriptor.objects.count()
-        except:
-            nuevos_suscriptores_dia = 0
-            nuevos_suscriptores_semana = 0
-            nuevos_suscriptores_mes = 0
-            total_suscriptores = 0
+        nuevos_suscriptores_dia = 0
+        nuevos_suscriptores_semana = 0
+        nuevos_suscriptores_mes = 0
+        total_suscriptores = 0
 
         # -----------------------------
         # CONVERSIÓN
