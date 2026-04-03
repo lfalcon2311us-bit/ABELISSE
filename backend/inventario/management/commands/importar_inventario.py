@@ -97,14 +97,14 @@ class Command(BaseCommand):
                 costo_compra,        # 8
                 taxes,               # 9
                 precio_importacion,  # 10
-                valor_total_csv,     # 11 (lo recalcula el modelo)
-                valor_general_csv,   # 12 (lo recalcula el modelo)
-                precio_venta_usd_csv,# 13 (lo recalcula el modelo)
+                valor_total_csv,     # 11 (no se usa)
+                valor_general_csv,   # 12 (no se usa)
+                precio_venta_usd_csv,# 13 (no se usa)
                 precio_venta_soles,  # 14
                 precio_mercado,      # 15
                 columna_vacia,       # 16
-                ganancia_unidad_csv, # 17 (lo recalcula el modelo)
-                ganancia_total_csv,  # 18 (lo recalcula el modelo)
+                ganancia_unidad_csv, # 17 (no se usa)
+                ganancia_total_csv,  # 18 (no se usa)
             ) = fila[:19]
 
             if not sku:

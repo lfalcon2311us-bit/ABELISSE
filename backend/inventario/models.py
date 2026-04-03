@@ -1,8 +1,20 @@
 from django.db import models
 from django.utils.text import slugify
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 TASA_USD_PEN = Decimal("3.5")
+
+
+def to_decimal(value):
+    """Convierte cualquier valor a Decimal de forma segura."""
+    if value is None:
+        return Decimal("0.00")
+    if isinstance(value, Decimal):
+        return value
+    try:
+        return Decimal(str(value))
+    except:
+        return Decimal("0.00")
 
 
 class Categoria(models.Model):
@@ -31,7 +43,6 @@ class Producto(models.Model):
         default='no_recibido'
     )
 
-    # Cantidad que realmente llegó (solo aplica si verificacion_katy = no_recibido)
     cantidad_recibida = models.PositiveIntegerField(default=0)
 
     # --- Identificación ---
@@ -66,7 +77,6 @@ class Producto(models.Model):
     precio_venta_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     precio_venta_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # Renombrado según tu instrucción
     precio_mercado_soles = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     # --- Descuentos ---
@@ -82,7 +92,7 @@ class Producto(models.Model):
     imagen_secundaria = models.URLField(max_length=500, blank=True, null=True)
     imagen_terciaria = models.URLField(max_length=500, blank=True, null=True)
 
-    # --- Estado del producto ---
+    # --- Estado ---
     destacado = models.BooleanField(default=False)
     activo = models.BooleanField(default=True)
 
@@ -108,44 +118,33 @@ class Producto(models.Model):
                 contador += 1
             self.slug = slug
 
+        # Convertir todo a Decimal de forma segura
+        costo = to_decimal(self.costo_compra)
+        taxes = to_decimal(self.taxes)
+        imp = to_decimal(self.precio_importacion)
+        venta_soles = to_decimal(self.precio_venta_soles)
+        mercado_soles = to_decimal(self.precio_mercado_soles)
+
         # VALOR TOTAL POR UNIDAD
-        self.valor_total_unidad = (
-            self.costo_compra + self.taxes + self.precio_importacion
-        ).quantize(Decimal("0.01"))
+        self.valor_total_unidad = (costo + taxes + imp).quantize(Decimal("0.01"))
 
         # VALOR GENERAL
-        self.valor_general = (self.valor_total_unidad * self.stock).quantize(
-            Decimal("0.01")
-        )
+        self.valor_general = (self.valor_total_unidad * Decimal(self.stock)).quantize(Decimal("0.01"))
 
-        # PRECIO VENTA USD DESDE SOLES
-        if self.precio_venta_soles and self.precio_venta_soles > 0:
-            self.precio_venta_usd = (
-                self.precio_venta_soles / TASA_USD_PEN
-            ).quantize(Decimal("0.01"))
+        # PRECIO VENTA USD
+        if venta_soles > 0:
+            self.precio_venta_usd = (venta_soles / TASA_USD_PEN).quantize(Decimal("0.01"))
         else:
             self.precio_venta_usd = Decimal("0.00")
 
         # GANANCIAS
-        self.ganancia_unidad = (
-            self.precio_venta_usd - self.valor_total_unidad
-        ).quantize(Decimal("0.01"))
-        self.ganancia_total = (self.ganancia_unidad * self.stock).quantize(
-            Decimal("0.01")
-        )
+        self.ganancia_unidad = (self.precio_venta_usd - self.valor_total_unidad).quantize(Decimal("0.01"))
+        self.ganancia_total = (self.ganancia_unidad * Decimal(self.stock)).quantize(Decimal("0.01"))
 
         # DESCUENTOS
-        if (
-            self.precio_mercado_soles
-            and self.precio_mercado_soles > 0
-            and self.precio_venta_soles > 0
-        ):
-            self.descuento_soles = (
-                self.precio_mercado_soles - self.precio_venta_soles
-            ).quantize(Decimal("0.01"))
-            self.descuento_porcentaje = (
-                (self.descuento_soles / self.precio_mercado_soles) * 100
-            ).quantize(Decimal("0.01"))
+        if mercado_soles > 0 and venta_soles > 0:
+            self.descuento_soles = (mercado_soles - venta_soles).quantize(Decimal("0.01"))
+            self.descuento_porcentaje = ((self.descuento_soles / mercado_soles) * 100).quantize(Decimal("0.01"))
         else:
             self.descuento_soles = Decimal("0.00")
             self.descuento_porcentaje = Decimal("0.00")
