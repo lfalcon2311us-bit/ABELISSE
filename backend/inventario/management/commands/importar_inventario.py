@@ -3,130 +3,154 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 from inventario.models import Producto, Categoria
 
-TASA_USD_PEN = Decimal("3.5")
 
-
-def limpiar_valor(valor):
-    if not valor or str(valor).strip() == "" or "DIV" in str(valor):
+def limpiar_decimal(valor):
+    """
+    Limpia valores como:
+    '$34.00', 'S/ 230.00', ' 15.20 ', '(1.60)', '0', ''
+    y los convierte en Decimal.
+    """
+    if not valor or str(valor).strip() == "":
         return Decimal("0")
 
-    valor = str(valor).replace("$", "").replace("S/", "").replace(",", "").strip()
-    try:
-        return Decimal(valor)
-    except:
+    texto = str(valor).strip()
+
+    # Manejar negativos tipo (1.60)
+    negativo = False
+    if texto.startswith("(") and texto.endswith(")"):
+        negativo = True
+        texto = texto[1:-1]
+
+    # Quitar símbolos
+    texto = (
+        texto.replace("$", "")
+        .replace("S/", "")
+        .replace("s/", "")
+        .replace(",", "")
+        .strip()
+    )
+
+    if texto == "":
         return Decimal("0")
 
-
-def limpiar_entero(valor):
-    try:
-        return int(str(valor).replace(",", "").strip())
-    except:
-        return 0
+    numero = Decimal(texto)
+    return -numero if negativo else numero
 
 
 class Command(BaseCommand):
-    help = "Importa productos desde inventario_utf8.csv"
+    help = "Importa o actualiza productos desde inventario.csv"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "archivo_csv",
+            "ruta_csv",
             type=str,
-            nargs="?",
-            default="inventario_utf8.csv",
-            help="Ruta del archivo CSV (por defecto inventario_utf8.csv)"
+            help="Ruta al archivo CSV de inventario"
         )
 
-    def handle(self, *args, **kwargs):
-        archivo = kwargs["archivo_csv"]
+    def handle(self, *args, **options):
+        ruta_csv = options["ruta_csv"]
 
-        # LECTOR UNIVERSAL (UTF-8, BOM, LATIN-1, WINDOWS-1252)
+        self.stdout.write(self.style.WARNING(f"Usando archivo: {ruta_csv}"))
+
+        # 🔥 APERTURA ROBUSTA DEL ARCHIVO (UTF-8 → UTF-8-SIG → LATIN-1)
         try:
-            f = open(archivo, newline="", encoding="utf-8")
+            f = open(ruta_csv, newline="", encoding="utf-8")
             f.read(1)
             f.seek(0)
         except:
             try:
-                f = open(archivo, newline="", encoding="utf-8-sig")
+                f = open(ruta_csv, newline="", encoding="utf-8-sig")
+                f.read(1)
+                f.seek(0)
             except:
-                f = open(archivo, newline="", encoding="latin-1", errors="ignore")
+                f = open(ruta_csv, newline="", encoding="latin-1", errors="ignore")
 
-        reader = csv.DictReader(f)
+        reader = csv.reader(f)
 
-        for row in reader:
-            sku = row["ID de inventario"].strip()
-            nombre = row["Nombre"].strip()
-            marca = row["Marca"].strip() if row["Marca"] else ""
-            descripcion = row["Descripción "].strip() if row["Descripción "] else ""
-            tamano = row["Tamaño"].strip() if row["Tamaño"] else ""
+        encabezados_encontrados = False
 
-            # STOCK
-            stock = limpiar_entero(row["Cantidad  en existencias"])
+        for fila in reader:
 
-            # USD BASE
-            costo_compra = limpiar_valor(row["Costo de compra "])
-            taxes = limpiar_valor(row["Taxes "])
-            precio_importacion = limpiar_valor(row["Precio de importación "])
+            # Saltar filas vacías
+            if not any(fila):
+                continue
 
-            # VALOR TOTAL POR UNIDAD
-            valor_total_unidad = costo_compra + taxes + precio_importacion
+            # Detectar encabezados reales
+            if not encabezados_encontrados:
+                if len(fila) > 2 and "ID de inventario" in fila[2]:
+                    encabezados_encontrados = True
+                continue
 
-            # VALOR GENERAL DE MERCADERÍA DISPONIBLE
-            valor_general = valor_total_unidad * stock
+            # A partir de aquí son filas de datos
+            if len(fila) < 19:
+                continue
 
-            # PRECIOS EN SOLES
-            precio_venta_soles = limpiar_valor(row["Precio de venta peru x unidad en soles"])
-            precio_mercado = limpiar_valor(row["Precio del mercado"])
+            (
+                volver_a_pedir,      # 0
+                verificacion_csv,    # 1 (no lo usamos)
+                sku,                 # 2
+                marca,               # 3
+                nombre,              # 4
+                descripcion,         # 5
+                tamano,              # 6
+                cantidad_existencias,# 7
+                costo_compra,        # 8
+                taxes,               # 9
+                precio_importacion,  # 10
+                valor_total_csv,     # 11 (lo recalcula el modelo)
+                valor_general_csv,   # 12 (lo recalcula el modelo)
+                precio_venta_usd_csv,# 13 (lo recalcula el modelo)
+                precio_venta_soles,  # 14
+                precio_mercado,      # 15
+                columna_vacia,       # 16
+                ganancia_unidad_csv, # 17 (lo recalcula el modelo)
+                ganancia_total_csv,  # 18 (lo recalcula el modelo)
+            ) = fila[:19]
 
-            # PRECIO VENTA USD (DESDE SOLES)
-            if precio_venta_soles > 0:
-                precio_venta_usd = (precio_venta_soles / TASA_USD_PEN).quantize(Decimal("0.01"))
-            else:
-                precio_venta_usd = Decimal("0")
+            if not sku:
+                continue
 
-            # DESCUENTOS
-            if precio_mercado > 0 and precio_venta_soles > 0:
-                descuento_soles = precio_mercado - precio_venta_soles
-                descuento_porcentaje = (descuento_soles / precio_mercado * 100).quantize(Decimal("0.01"))
-            else:
-                descuento_soles = Decimal("0")
-                descuento_porcentaje = Decimal("0")
+            # Limpieza de datos
+            stock = int(cantidad_existencias.strip() or "0")
 
-            # GANANCIAS
-            ganancia_unidad = (precio_venta_usd - valor_total_unidad).quantize(Decimal("0.01"))
-            ganancia_total = (ganancia_unidad * stock).quantize(Decimal("0.01"))
+            costo_compra_dec = limpiar_decimal(costo_compra)
+            taxes_dec = limpiar_decimal(taxes)
+            precio_importacion_dec = limpiar_decimal(precio_importacion)
+            precio_venta_soles_dec = limpiar_decimal(precio_venta_soles)
+            precio_mercado_soles_dec = limpiar_decimal(precio_mercado)
 
-            # CATEGORÍA
-            categoria_nombre = marca if marca else "Sin categoría"
+            # Categoría automática por marca
+            categoria_nombre = marca.strip() if marca else "Sin categoría"
             categoria, _ = Categoria.objects.get_or_create(nombre=categoria_nombre)
 
-            Producto.objects.update_or_create(
-                sku=sku,
-                defaults={
-                    "nombre": nombre,
-                    "marca": marca,
-                    "descripcion": descripcion,
-                    "tamano": tamano,
-                    "stock": stock,
+            # Crear o actualizar producto
+            producto, creado = Producto.objects.get_or_create(sku=sku.strip())
 
-                    "costo_compra": costo_compra,
-                    "taxes": taxes,
-                    "precio_importacion": precio_importacion,
-                    "valor_total_unidad": valor_total_unidad,
-                    "valor_general": valor_general,
-                    "precio_venta_usd": precio_venta_usd,
+            producto.marca = marca.strip() if marca else ""
+            producto.nombre = nombre.strip() if nombre else ""
+            producto.descripcion = descripcion.strip() if descripcion else ""
+            producto.tamano = tamano.strip() if tamano else ""
 
-                    "precio_venta_soles": precio_venta_soles,
-                    "precio_mercado": precio_mercado,
-                    "descuento_soles": descuento_soles,
-                    "descuento_porcentaje": descuento_porcentaje,
+            producto.stock = stock
 
-                    "ganancia_unidad": ganancia_unidad,
-                    "ganancia_total": ganancia_total,
+            producto.costo_compra = costo_compra_dec
+            producto.taxes = taxes_dec
+            producto.precio_importacion = precio_importacion_dec
 
-                    "categoria": categoria,
-                    "activo": True,
-                }
-            )
+            producto.precio_venta_soles = precio_venta_soles_dec
+            producto.precio_mercado_soles = precio_mercado_soles_dec
+
+            producto.categoria = categoria
+
+            # Logística
+            producto.verificacion_katy = "no_recibido"
+            producto.cantidad_recibida = 0
+
+            # El modelo calcula todo lo demás automáticamente
+            producto.save()
+
+            accion = "CREADO" if creado else "ACTUALIZADO"
+            self.stdout.write(self.style.SUCCESS(f"{accion}: {sku} - {producto.nombre}"))
 
         f.close()
-        self.stdout.write(self.style.SUCCESS("Inventario importado correctamente."))
+        self.stdout.write(self.style.SUCCESS("Importación completada."))

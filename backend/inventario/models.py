@@ -19,6 +19,22 @@ class Categoria(models.Model):
 
 
 class Producto(models.Model):
+
+    # --- Verificación logística ---
+    VERIFICACION_CHOICES = [
+        ('recibido', 'Recibido'),
+        ('no_recibido', 'No recibido'),
+    ]
+    verificacion_katy = models.CharField(
+        max_length=20,
+        choices=VERIFICACION_CHOICES,
+        default='no_recibido'
+    )
+
+    # Cantidad que realmente llegó (solo aplica si verificacion_katy = no_recibido)
+    cantidad_recibida = models.PositiveIntegerField(default=0)
+
+    # --- Identificación ---
     sku = models.CharField(max_length=50, unique=True)
     marca = models.CharField(max_length=100, blank=True, null=True)
     nombre = models.CharField(max_length=255)
@@ -34,41 +50,54 @@ class Producto(models.Model):
     )
     subcategoria = models.CharField(max_length=100, blank=True, null=True)
 
+    # --- Stock ---
     stock = models.PositiveIntegerField(default=0)
 
+    # --- Costos (USD) ---
     costo_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     taxes = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     precio_importacion = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    # --- Cálculos automáticos (USD) ---
     valor_total_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     valor_general = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    # --- Precios de venta ---
     precio_venta_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
     precio_venta_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    precio_mercado = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
+    # Renombrado según tu instrucción
+    precio_mercado_soles = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+    # --- Descuentos ---
     descuento_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     descuento_porcentaje = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
+    # --- Ganancias ---
     ganancia_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ganancia_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    # --- Imágenes ---
     imagen_principal = models.URLField(max_length=500, blank=True, null=True)
     imagen_secundaria = models.URLField(max_length=500, blank=True, null=True)
     imagen_terciaria = models.URLField(max_length=500, blank=True, null=True)
 
+    # --- Estado del producto ---
     destacado = models.BooleanField(default=False)
     activo = models.BooleanField(default=True)
 
-    # 🔥 NUEVOS CAMPOS PARA ANALÍTICA Y DESTACADOS
+    # --- Analítica ---
     ventas_totales = models.IntegerField(default=0)
     busquedas_totales = models.IntegerField(default=0)
     calificacion_promedio = models.FloatField(default=0)
     total_calificaciones = models.IntegerField(default=0)
 
+    # --- Fechas ---
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+
         # SLUG ÚNICO
         if not self.slug:
             base_slug = slugify(self.nombre)
@@ -102,20 +131,20 @@ class Producto(models.Model):
             self.precio_venta_usd - self.valor_total_unidad
         ).quantize(Decimal("0.01"))
         self.ganancia_total = (self.ganancia_unidad * self.stock).quantize(
-            Decimal("0.01"
-        ))
+            Decimal("0.01")
+        )
 
         # DESCUENTOS
         if (
-            self.precio_mercado
-            and self.precio_mercado > 0
+            self.precio_mercado_soles
+            and self.precio_mercado_soles > 0
             and self.precio_venta_soles > 0
         ):
             self.descuento_soles = (
-                self.precio_mercado - self.precio_venta_soles
+                self.precio_mercado_soles - self.precio_venta_soles
             ).quantize(Decimal("0.01"))
             self.descuento_porcentaje = (
-                (self.descuento_soles / self.precio_mercado) * 100
+                (self.descuento_soles / self.precio_mercado_soles) * 100
             ).quantize(Decimal("0.01"))
         else:
             self.descuento_soles = Decimal("0.00")
