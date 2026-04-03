@@ -19,6 +19,9 @@ from pagos.webhook import stripe_webhook, paypal_webhook, yape_webhook
 # PayPal (FUNCIONES)
 from pagos.views_paypal import paypal_create_order, paypal_capture_order
 
+# Estadísticas
+from pagos.views_estadisticas import EstadisticasView
+
 
 router = routers.DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
@@ -46,6 +49,9 @@ urlpatterns = [
     path("api/paypal/capture-order/", paypal_capture_order),
     path("api/paypal/webhook/", paypal_webhook),
 
-    # Yape (placeholder listo)
+    # Yape
     path("api/yape/webhook/", yape_webhook),
+
+    # Estadísticas
+    path("api/estadisticas/", EstadisticasView.as_view()),
 ]

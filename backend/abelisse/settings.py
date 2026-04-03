@@ -9,8 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
 STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
-FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
-BACKEND_URL = config("BACKEND_URL", default="http://localhost:8000")
+FRONTEND_URL = config("FRONTEND_URL", default="https://abelisse.com")
+BACKEND_URL = config("BACKEND_URL", default="https://abelisse-backend.onrender.com")
 
 # Seguridad
 SECRET_KEY = config("SECRET_KEY", default="inseguro")
@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     # Apps internas
     'comunidad',
     'inventario',
-    'pagos',   # ←🔥 NECESARIO PARA QUE DJANGO RECONOZCA TU MODELO ORDEN
+    'pagos',
 ]
 
 # Middleware
@@ -99,5 +99,11 @@ STATICFILES_DIRS = []
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# CORS
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS CONFIG PROFESIONAL
+CORS_ALLOWED_ORIGINS = [
+    "https://abelisse.com",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://abelisse.com",
+]
