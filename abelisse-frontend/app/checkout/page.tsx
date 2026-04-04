@@ -23,6 +23,8 @@ export default function CheckoutPage() {
       carrito: cart,
       email,
       nombre,
+      currency: "USD",
+      payment_method: "stripe",
     });
   };
 

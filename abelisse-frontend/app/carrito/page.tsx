@@ -7,7 +7,6 @@ import { useCountryStore, useDetectCountry } from "@/store/countryStore";
 import PayPalButton from "@/components/PayPalButton";
 
 export default function CarritoPage() {
-  // Detectar país automáticamente
   useDetectCountry();
 
   const { country, currency, loading } = useCountryStore();
@@ -16,7 +15,6 @@ export default function CarritoPage() {
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
-  // Total dinámico según país
   const total = cart.reduce(
     (acc, item) =>
       acc +
@@ -47,7 +45,6 @@ export default function CarritoPage() {
     <div className="max-w-5xl mx-auto px-4 py-16">
       <h1 className="text-2xl font-semibold mb-2">Tu carrito</h1>
 
-      {/* Mostrar país detectado */}
       {!loading && (
         <p className="text-sm text-gray-500 mb-4">
           Detectado: {isPeru ? "Perú (PEN)" : "Resto del mundo (USD)"}
@@ -75,12 +72,10 @@ export default function CarritoPage() {
               <div className="flex-1">
                 <h2 className="font-medium !text-black">{item.nombre}</h2>
 
-                {/* Precio dinámico */}
                 <p className="text-pink-600 font-semibold">
                   {symbol} {price.toFixed(2)}
                 </p>
 
-                {/* Cantidad */}
                 <p className="text-sm text-gray-500">
                   Cantidad: {item.quantity}
                 </p>
@@ -97,7 +92,6 @@ export default function CarritoPage() {
         })}
       </div>
 
-      {/* RESUMEN */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-sm !text-black">Total</p>
@@ -115,11 +109,9 @@ export default function CarritoPage() {
         </button>
       </div>
 
-      {/* MÉTODOS DE PAGO */}
       <div className="flex flex-col gap-3 items-end">
         {isPeru ? (
           <>
-            {/* 🔥 MÉTODO DE PAGO PARA PERÚ */}
             <button
               onClick={() => alert("Yape estará disponible pronto")}
               className="px-6 py-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition text-sm"
@@ -129,7 +121,6 @@ export default function CarritoPage() {
           </>
         ) : (
           <>
-            {/* 🔥 MÉTODOS DE PAGO INTERNACIONALES */}
             <button
               onClick={() => (window.location.href = "/checkout")}
               className="px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition text-sm"
