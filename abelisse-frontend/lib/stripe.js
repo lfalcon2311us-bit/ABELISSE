@@ -1,29 +1,39 @@
 import { loadStripe } from "@stripe/stripe-js";
 
+const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export async function iniciarPago({ total, carrito, email, nombre }) {
-  const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+  if (!STRIPE_PUBLIC_KEY) {
+    throw new Error("Falta NEXT_PUBLIC_STRIPE_PUBLIC_KEY en .env.local");
+  }
+
+  if (!BACKEND_URL) {
+    throw new Error("Falta NEXT_PUBLIC_BACKEND_URL en .env.local");
+  }
+
+  const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/checkout/create-session/`,
+    `${BACKEND_URL}/api/checkout/create-session/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        total,
-        carrito,
-        email,
-        nombre,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ total, carrito, email, nombre }),
     }
   );
 
+  if (!response.ok) {
+    console.error(await response.text());
+    throw new Error("Error al crear sesión de pago");
+  }
+
   const data = await response.json();
 
-  if (data.sessionId) {
-    stripe?.redirectToCheckout({ sessionId: data.sessionId });
-  } else {
-    console.error("❌ Error al crear sesión de Stripe:", data);
+  if (!data.sessionId) {
+    console.error("Respuesta inesperada del backend:", data);
+    throw new Error("No se recibió sessionId de Stripe");
   }
+
+  await stripe.redirectToCheckout({ sessionId: data.sessionId });
 }

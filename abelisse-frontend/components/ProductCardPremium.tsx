@@ -9,7 +9,7 @@ interface Props {
   id: number;
   nombre: string;
   precio_venta_soles: number | string | null;
-  precio_mercado: number | string | null;
+  precio_mercado_soles: number | string | null;   // ← 🔥 CAMBIO REAL
   descuento_porcentaje: number | string | null;
   imagen_principal: string | null;
   precio_venta_usd?: number | string | null;
@@ -22,7 +22,7 @@ export default function ProductCardPremium(props: Props) {
     id,
     nombre,
     precio_venta_soles,
-    precio_mercado,
+    precio_mercado_soles,   // ← 🔥 CAMBIO REAL
     descuento_porcentaje,
     imagen_principal,
     precio_venta_usd,
@@ -32,19 +32,17 @@ export default function ProductCardPremium(props: Props) {
 
   const [showFullDesc, setShowFullDesc] = useState(false);
 
-  // Detectar país automáticamente
   useDetectCountry();
   const { currency } = useCountryStore();
 
   const addToCart = useCartStore((state) => state.addToCart);
 
-  // Perú = soles, resto = dólares
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
   // Conversión segura
   const precioSoles = Number(precio_venta_soles ?? 0);
-  const precioMercado = Number(precio_mercado ?? 0);
+  const precioMercado = Number(precio_mercado_soles ?? 0);   // ← 🔥 CAMBIO REAL
   const precioUSD = Number(precio_venta_usd ?? precioSoles / 3.5);
   const descuento = Number(descuento_porcentaje ?? 0);
 
@@ -58,7 +56,6 @@ export default function ProductCardPremium(props: Props) {
       ? descripcion.slice(0, 120) + "..."
       : descripcion;
 
-  // ⭐ Rating
   const rating = Number(calificacion_promedio ?? 0);
   const roundedRating = Math.round(rating);
 

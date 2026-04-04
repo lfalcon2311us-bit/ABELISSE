@@ -13,16 +13,22 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+
     "plugins": [
       {
         "name": "next"
       }
     ],
+
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+
+    "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "6.0"
   },
+
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -33,5 +39,6 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
+
   "exclude": ["node_modules"]
 }
