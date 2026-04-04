@@ -18,7 +18,7 @@ BACKEND_URL = config("BACKEND_URL", default="https://abelisse-backend.onrender.c
 SECRET_KEY = config("SECRET_KEY", default="inseguro")
 DEBUG = config("DEBUG", default="False") == "True"
 
-ALLOWED_HOSTS = ["*"]  # Render usa hosts dinámicos
+ALLOWED_HOSTS = ["*"]
 
 
 # ============================
@@ -128,7 +128,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # ============================
-#   CORS / CSRF (Next.js)
+#   CORS / CSRF
 # ============================
 CORS_ALLOWED_ORIGINS = [
     "https://abelisse.com",
@@ -144,3 +144,23 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+
+# ============================
+#   LOGGING (MOSTRAR ERRORES 500 EN RENDER)
+# ============================
+import logging
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "ERROR",
+    },
+}
