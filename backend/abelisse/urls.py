@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
+from django.http import JsonResponse
 from rest_framework import routers, permissions
 
 # Inventario
@@ -27,6 +28,24 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 
+# ============================
+#   ENDPOINT RAÍZ / (HOME)
+# ============================
+def home(request):
+    return JsonResponse({
+        "status": "online",
+        "project": "ABELISSE Backend",
+        "version": "1.0.0",
+        "docs": "/docs/",
+        "redoc": "/redoc/",
+        "openapi": "/openapi.json",
+        "message": "API funcionando correctamente"
+    })
+
+
+# ============================
+#   SWAGGER CONFIG
+# ============================
 schema_view = get_schema_view(
     openapi.Info(
         title="ABELISSE API",
@@ -39,12 +58,22 @@ schema_view = get_schema_view(
 )
 
 
+# ============================
+#   ROUTER
+# ============================
 router = routers.DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
 router.register(r'productos', ProductoViewSet)
 
 
+# ============================
+#   URLS PRINCIPALES
+# ============================
 urlpatterns = [
+    # Endpoint raíz
+    path("", home),
+
+    # Admin
     path('admin/', admin.site.urls),
 
     # API REST
