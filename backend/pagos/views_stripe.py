@@ -7,10 +7,6 @@ from .models import Orden
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-
-# ---------------------------------------------------------
-# 🔥 CREAR CHECKOUT SESSION (PROFESIONAL)
-# ---------------------------------------------------------
 @csrf_exempt
 def create_checkout_session(request):
     try:
@@ -24,7 +20,6 @@ def create_checkout_session(request):
         if not total or float(total) <= 0:
             return JsonResponse({"error": "Total inválido"}, status=400)
 
-        # Crear sesión de Stripe
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             mode="payment",
@@ -32,9 +27,7 @@ def create_checkout_session(request):
                 {
                     "price_data": {
                         "currency": "usd",
-                        "product_data": {
-                            "name": "Compra en ABELISSE",
-                        },
+                        "product_data": {"name": "Compra en ABELISSE"},
                         "unit_amount": int(float(total) * 100),
                     },
                     "quantity": 1,
@@ -44,9 +37,6 @@ def create_checkout_session(request):
             cancel_url=f"{settings.FRONTEND_URL}/pago-fallido",
         )
 
-        # ---------------------------------------------------------
-        # 🔥 GUARDAR ORDEN EN LA BASE DE DATOS
-        # ---------------------------------------------------------
         Orden.objects.create(
             stripe_session_id=session.id,
             monto=float(total),
