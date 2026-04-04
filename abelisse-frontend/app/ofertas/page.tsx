@@ -39,7 +39,7 @@ export default function OfertasPage() {
             id={p.id}
             nombre={p.nombre}
             precio_venta_soles={p.precio_venta_soles}
-            precio_mercado={p.precio_mercado}
+            precio_mercado_soles={p.precio_mercado_soles}
             descuento_porcentaje={p.descuento_porcentaje}
             imagen_principal={p.imagen_principal}
             precio_venta_usd={p.precio_venta_usd}
