@@ -23,19 +23,15 @@ export default function PayPalButton({
   const cart = useCartStore((state) => state.cart);
 
   useEffect(() => {
-    // Limpiar contenedor
     const container = document.getElementById("paypal-button-container");
     if (container) container.innerHTML = "";
 
-    // Eliminar SDK previo
     const oldScript = document.getElementById("paypal-sdk");
     if (oldScript) oldScript.remove();
 
-    // Crear nuevo SDK
     const script = document.createElement("script");
     script.id = "paypal-sdk";
 
-    // ⭐ CLIENT ID SANDBOX (cámbialo por el tuyo real)
     script.src = `https://www.paypal.com/sdk/js?client-id=Abd0yZtKk0bHc8Yt8X8Jt3Yt9Jt8Yt7Jt6Yt5Yt4Yt3Yt2Yt1&currency=${currency}`;
     script.async = true;
 
@@ -44,9 +40,6 @@ export default function PayPalButton({
 
       window.paypal
         .Buttons({
-          // ---------------------------------------------------------
-          // 🔥 CREAR ORDEN
-          // ---------------------------------------------------------
           createOrder: async () => {
             const res = await fetch(
               `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/paypal/create-order/`,
@@ -63,37 +56,23 @@ export default function PayPalButton({
             );
 
             const data = await res.json();
-
-            // PayPal devuelve order.id
             return data.id;
           },
 
-          // ---------------------------------------------------------
-          // 🔥 CAPTURAR ORDEN
-          // ---------------------------------------------------------
           onApprove: async (data: any) => {
             const res = await fetch(
               `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/paypal/capture-order/`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  orderID: data.orderID,
-                }),
+                body: JSON.stringify({ orderID: data.orderID }),
               }
             );
 
-            if (res.ok) {
-              // Redirección profesional
-              window.location.href = "/pago-exitoso";
-            } else {
-              window.location.href = "/pago-fallido";
-            }
+            if (res.ok) window.location.href = "/pago-exitoso";
+            else window.location.href = "/pago-fallido";
           },
 
-          // ---------------------------------------------------------
-          // 🔥 ERROR EN BOTÓN
-          // ---------------------------------------------------------
           onError: () => {
             window.location.href = "/pago-fallido";
           },
