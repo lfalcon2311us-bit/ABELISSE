@@ -1,23 +1,29 @@
 from pathlib import Path
 from decouple import config
-import os
 import dj_database_url
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Stripe / Frontend / Backend
+# ============================
+#   KEYS / URLS
+# ============================
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = config("STRIPE_PUBLISHABLE_KEY")
 STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
+
 FRONTEND_URL = config("FRONTEND_URL", default="https://abelisse.com")
 BACKEND_URL = config("BACKEND_URL", default="https://abelisse-backend.onrender.com")
 
-# Seguridad
 SECRET_KEY = config("SECRET_KEY", default="inseguro")
 DEBUG = config("DEBUG", default="False") == "True"
-ALLOWED_HOSTS = ["*"]  # Render asigna dominio dinámico
 
-# Apps
+ALLOWED_HOSTS = ["*"]  # Render usa hosts dinámicos
+
+
+# ============================
+#   APPS
+# ============================
 INSTALLED_APPS = [
     # Django
     'django.contrib.admin',
@@ -37,7 +43,10 @@ INSTALLED_APPS = [
     'pagos',
 ]
 
-# Middleware
+
+# ============================
+#   MIDDLEWARE
+# ============================
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -50,8 +59,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'abelisse.urls'
 
+
+# ============================
+#   TEMPLATES
+# ============================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -67,9 +81,13 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'abelisse.wsgi.application'
 
-# BASE DE DATOS (Render usa DATABASE_URL)
+
+# ============================
+#   BASE DE DATOS
+# ============================
 DATABASES = {
     'default': dj_database_url.config(
         default=config("DATABASE_URL", default="sqlite:///db.sqlite3"),
@@ -78,7 +96,10 @@ DATABASES = {
     )
 }
 
-# Passwords
+
+# ============================
+#   PASSWORDS
+# ============================
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -86,24 +107,40 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internacionalización
+
+# ============================
+#   INTERNACIONALIZACIÓN
+# ============================
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+
+# ============================
+#   STATIC FILES
+# ============================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = []
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# CORS CONFIG PROFESIONAL
+
+# ============================
+#   CORS / CSRF (Next.js)
+# ============================
 CORS_ALLOWED_ORIGINS = [
     "https://abelisse.com",
+    "https://www.abelisse.com",
+    "http://localhost:3000",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://abelisse.com",
+    "https://www.abelisse.com",
+    "https://abelisse-backend.onrender.com",
+    "http://localhost:3000",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
