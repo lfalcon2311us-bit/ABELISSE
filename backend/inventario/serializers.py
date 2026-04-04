@@ -31,7 +31,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             "valor_general",
             "precio_venta_usd",
             "precio_venta_soles",
-            "precio_mercado",
+            "precio_mercado_soles",   # ← 🔥 FIX REAL
             "descuento_soles",
             "descuento_porcentaje",
             "ganancia_unidad",
