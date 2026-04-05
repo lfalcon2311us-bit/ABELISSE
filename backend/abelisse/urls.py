@@ -23,17 +23,14 @@ from pagos.views_paypal import paypal_create_order, paypal_capture_order
 # Estadísticas
 from pagos.views_estadisticas import EstadisticasView
 
-# GEO (nuevo)
+# GEO
 from pagos.views_geo import detectar_pais
 
-# Swagger / OpenAPI
+# Swagger
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 
-# ============================
-#   ENDPOINT RAÍZ / (HOME)
-# ============================
 def home(request):
     return JsonResponse({
         "status": "online",
@@ -46,9 +43,6 @@ def home(request):
     })
 
 
-# ============================
-#   SWAGGER CONFIG
-# ============================
 schema_view = get_schema_view(
     openapi.Info(
         title="ABELISSE API",
@@ -60,35 +54,21 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
-
-# ============================
-#   ROUTER
-# ============================
 router = routers.DefaultRouter()
 router.register(r'categorias', CategoriaViewSet)
 router.register(r'productos', ProductoViewSet)
 
-
-# ============================
-#   URLS PRINCIPALES
-# ============================
 urlpatterns = [
-    # Endpoint raíz
     path("", home),
 
-    # Admin
     path('admin/', admin.site.urls),
 
     # API REST
     path('api/', include(router.urls)),
-
-    # Productos destacados
     path("api/productos-destacados/", ProductosDestacados.as_view()),
-
-    # Suscripción
     path('api/suscribirse/', suscribirse),
 
-    # GEO desde backend (🔥 nuevo)
+    # GEO
     path("api/geo/", detectar_pais),
 
     # Stripe
@@ -106,12 +86,8 @@ urlpatterns = [
     # Estadísticas
     path("api/estadisticas/", EstadisticasView.as_view()),
 
-    # Swagger UI
-    re_path(r"^docs/$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-
-    # Redoc
-    re_path(r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-
-    # OpenAPI JSON
-    re_path(r"^openapi.json$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
+    # Swagger
+    re_path(r"^docs/$", schema_view.with_ui("swagger", cache_timeout=0)),
+    re_path(r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0)),
+    re_path(r"^openapi.json$", schema_view.without_ui(cache_timeout=0)),
 ]
