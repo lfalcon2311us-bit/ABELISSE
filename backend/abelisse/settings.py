@@ -128,7 +128,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # ============================
-#   CORS / CSRF (CORREGIDO)
+#   CORS / CSRF (CORREGIDO + DEBUG)
 # ============================
 
 CORS_ALLOWED_ORIGINS = [
@@ -144,7 +144,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-# 🔥 Permitir headers necesarios
+# Headers permitidos
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
@@ -156,7 +156,7 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-# 🔥 Permitir todos los métodos
+# Métodos permitidos
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -166,10 +166,10 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 
-# 🔥 Permitir credenciales
+# Permitir credenciales
 CORS_ALLOW_CREDENTIALS = True
 
-# 🔥 Permitir cualquier origen si Render ignora la lista
+# Permitir todos los orígenes (Render a veces ignora la lista)
 CORS_ALLOW_ALL_ORIGINS = True
 
 
@@ -191,3 +191,14 @@ LOGGING = {
         "level": "ERROR",
     },
 }
+
+
+# ============================
+#   DEBUG DE CORS (TRUCO)
+# ============================
+
+print("=== CORS DEBUG ===")
+print("CORS_ALLOWED_ORIGINS:", CORS_ALLOWED_ORIGINS)
+print("CORS_ALLOW_ALL_ORIGINS:", CORS_ALLOW_ALL_ORIGINS)
+print("CSRF_TRUSTED_ORIGINS:", CSRF_TRUSTED_ORIGINS)
+print("===================")
