@@ -3,7 +3,7 @@ import { loadStripe } from "@stripe/stripe-js";
 const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export async function iniciarPago({ total, carrito, email, nombre, currency, payment_method }) {
+export async function iniciarPago({ total, carrito, email, nombre }) {
   if (!STRIPE_PUBLIC_KEY) {
     throw new Error("Falta NEXT_PUBLIC_STRIPE_PUBLIC_KEY en variables de entorno");
   }
@@ -22,8 +22,6 @@ export async function iniciarPago({ total, carrito, email, nombre, currency, pay
       carrito,
       email,
       nombre,
-      currency,
-      payment_method,
     }),
   });
 

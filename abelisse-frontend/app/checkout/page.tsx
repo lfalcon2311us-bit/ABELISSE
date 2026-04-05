@@ -11,7 +11,7 @@ export default function CheckoutPage() {
   const [email, setEmail] = useState("");
 
   const total = cart.reduce(
-    (acc, item) => acc + item.precio_usd * item.quantity,
+    (acc, item) => acc + Number(item.precio_usd || 0) * item.quantity,
     0
   );
 
@@ -23,8 +23,6 @@ export default function CheckoutPage() {
       carrito: cart,
       email,
       nombre,
-      currency: "USD",
-      payment_method: "stripe",
     });
   };
 

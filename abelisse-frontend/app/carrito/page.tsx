@@ -9,7 +9,7 @@ import PayPalButton from "@/components/PayPalButton";
 export default function CarritoPage() {
   useDetectCountry();
 
-  const { country, currency, loading } = useCountryStore();
+  const { currency, loading } = useCountryStore();
   const { cart, removeFromCart, clearCart } = useCartStore();
 
   const isPeru = currency === "PEN";
@@ -18,7 +18,10 @@ export default function CarritoPage() {
   const total = cart.reduce(
     (acc, item) =>
       acc +
-      (isPeru ? item.precio_soles : item.precio_usd) * item.quantity,
+      (isPeru
+        ? Number(item.precio_soles || 0)
+        : Number(item.precio_usd || 0)) *
+        item.quantity,
     0
   );
 
@@ -47,13 +50,15 @@ export default function CarritoPage() {
 
       {!loading && (
         <p className="text-sm text-gray-500 mb-4">
-          Detectado: {isPeru ? "Perú (PEN)" : "Resto del mundo (USD)"}
+          {isPeru ? "Precios en Soles (PEN)" : "Precios en Dólares (USD)"}
         </p>
       )}
 
       <div className="space-y-4 mb-8">
         {cart.map((item) => {
-          const price = isPeru ? item.precio_soles : item.precio_usd;
+          const price = isPeru
+            ? Number(item.precio_soles || 0)
+            : Number(item.precio_usd || 0);
 
           return (
             <div
@@ -109,30 +114,31 @@ export default function CarritoPage() {
         </button>
       </div>
 
+      {/* MÉTODOS DE PAGO */}
       <div className="flex flex-col gap-3 items-end">
-        {isPeru ? (
-          <>
-            <button
-              onClick={() => alert("Yape estará disponible pronto")}
-              className="px-6 py-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition text-sm"
-            >
-              Pagar con Yape
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => (window.location.href = "/checkout")}
-              className="px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition text-sm"
-            >
-              Pagar con Stripe
-            </button>
 
-            <div className="w-full">
-              <PayPalButton total={total} currency="USD" />
-            </div>
-          </>
+        {/* 🔥 Yape solo si Perú */}
+        {isPeru && (
+          <button
+            onClick={() => alert("Yape estará disponible pronto")}
+            className="px-6 py-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition text-sm"
+          >
+            Pagar con Yape
+          </button>
         )}
+
+        {/* 🔥 Stripe SIEMPRE visible */}
+        <button
+          onClick={() => (window.location.href = "/checkout")}
+          className="px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition text-sm"
+        >
+          Pagar con Stripe
+        </button>
+
+        {/* 🔥 PayPal SIEMPRE visible */}
+        <div className="w-full">
+          <PayPalButton total={total} currency={isPeru ? "PEN" : "USD"} />
+        </div>
       </div>
     </div>
   );

@@ -9,15 +9,15 @@ interface CountryState {
   country: string | null;
   currency: Currency;
   loading: boolean;
-  setCountry: (country: string) => void;
+  setCountry: (country: string | null) => void;
 }
 
 export const useCountryStore = create<CountryState>((set) => ({
   country: null,
-  currency: "USD", // Por defecto USD
+  currency: "USD", // default neutral
   loading: true,
 
-  setCountry: (country: string) =>
+  setCountry: (country: string | null) =>
     set({
       country,
       currency: country === "PE" ? "PEN" : "USD",
@@ -25,7 +25,7 @@ export const useCountryStore = create<CountryState>((set) => ({
     }),
 }));
 
-// 🔥 Hook que detecta el país automáticamente
+// 🔥 Detección real del país
 export function useDetectCountry() {
   const setCountry = useCountryStore((s) => s.setCountry);
 
@@ -35,11 +35,13 @@ export function useDetectCountry() {
         const res = await fetch("https://ipapi.co/json/");
         const data = await res.json();
 
-        // Si la API devuelve país, lo usamos
-        setCountry(data.country || "US");
+        if (data && data.country) {
+          setCountry(data.country);
+        } else {
+          setCountry(null); // no forzamos nada
+        }
       } catch (e) {
-        // Si falla, asumimos USD
-        setCountry("US");
+        setCountry(null); // fallback neutral
       }
     }
 
