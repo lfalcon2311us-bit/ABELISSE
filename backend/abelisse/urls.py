@@ -23,6 +23,9 @@ from pagos.views_paypal import paypal_create_order, paypal_capture_order
 # Estadísticas
 from pagos.views_estadisticas import EstadisticasView
 
+# GEO (nuevo)
+from pagos.views_geo import detectar_pais
+
 # Swagger / OpenAPI
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -84,6 +87,9 @@ urlpatterns = [
 
     # Suscripción
     path('api/suscribirse/', suscribirse),
+
+    # GEO desde backend (🔥 nuevo)
+    path("api/geo/", detectar_pais),
 
     # Stripe
     path("api/checkout/create-session/", create_checkout_session),
