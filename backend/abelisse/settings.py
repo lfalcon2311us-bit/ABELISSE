@@ -128,8 +128,9 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # ============================
-#   CORS / CSRF
+#   CORS / CSRF (CORREGIDO)
 # ============================
+
 CORS_ALLOWED_ORIGINS = [
     "https://abelisse.com",
     "https://www.abelisse.com",
@@ -143,11 +144,37 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
 ]
 
+# 🔥 Permitir headers necesarios
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+# 🔥 Permitir todos los métodos
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+# 🔥 Permitir credenciales
 CORS_ALLOW_CREDENTIALS = True
+
+# 🔥 Permitir cualquier origen si Render ignora la lista
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # ============================
-#   LOGGING (MOSTRAR ERRORES 500 EN RENDER)
+#   LOGGING
 # ============================
 import logging
 
