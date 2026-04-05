@@ -25,23 +25,26 @@ export const useCountryStore = create<CountryState>((set) => ({
     }),
 }));
 
-// 🔥 Detección real del país
+// 🔥 Detección REAL del país desde tu backend (sin CORS)
 export function useDetectCountry() {
   const setCountry = useCountryStore((s) => s.setCountry);
 
   useEffect(() => {
     async function detect() {
       try {
-        const res = await fetch("https://ipapi.co/json/");
+        const res = await fetch(
+          "https://abelisse-backend.onrender.com/api/geo/"
+        );
+
         const data = await res.json();
 
         if (data && data.country) {
           setCountry(data.country);
         } else {
-          setCountry(null); // no forzamos nada
+          setCountry(null);
         }
       } catch (e) {
-        setCountry(null); // fallback neutral
+        setCountry(null);
       }
     }
 
