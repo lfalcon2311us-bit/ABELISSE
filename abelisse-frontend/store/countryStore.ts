@@ -14,7 +14,7 @@ interface CountryState {
 
 export const useCountryStore = create<CountryState>((set) => ({
   country: null,
-  currency: "USD", // default neutral
+  currency: "USD",
   loading: true,
 
   setCountry: (country: string | null) =>
@@ -25,7 +25,6 @@ export const useCountryStore = create<CountryState>((set) => ({
     }),
 }));
 
-// 🔥 Detección REAL del país desde tu backend (sin CORS)
 export function useDetectCountry() {
   const setCountry = useCountryStore((s) => s.setCountry);
 
@@ -33,7 +32,7 @@ export function useDetectCountry() {
     async function detect() {
       try {
         const res = await fetch(
-          "https://abelisse-backend.onrender.com/api/geo/"
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/geo/`
         );
 
         const data = await res.json();
