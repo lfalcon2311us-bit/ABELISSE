@@ -15,15 +15,15 @@ export default function CarritoPage() {
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
-  const total = cart.reduce(
-    (acc, item) =>
-      acc +
-      (isPeru
-        ? Number(item.precio_soles || 0)
-        : Number(item.precio_usd || 0)) *
-        item.quantity,
-    0
-  );
+  // ⭐ TOTAL CORREGIDO (NUNCA PRODUCE NaN)
+  const total = cart.reduce((acc, item) => {
+    const raw = isPeru ? item.precio_soles : item.precio_usd;
+    const price = parseFloat(String(raw).replace(",", "."));
+
+    if (!Number.isFinite(price)) return acc;
+
+    return acc + price * item.quantity;
+  }, 0);
 
   if (cart.length === 0) {
     return (
@@ -56,9 +56,8 @@ export default function CarritoPage() {
 
       <div className="space-y-4 mb-8">
         {cart.map((item) => {
-          const price = isPeru
-            ? Number(item.precio_soles || 0)
-            : Number(item.precio_usd || 0);
+          const raw = isPeru ? item.precio_soles : item.precio_usd;
+          const price = parseFloat(String(raw).replace(",", "."));
 
           return (
             <div
@@ -117,7 +116,6 @@ export default function CarritoPage() {
       {/* MÉTODOS DE PAGO */}
       <div className="flex flex-col gap-3 items-end">
 
-        {/* 🔥 Yape solo si Perú */}
         {isPeru && (
           <button
             onClick={() => alert("Yape estará disponible pronto")}
@@ -127,7 +125,6 @@ export default function CarritoPage() {
           </button>
         )}
 
-        {/* 🔥 Stripe SIEMPRE visible */}
         <button
           onClick={() => (window.location.href = "/checkout")}
           className="px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition text-sm"
@@ -135,7 +132,6 @@ export default function CarritoPage() {
           Pagar con Stripe
         </button>
 
-        {/* 🔥 PayPal SIEMPRE visible */}
         <div className="w-full">
           <PayPalButton total={total} currency={isPeru ? "PEN" : "USD"} />
         </div>

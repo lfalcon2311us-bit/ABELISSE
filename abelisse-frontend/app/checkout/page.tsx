@@ -10,10 +10,15 @@ export default function CheckoutPage() {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
 
-  const total = cart.reduce(
-    (acc, item) => acc + Number(item.precio_usd || 0) * item.quantity,
-    0
-  );
+  // ⭐ TOTAL CORREGIDO (NUNCA PRODUCE NaN)
+  const total = cart.reduce((acc, item) => {
+    const raw = item.precio_usd;
+    const price = parseFloat(String(raw).replace(",", "."));
+
+    if (!Number.isFinite(price)) return acc;
+
+    return acc + price * item.quantity;
+  }, 0);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
