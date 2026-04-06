@@ -1,22 +1,46 @@
+# ---------------------------------------------------------
+# 🔥 IMPORTS
+# ---------------------------------------------------------
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.generics import RetrieveAPIView
 
 from .models import Categoria, Producto
 from .serializers import CategoriaSerializer, ProductoSerializer
 
 
+# ---------------------------------------------------------
+# 🔥 1) CATEGORÍAS
+# ---------------------------------------------------------
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
 
 
+# ---------------------------------------------------------
+# 🔥 2) PRODUCTOS — LISTA + DETALLE AUTOMÁTICO
+# ---------------------------------------------------------
 class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all().order_by("-fecha_creacion")
     serializer_class = ProductoSerializer
 
+    # 👇 ESTA LÍNEA ES LA CLAVE
+    lookup_field = "id"
 
-# 🔥 NUEVO ENDPOINT: PRODUCTOS DESTACADOS
+
+# ---------------------------------------------------------
+# 🔥 3) PRODUCTO DETALLE (OPCIONAL, SI QUIERES ENDPOINT MANUAL)
+# ---------------------------------------------------------
+class ProductoDetalleView(RetrieveAPIView):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
+    lookup_field = "id"
+
+
+# ---------------------------------------------------------
+# 🔥 4) PRODUCTOS DESTACADOS
+# ---------------------------------------------------------
 class ProductosDestacados(APIView):
     def get(self, request):
 
