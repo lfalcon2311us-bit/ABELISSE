@@ -31,7 +31,7 @@ def stripe_webhook(request):
     # Pago completado
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-        stripe_id = session["id"]
+        stripe_id = session.get("id")
 
         try:
             orden = Orden.objects.get(stripe_session_id=stripe_id)
@@ -49,7 +49,7 @@ Hola {orden.nombre},
 
 Tu pago en ABELISSE fue procesado con éxito.
 
-Monto: ${orden.total}
+Monto: ${orden.monto}
 Estado: COMPLETADA
 ID de orden: {orden.id}
 
@@ -75,7 +75,7 @@ Equipo ABELISSE
 
 
 # ---------------------------------------------------------
-# 🔥 2) WEBHOOK PAYPAL — LISTO
+# 🔥 2) WEBHOOK PAYPAL — LISTO + FIX DE `orden.total`
 # ---------------------------------------------------------
 @csrf_exempt
 def paypal_webhook(request):
@@ -112,7 +112,7 @@ Hola {orden.nombre},
 
 Tu pago con PayPal en ABELISSE fue procesado con éxito.
 
-Monto: ${orden.total}
+Monto: ${orden.monto}
 Estado: COMPLETADA
 ID de orden: {orden.id}
 
@@ -146,20 +146,9 @@ Gracias por tu compra.
 # ---------------------------------------------------------
 @csrf_exempt
 def yape_webhook(request):
-    """
-    Cuando activemos Yape API oficial, aquí procesaremos:
-    - Confirmación de pago
-    - Validación de monto
-    - Actualización de orden
-    - Envío de correo automático
-    """
     try:
         body = json.loads(request.body)
         print("📲 Evento Yape recibido:", body)
-
-        # Ejemplo:
-        # orden_id = body.get("order_id")
-        # estado = body.get("status")
 
         return HttpResponse(status=200)
 
