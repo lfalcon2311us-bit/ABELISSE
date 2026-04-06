@@ -12,7 +12,8 @@ export async function iniciarPago({ total, carrito, email, nombre }) {
     throw new Error("Falta NEXT_PUBLIC_BACKEND_URL en variables de entorno");
   }
 
-  const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
+  // Ya no se usa redirectToCheckout, pero Stripe.js sigue siendo útil para otras funciones
+  await loadStripe(STRIPE_PUBLIC_KEY);
 
   const response = await fetch(`${BACKEND_URL}/api/checkout/create-session/`, {
     method: "POST",
@@ -32,10 +33,11 @@ export async function iniciarPago({ total, carrito, email, nombre }) {
 
   const data = await response.json();
 
-  if (!data.sessionId) {
+  if (!data.checkout_url) {
     console.error("Respuesta inesperada del backend:", data);
-    throw new Error("No se recibió sessionId de Stripe");
+    throw new Error("No se recibió checkout_url de Stripe");
   }
 
-  await stripe.redirectToCheckout({ sessionId: data.sessionId });
+  // 🔥 Nuevo método oficial: redirección manual
+  window.location.href = data.checkout_url;
 }
