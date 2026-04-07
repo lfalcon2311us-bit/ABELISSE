@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { iniciarPago } from "@/lib/stripe";
+import PayPalButton from "@/components/PayPalButton";
 
 export default function CheckoutPage() {
   const { cart } = useCartStore();
@@ -10,13 +11,11 @@ export default function CheckoutPage() {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
 
-  // ⭐ TOTAL CORREGIDO (NUNCA PRODUCE NaN)
+  // ⭐ TOTAL SEGURO (NUNCA NaN)
   const total = cart.reduce((acc, item) => {
     const raw = item.precio_usd;
     const price = parseFloat(String(raw).replace(",", "."));
-
     if (!Number.isFinite(price)) return acc;
-
     return acc + price * item.quantity;
   }, 0);
 
@@ -32,9 +31,10 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="max-w-lg mx-auto py-16 px-4">
-      <h1 className="text-2xl font-semibold mb-6">Datos del comprador</h1>
+    <div className="max-w-lg mx-auto py-16 px-4 space-y-10">
+      <h1 className="text-2xl font-semibold">Datos del comprador</h1>
 
+      {/* FORMULARIO */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -61,6 +61,16 @@ export default function CheckoutPage() {
           Continuar con Stripe
         </button>
       </form>
+
+      {/* PAYPAL */}
+      <div className="pt-6 border-t">
+        <PayPalButton
+          total={total}
+          currency="USD"
+          email={email}
+          nombre={nombre}
+        />
+      </div>
     </div>
   );
 }
