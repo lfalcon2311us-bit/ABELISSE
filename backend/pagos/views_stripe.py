@@ -17,7 +17,7 @@ def create_checkout_session(request):
         email = body.get("email")
         nombre = body.get("nombre")
 
-        # 🔥 Validación fuerte del total
+        # Validación del total
         try:
             total_float = float(total)
         except:
@@ -28,7 +28,7 @@ def create_checkout_session(request):
             print("❌ Total <= 0:", total_float)
             return JsonResponse({"error": "Total inválido"}, status=400)
 
-        # 🔥 Crear sesión Stripe
+        # Crear sesión Stripe
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             mode="payment",
@@ -46,7 +46,7 @@ def create_checkout_session(request):
             cancel_url=f"{settings.FRONTEND_URL}/pago-fallido",
         )
 
-        # 🔥 Guardar orden
+        # Guardar orden
         Orden.objects.create(
             stripe_session_id=session.id,
             monto=total_float,
@@ -58,7 +58,8 @@ def create_checkout_session(request):
             nombre=nombre,
         )
 
-        return JsonResponse({"sessionId": session.id})
+        # 🔥 DEVOLVER checkout_url (FORMATO NUEVO)
+        return JsonResponse({"checkout_url": session.url})
 
     except Exception as e:
         print("❌ Error creando sesión Stripe:", e)
