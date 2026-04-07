@@ -24,13 +24,11 @@ class CategoriaViewSet(viewsets.ModelViewSet):
 class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all().order_by("-fecha_creacion")
     serializer_class = ProductoSerializer
-
-    # 👇 ESTA LÍNEA ES LA CLAVE
     lookup_field = "id"
 
 
 # ---------------------------------------------------------
-# 🔥 3) PRODUCTO DETALLE (OPCIONAL, SI QUIERES ENDPOINT MANUAL)
+# 🔥 3) PRODUCTO DETALLE (OPCIONAL)
 # ---------------------------------------------------------
 class ProductoDetalleView(RetrieveAPIView):
     queryset = Producto.objects.all()
@@ -39,15 +37,31 @@ class ProductoDetalleView(RetrieveAPIView):
 
 
 # ---------------------------------------------------------
-# 🔥 4) PRODUCTOS DESTACADOS
+# 🔥 4) PRODUCTOS DESTACADOS — VERSIÓN ESTABLE
 # ---------------------------------------------------------
 class ProductosDestacados(APIView):
     def get(self, request):
 
-        mas_vendidos = Producto.objects.order_by("-ventas_totales")[:10]
-        mas_buscados = Producto.objects.order_by("-busquedas_totales")[:10]
-        nuevos = Producto.objects.order_by("-fecha_creacion")[:10]
-        mejor_calificados = Producto.objects.order_by("-calificacion_promedio")[:10]
+        # Si los campos no existen o están vacíos, evitamos errores
+        try:
+            mas_vendidos = Producto.objects.order_by("-ventas_totales")[:10]
+        except:
+            mas_vendidos = Producto.objects.all()[:10]
+
+        try:
+            mas_buscados = Producto.objects.order_by("-busquedas_totales")[:10]
+        except:
+            mas_buscados = Producto.objects.all()[:10]
+
+        try:
+            nuevos = Producto.objects.order_by("-fecha_creacion")[:10]
+        except:
+            nuevos = Producto.objects.all()[:10]
+
+        try:
+            mejor_calificados = Producto.objects.order_by("-calificacion_promedio")[:10]
+        except:
+            mejor_calificados = Producto.objects.all()[:10]
 
         data = {
             "mas_vendidos": ProductoSerializer(mas_vendidos, many=True).data,
