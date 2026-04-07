@@ -1,14 +1,36 @@
 import json
-import stripe
+import requests
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Orden
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
+# ---------------------------------------------------------
+# 🔥 1) OBTENER TOKEN DE PAYPAL
+# ---------------------------------------------------------
+def get_paypal_token():
+    url = "https://api-m.paypal.com/v1/oauth2/token"
+
+    auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET)
+
+    headers = {"Accept": "application/json", "Accept-Language": "en_US"}
+    data = {"grant_type": "client_credentials"}
+
+    response = requests.post(url, headers=headers, data=data, auth=auth)
+
+    if response.status_code != 200:
+        print("❌ Error obteniendo token PayPal:", response.text)
+        return None
+
+    return response.json().get("access_token")
+
+
+# ---------------------------------------------------------
+# 🔥 2) CREAR ORDEN PAYPAL
+# ---------------------------------------------------------
 @csrf_exempt
-def create_checkout_session(request):
+def paypal_create_order(request):
     try:
         body = json.loads(request.body)
 
@@ -17,50 +39,114 @@ def create_checkout_session(request):
         email = body.get("email")
         nombre = body.get("nombre")
 
-        # Validación del total
         try:
             total_float = float(total)
         except:
-            print("❌ Total inválido recibido:", total)
             return JsonResponse({"error": "Total inválido"}, status=400)
 
         if total_float <= 0:
-            print("❌ Total <= 0:", total_float)
             return JsonResponse({"error": "Total inválido"}, status=400)
 
-        # Crear sesión Stripe
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            mode="payment",
-            line_items=[
+        token = get_paypal_token()
+        if not token:
+            return JsonResponse({"error": "No se pudo obtener token PayPal"}, status=500)
+
+        url = "https://api-m.paypal.com/v2/checkout/orders"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+
+        data = {
+            "intent": "CAPTURE",
+            "purchase_units": [
                 {
-                    "price_data": {
-                        "currency": "usd",
-                        "product_data": {"name": "Compra en ABELISSE"},
-                        "unit_amount": int(total_float * 100),
-                    },
-                    "quantity": 1,
+                    "amount": {
+                        "currency_code": "USD",
+                        "value": f"{total_float:.2f}",
+                    }
                 }
             ],
-            success_url=f"{settings.FRONTEND_URL}/pago-exitoso",
-            cancel_url=f"{settings.FRONTEND_URL}/pago-fallido",
-        )
+            "application_context": {
+                "return_url": f"{settings.FRONTEND_URL}/pago-exitoso",
+                "cancel_url": f"{settings.FRONTEND_URL}/pago-fallido",
+            },
+        }
+
+        response = requests.post(url, headers=headers, json=data)
+
+        if response.status_code not in [200, 201]:
+            print("❌ Error creando orden PayPal:", response.text)
+            return JsonResponse({"error": "Error creando orden PayPal"}, status=500)
+
+        order = response.json()
+        order_id = order["id"]
 
         # Guardar orden
         Orden.objects.create(
-            stripe_session_id=session.id,
+            paypal_order_id=order_id,
             monto=total_float,
             moneda="USD",
-            metodo="stripe",
+            metodo="paypal",
             estado="CREADA",
             carrito=carrito,
             email=email,
             nombre=nombre,
         )
 
-        # 🔥 NUEVO: devolver la URL oficial del checkout
-        return JsonResponse({"checkout_url": session.url})
+        # URL de aprobación
+        approve_url = next(
+            (link["href"] for link in order["links"] if link["rel"] == "approve"),
+            None,
+        )
+
+        return JsonResponse({"approve_url": approve_url, "order_id": order_id})
 
     except Exception as e:
-        print("❌ Error creando sesión Stripe:", e)
+        print("❌ Error PayPal create_order:", e)
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+# ---------------------------------------------------------
+# 🔥 3) CAPTURAR ORDEN PAYPAL
+# ---------------------------------------------------------
+@csrf_exempt
+def paypal_capture_order(request):
+    try:
+        body = json.loads(request.body)
+        order_id = body.get("order_id")
+
+        if not order_id:
+            return JsonResponse({"error": "order_id requerido"}, status=400)
+
+        token = get_paypal_token()
+        if not token:
+            return JsonResponse({"error": "No se pudo obtener token PayPal"}, status=500)
+
+        url = f"https://api-m.paypal.com/v2/checkout/orders/{order_id}/capture"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+
+        response = requests.post(url, headers=headers)
+
+        if response.status_code not in [200, 201]:
+            print("❌ Error capturando orden PayPal:", response.text)
+            return JsonResponse({"error": "Error capturando orden PayPal"}, status=500)
+
+        # Actualizar orden
+        try:
+            orden = Orden.objects.get(paypal_order_id=order_id)
+            orden.estado = "COMPLETADA"
+            orden.save()
+        except Orden.DoesNotExist:
+            print("⚠️ Orden PayPal no encontrada:", order_id)
+
+        return JsonResponse({"status": "COMPLETADA"})
+
+    except Exception as e:
+        print("❌ Error PayPal capture_order:", e)
         return JsonResponse({"error": str(e)}, status=500)
