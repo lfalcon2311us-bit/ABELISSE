@@ -10,7 +10,7 @@ from .models import Orden
 # 🔥 1) OBTENER TOKEN DE PAYPAL
 # ---------------------------------------------------------
 def get_paypal_token():
-    url = "https://api-m.paypal.com/v1/oauth2/token"
+    url = "https://api-m.paypal.com/v1/oauth2/token"  # LIVE
 
     auth = (settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET)
 
@@ -95,7 +95,7 @@ def paypal_create_order(request):
             nombre=nombre,
         )
 
-        # URL de aprobación
+        # URL de aprobación (para flujos que la necesiten)
         approve_url = next(
             (link["href"] for link in order["links"] if link["rel"] == "approve"),
             None,

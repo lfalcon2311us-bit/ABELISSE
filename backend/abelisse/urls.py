@@ -55,18 +55,18 @@ schema_view = get_schema_view(
 )
 
 router = routers.DefaultRouter()
-router.register(r'categorias', CategoriaViewSet)
-router.register(r'productos', ProductoViewSet)
+router.register(r"categorias", CategoriaViewSet)
+router.register(r"productos", ProductoViewSet)
 
 urlpatterns = [
     path("", home),
 
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 
     # API REST
-    path('api/', include(router.urls)),
+    path("api/", include(router.urls)),
     path("api/productos-destacados/", ProductosDestacados.as_view()),
-    path('api/suscribirse/', suscribirse),
+    path("api/suscribirse/", suscribirse),
 
     # GEO
     path("api/geo/", detectar_pais),
