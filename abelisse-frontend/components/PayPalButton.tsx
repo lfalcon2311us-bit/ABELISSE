@@ -32,7 +32,8 @@ export default function PayPalButton({
     const script = document.createElement("script");
     script.id = "paypal-sdk";
 
-    script.src = `https://www.paypal.com/sdk/js?client-id=Abd0yZtKk0bHc8Yt8X8Jt3Yt9Jt8Yt7Jt6Yt5Yt4Yt3Yt2Yt1&currency=${currency}`;
+    // ⭐ CLIENT ID DESDE ENV
+    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}`;
     script.async = true;
 
     script.onload = () => {
@@ -56,7 +57,7 @@ export default function PayPalButton({
             );
 
             const data = await res.json();
-            return data.id;
+            return data.order_id || data.id;
           },
 
           onApprove: async (data: any) => {
@@ -65,7 +66,7 @@ export default function PayPalButton({
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderID: data.orderID }),
+                body: JSON.stringify({ order_id: data.orderID }),
               }
             );
 
