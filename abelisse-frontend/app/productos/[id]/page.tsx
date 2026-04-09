@@ -1,8 +1,8 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// 🔥 Fetch del backend real (variable correcta)
+// 🔥 Fetch del backend real (hardcoded para evitar fallos en SSR)
 async function getProducto(id: string) {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backend = "https://abelisse-backend.onrender.com";
 
   const res = await fetch(`${backend}/api/productos/${id}/`, {
     cache: "no-store",
