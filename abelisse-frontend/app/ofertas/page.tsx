@@ -8,17 +8,29 @@ export default function OfertasPage() {
 
   useEffect(() => {
     async function fetchOfertas() {
-      const res = await fetch("http://127.0.0.1:8000/api/productos/");
-      const data = await res.json();
-
-      const filtrados = data
-        .filter((p: any) => Number(p.descuento_porcentaje) > 0)
-        .sort(
-          (a: any, b: any) =>
-            Number(b.descuento_porcentaje) - Number(a.descuento_porcentaje)
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/productos/`,
+          { cache: "no-store" }
         );
 
-      setOfertas(filtrados);
+        if (!res.ok) {
+          throw new Error("Error al cargar productos");
+        }
+
+        const data = await res.json();
+
+        const filtrados = data
+          .filter((p: any) => Number(p.descuento_porcentaje) > 0)
+          .sort(
+            (a: any, b: any) =>
+              Number(b.descuento_porcentaje) - Number(a.descuento_porcentaje)
+          );
+
+        setOfertas(filtrados);
+      } catch (error) {
+        console.error("Error cargando ofertas:", error);
+      }
     }
 
     fetchOfertas();

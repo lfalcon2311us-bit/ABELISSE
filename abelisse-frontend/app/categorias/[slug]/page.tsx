@@ -3,7 +3,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 
 // 🔥 Fetch real al backend
 async function getProductosPorCategoria(slug: string) {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backend = process.env.NEXT_PUBLIC_API_URL;
 
   const res = await fetch(`${backend}/api/categorias/${slug}/productos/`, {
     cache: "no-store",
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: any) {
       type: "website",
       images: [
         {
-          url: "/og-image.jpg", // Puedes cambiarlo por imagen de categoría si la tienes
+          url: "/og-image.jpg",
           width: 1200,
           height: 630,
           alt: nombre,
@@ -58,7 +58,6 @@ export default async function CategoriaProductos({ params }: any) {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">
-      {/* BREADCRUMBS */}
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },

@@ -15,7 +15,7 @@ export default function ContactoPage() {
     setLoading(true);
 
     try {
-      const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+      const backend = process.env.NEXT_PUBLIC_API_URL;
 
       const res = await fetch(`${backend}/api/contactar/`, {
         method: "POST",
@@ -40,11 +40,10 @@ export default function ContactoPage() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
-      {/* BREADCRUMBS */}
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },
-          { label: "Contacto" }
+          { label: "Contacto" },
         ]}
       />
 
@@ -65,7 +64,6 @@ export default function ContactoPage() {
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-xl shadow-md space-y-5"
       >
-        {/* Nombre */}
         <div>
           <label className="block mb-1 font-medium">Nombre</label>
           <input
@@ -78,7 +76,6 @@ export default function ContactoPage() {
           />
         </div>
 
-        {/* Email */}
         <div>
           <label className="block mb-1 font-medium">Correo electrónico</label>
           <input
@@ -91,7 +88,6 @@ export default function ContactoPage() {
           />
         </div>
 
-        {/* Mensaje */}
         <div>
           <label className="block mb-1 font-medium">Mensaje</label>
           <textarea
@@ -103,7 +99,6 @@ export default function ContactoPage() {
           />
         </div>
 
-        {/* Botón */}
         <button
           type="submit"
           disabled={loading}

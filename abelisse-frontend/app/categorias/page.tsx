@@ -9,8 +9,14 @@ export default function CategoriasPage() {
   useEffect(() => {
     async function fetchCategorias() {
       try {
-        const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
-        const res = await fetch(`${backend}/api/categorias/`);
+        const backend = process.env.NEXT_PUBLIC_API_URL;
+
+        const res = await fetch(`${backend}/api/categorias/`, {
+          cache: "no-store",
+        });
+
+        if (!res.ok) throw new Error("Error al cargar categorías");
+
         const data = await res.json();
         setCategorias(data);
       } catch (error) {
