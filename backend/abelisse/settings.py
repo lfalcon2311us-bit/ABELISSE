@@ -20,12 +20,10 @@ DEBUG = config("DEBUG", default="False") == "True"
 
 ALLOWED_HOSTS = ["*"]
 
-
 # ============================
 #   APPS
 # ============================
 INSTALLED_APPS = [
-    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,16 +31,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Terceros
     'rest_framework',
     'corsheaders',
 
-    # Apps internas
     'comunidad',
     'inventario',
     'pagos',
 ]
-
 
 # ============================
 #   MIDDLEWARE
@@ -59,9 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 ROOT_URLCONF = 'abelisse.urls'
-
 
 # ============================
 #   TEMPLATES
@@ -81,9 +74,7 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'abelisse.wsgi.application'
-
 
 # ============================
 #   BASE DE DATOS
@@ -96,7 +87,6 @@ DATABASES = {
     )
 }
 
-
 # ============================
 #   PASSWORDS
 # ============================
@@ -107,7 +97,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
 # ============================
 #   INTERNACIONALIZACIÓN
 # ============================
@@ -116,24 +105,22 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
 # ============================
 #   STATIC FILES
 # ============================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = []
-
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-
 # ============================
-#   CORS / CSRF (CORREGIDO + DEBUG)
+#   CORS / CSRF (CORRECTO)
 # ============================
 
 CORS_ALLOWED_ORIGINS = [
     "https://abelisse.com",
     "https://www.abelisse.com",
+    "https://abelisse-backend.onrender.com",
     "http://localhost:3000",
 ]
 
@@ -144,34 +131,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-# Headers permitidos
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
-
-# Métodos permitidos
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-
-# Permitir credenciales
 CORS_ALLOW_CREDENTIALS = True
-
-# Permitir todos los orígenes (Render a veces ignora la lista)
-CORS_ALLOW_ALL_ORIGINS = True
-
 
 # ============================
 #   LOGGING
@@ -192,13 +152,7 @@ LOGGING = {
     },
 }
 
-
-# ============================
-#   DEBUG DE CORS (TRUCO)
-# ============================
-
 print("=== CORS DEBUG ===")
 print("CORS_ALLOWED_ORIGINS:", CORS_ALLOWED_ORIGINS)
-print("CORS_ALLOW_ALL_ORIGINS:", CORS_ALLOW_ALL_ORIGINS)
 print("CSRF_TRUSTED_ORIGINS:", CSRF_TRUSTED_ORIGINS)
 print("===================")
