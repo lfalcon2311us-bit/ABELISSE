@@ -2,7 +2,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 
 // 🔥 Fetch del backend real
 async function getProducto(id: string) {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backend = process.env.NEXT_PUBLIC_API_URL;
 
   const res = await fetch(`${backend}/api/productos/${id}/`, {
     cache: "no-store",
@@ -77,7 +77,6 @@ export default async function ProductoPage({ params }: any) {
     );
   }
 
-  // Nombre bonito de la categoría (si existe)
   const categoriaSlug = producto.categoria?.slug || null;
   const categoriaNombre = categoriaSlug
     ? categoriaSlug.replace(/-/g, " ")
@@ -85,7 +84,6 @@ export default async function ProductoPage({ params }: any) {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">
-      {/* BREADCRUMBS */}
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -98,7 +96,6 @@ export default async function ProductoPage({ params }: any) {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* IMAGEN PRINCIPAL */}
         <div>
           <img
             src={producto.imagen_principal}
@@ -107,11 +104,9 @@ export default async function ProductoPage({ params }: any) {
           />
         </div>
 
-        {/* INFORMACIÓN DEL PRODUCTO */}
         <div>
           <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
 
-          {/* PRECIO */}
           <div className="mb-6">
             <p className="text-2xl font-bold text-pink-600">
               S/ {producto.precio_venta_soles}
@@ -130,12 +125,10 @@ export default async function ProductoPage({ params }: any) {
             )}
           </div>
 
-          {/* DESCRIPCIÓN */}
           <p className="text-gray-700 mb-8 leading-relaxed">
             {producto.descripcion}
           </p>
 
-          {/* BOTÓN */}
           <button className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition">
             Agregar al carrito
           </button>
