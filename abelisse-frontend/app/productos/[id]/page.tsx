@@ -1,8 +1,8 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// 🔥 Fetch del backend real
+// 🔥 Fetch del backend real (variable correcta)
 async function getProducto(id: string) {
-  const backend = process.env.NEXT_PUBLIC_API_URL;
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   const res = await fetch(`${backend}/api/productos/${id}/`, {
     cache: "no-store",
