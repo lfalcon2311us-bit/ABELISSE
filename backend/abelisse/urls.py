@@ -54,9 +54,13 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+# ---------------------------------------------------------
+# 🔥 ROUTER — FIX CRÍTICO PARA lookup_field="id"
+# ---------------------------------------------------------
 router = routers.DefaultRouter()
-router.register(r"categorias", CategoriaViewSet)
-router.register(r"productos", ProductoViewSet)
+router.register(r"categorias", CategoriaViewSet, basename="categorias")
+router.register(r"productos", ProductoViewSet, basename="productos")  # ← FIX
+
 
 urlpatterns = [
     path("", home),
