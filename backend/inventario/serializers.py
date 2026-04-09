@@ -31,7 +31,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             "valor_general",
             "precio_venta_usd",
             "precio_venta_soles",
-            "precio_mercado_soles",   # ← 🔥 FIX REAL
+            "precio_mercado_soles",
             "descuento_soles",
             "descuento_porcentaje",
             "ganancia_unidad",
@@ -41,13 +41,10 @@ class ProductoSerializer(serializers.ModelSerializer):
             "imagen_terciaria",
             "destacado",
             "activo",
-
-            # 🔥 Campos nuevos para analítica
             "ventas_totales",
             "busquedas_totales",
             "calificacion_promedio",
             "total_calificaciones",
-
             "fecha_creacion",
             "fecha_actualizacion",
         ]

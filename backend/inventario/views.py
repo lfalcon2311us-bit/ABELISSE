@@ -16,6 +16,7 @@ from .serializers import CategoriaSerializer, ProductoSerializer
 class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
+    lookup_field = "id"
 
 
 # ---------------------------------------------------------
@@ -25,6 +26,7 @@ class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all().order_by("-fecha_creacion")
     serializer_class = ProductoSerializer
     lookup_field = "id"
+    lookup_url_kwarg = "id"   # ← 🔥 FIX CRÍTICO
 
 
 # ---------------------------------------------------------
@@ -34,6 +36,7 @@ class ProductoDetalleView(RetrieveAPIView):
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
     lookup_field = "id"
+    lookup_url_kwarg = "id"   # ← 🔥 FIX CRÍTICO
 
 
 # ---------------------------------------------------------
@@ -42,26 +45,10 @@ class ProductoDetalleView(RetrieveAPIView):
 class ProductosDestacados(APIView):
     def get(self, request):
 
-        # Si los campos no existen o están vacíos, evitamos errores
-        try:
-            mas_vendidos = Producto.objects.order_by("-ventas_totales")[:10]
-        except:
-            mas_vendidos = Producto.objects.all()[:10]
-
-        try:
-            mas_buscados = Producto.objects.order_by("-busquedas_totales")[:10]
-        except:
-            mas_buscados = Producto.objects.all()[:10]
-
-        try:
-            nuevos = Producto.objects.order_by("-fecha_creacion")[:10]
-        except:
-            nuevos = Producto.objects.all()[:10]
-
-        try:
-            mejor_calificados = Producto.objects.order_by("-calificacion_promedio")[:10]
-        except:
-            mejor_calificados = Producto.objects.all()[:10]
+        mas_vendidos = Producto.objects.order_by("-ventas_totales")[:10]
+        mas_buscados = Producto.objects.order_by("-busquedas_totales")[:10]
+        nuevos = Producto.objects.order_by("-fecha_creacion")[:10]
+        mejor_calificados = Producto.objects.order_by("-calificacion_promedio")[:10]
 
         data = {
             "mas_vendidos": ProductoSerializer(mas_vendidos, many=True).data,
