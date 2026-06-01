@@ -74,6 +74,7 @@ JAZZMIN_SETTINGS = {
     },
 
     "custom_links": {},
+    # Tu archivo está en backend/static/css/custom_admin.css
     "custom_css": "css/custom_admin.css",
     "custom_js": None,
 }
@@ -155,8 +156,13 @@ USE_TZ = True
 # ============================
 #   STATIC FILES
 # ============================
-STATIC_URL = '/assents/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# IMPORTANTE: aquí le decimos a Django dónde está tu carpeta backend/static
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # backend/static
+]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
