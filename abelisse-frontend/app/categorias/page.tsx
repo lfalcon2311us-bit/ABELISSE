@@ -9,7 +9,12 @@ export default function CategoriasPage() {
   useEffect(() => {
     async function fetchCategorias() {
       try {
-        const backend = process.env.NEXT_PUBLIC_API_URL;
+        const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+        if (!backend) {
+          console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+          return;
+        }
 
         const res = await fetch(`${backend}/api/categorias/`, {
           cache: "no-store",
@@ -20,7 +25,7 @@ export default function CategoriasPage() {
         const data = await res.json();
         setCategorias(data);
       } catch (error) {
-        console.error("Error cargando categorías:", error);
+        console.error("❌ Error cargando categorías:", error);
       }
     }
 
