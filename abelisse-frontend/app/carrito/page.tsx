@@ -15,13 +15,11 @@ export default function CarritoPage() {
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
-  // ⭐ TOTAL CORREGIDO (NUNCA PRODUCE NaN)
+  // ⭐ TOTAL SEGURO (sin NaN)
   const total = cart.reduce((acc, item) => {
     const raw = isPeru ? item.precio_soles : item.precio_usd;
     const price = parseFloat(String(raw).replace(",", "."));
-
     if (!Number.isFinite(price)) return acc;
-
     return acc + price * item.quantity;
   }, 0);
 
