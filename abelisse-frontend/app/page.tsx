@@ -2,36 +2,32 @@ import HeroPremium from "@/components/HeroPremium";
 import ProductCardPremium from "@/components/ProductCardPremium";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
 
-// 🔥 Fetch de productos destacados desde backend real
-async function getFeatured() {
+// 🔥 Fetch seguro usando variable de entorno
+async function fetchData(endpoint: string) {
   const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-  const res = await fetch(`${backend}/api/productos-destacados/`, {
-    cache: "no-store",
-  });
+  if (!backend) {
+    console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+    return [];
+  }
+
+  const res = await fetch(`${backend}${endpoint}`, { cache: "no-store" });
 
   if (!res.ok) {
-    console.error("Error al cargar productos destacados");
-    return {
-      mas_vendidos: [],
-      mas_buscados: [],
-      nuevos: [],
-      mejor_calificados: [],
-    };
+    console.error(`❌ Error cargando ${endpoint}`);
+    return [];
   }
 
   return res.json();
 }
 
 export default async function Home() {
-  const destacados = await getFeatured();
+  // 🔥 Endpoints REALES del backend
+  const masVendidos = await fetchData("/api/productos/mas-vendidos/");
+  const masBuscados = await fetchData("/api/productos/mas-buscados/");
+  const nuevos = await fetchData("/api/productos/nuevos/");
+  const mejorCalificados = await fetchData("/api/productos/mejor-calificados/");
 
-  const masVendidos = destacados.mas_vendidos || [];
-  const masBuscados = destacados.mas_buscados || [];
-  const nuevos = destacados.nuevos || [];
-  const mejorCalificados = destacados.mejor_calificados || [];
-
-  // ⭐ CATEGORÍAS CON SLUG
   const categorias = [
     { nombre: "Maquillaje", slug: "maquillaje" },
     { nombre: "Cuidado Facial", slug: "cuidado-facial" },
@@ -41,10 +37,9 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
-      {/* HERO PREMIUM */}
       <HeroPremium />
 
-      {/* CATEGORÍAS PREMIUM */}
+      {/* CATEGORÍAS */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-semibold mb-6 text-center">
@@ -67,7 +62,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 🔥 MÁS VENDIDOS */}
+      {/* MÁS VENDIDOS */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
@@ -85,7 +80,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 🔍 MÁS BUSCADOS */}
+      {/* MÁS BUSCADOS */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-semibold mb-6">Más buscados</h2>
@@ -98,7 +93,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 🆕 PRODUCTOS NUEVOS */}
+      {/* NUEVOS */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-semibold mb-6">Nuevos</h2>
@@ -111,7 +106,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ⭐ MEJOR CALIFICADOS */}
+      {/* MEJOR CALIFICADOS */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-semibold mb-6">Mejor calificados</h2>
