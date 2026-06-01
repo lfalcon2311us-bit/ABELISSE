@@ -24,7 +24,7 @@ ALLOWED_HOSTS = ["*"]
 #   APPS
 # ============================
 INSTALLED_APPS = [
-    'jazzmin',
+    # Jazzmin removido para compatibilidad con Django 5
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,28 +40,6 @@ INSTALLED_APPS = [
     'inventario',
     'pagos',
 ]
-
-# ============================
-#   JAZZMIN CONFIG
-# ============================
-JAZZMIN_SETTINGS = {
-    "site_title": "ABELISSE Admin",
-    "site_header": "ABELISSE",
-    "site_brand": "ABELISSE",
-    "welcome_sign": "Panel Administrativo de ABELISSE",
-    "copyright": "ABELISSE",
-
-    "icons": {
-        "auth": "fas fa-users",
-        "auth.user": "fas fa-user",
-        "auth.Group": "fas fa-users-cog",
-        "inventario.Producto": "fas fa-box",
-        "inventario.Categoria": "fas fa-tags",
-        "pagos.Orden": "fas fa-shopping-cart",
-    },
-
-    "custom_css": "css/custom_admin.css",
-}
 
 # ============================
 #   MIDDLEWARE
