@@ -32,7 +32,7 @@ export default function PayPalButton({
     const script = document.createElement("script");
     script.id = "paypal-sdk";
 
-    // ⭐ SDK COMPLETO: PayPal + Pay Later + Tarjeta
+    // ⭐ SDK CORRECTO (PayPal + Pay Later)
     script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&intent=CAPTURE&components=buttons&enable-funding=paylater`;
     script.async = true;
 
@@ -41,7 +41,7 @@ export default function PayPalButton({
 
       window.paypal
         .Buttons({
-          fundingSource: undefined, // ⭐ Permite PayPal, Pay Later y Card
+          fundingSource: undefined,
 
           createOrder: async () => {
             const res = await fetch(
