@@ -3,70 +3,69 @@
 /* =============================================== */
 
 :root {
-  --background: #1a1a1a;        /* Fondo gris oscuro elegante */
-  --foreground: #e5e5e5;        /* Texto gris claro */
-  --primary: #2d2d2d;           /* Paneles y sidebar */
-  --secondary: #3a3a3a;         /* Hover y elementos activos */
-  --accent: #8a8a8a;            /* Bordes y detalles */
-  --highlight: #ffffff;         /* Texto destacado */
+  --jazzmin-bg: #1a1a1a;
+  --jazzmin-fg: #e5e5e5;
+  --jazzmin-panel: #2d2d2d;
+  --jazzmin-panel-hover: #3a3a3a;
+  --jazzmin-border: #8a8a8a;
+  --jazzmin-highlight: #ffffff;
 }
 
 /* =============================================== */
-/* 🧱 ESTILOS BASE */
+/* 🧱 BODY */
 /* =============================================== */
 
-body, html {
-  background-color: var(--background) !important;
-  color: var(--foreground) !important;
-  font-family: Arial, Helvetica, sans-serif !important;
+body {
+  background-color: var(--jazzmin-bg) !important;
+  color: var(--jazzmin-fg) !important;
 }
 
 /* =============================================== */
-/* 🧭 SIDEBAR */
+/* 🧭 SIDEBAR NUEVO (Jazzmin 2.6) */
 /* =============================================== */
 
-.sidebar {
-  background-color: var(--primary) !important;
-  border-right: 1px solid var(--secondary) !important;
+.main-sidebar {
+  background-color: var(--jazzmin-panel) !important;
+  border-right: 1px solid var(--jazzmin-panel-hover) !important;
 }
 
-.sidebar .nav-link {
-  color: var(--foreground) !important;
+.main-sidebar .nav-link {
+  color: var(--jazzmin-fg) !important;
 }
 
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
-  background-color: var(--secondary) !important;
-  color: var(--highlight) !important;
-}
-
-/* =============================================== */
-/* 🧩 HEADER / TOPBAR */
-/* =============================================== */
-
-.navbar {
-  background-color: var(--primary) !important;
-  border-bottom: 1px solid var(--secondary) !important;
-}
-
-.navbar-brand,
-.navbar-nav .nav-link {
-  color: var(--foreground) !important;
+.main-sidebar .nav-link:hover,
+.main-sidebar .nav-link.active {
+  background-color: var(--jazzmin-panel-hover) !important;
+  color: var(--jazzmin-highlight) !important;
 }
 
 /* =============================================== */
-/* 📦 TARJETAS / PANELES */
+/* 🧩 NAVBAR NUEVO */
+/* =============================================== */
+
+.main-header {
+  background-color: var(--jazzmin-panel) !important;
+  border-bottom: 1px solid var(--jazzmin-panel-hover) !important;
+}
+
+.main-header .nav-link,
+.main-header .navbar-brand {
+  color: var(--jazzmin-fg) !important;
+}
+
+/* =============================================== */
+/* 📦 TARJETAS */
 /* =============================================== */
 
 .card {
-  background-color: var(--primary) !important;
-  border: 1px solid var(--secondary) !important;
-  color: var(--foreground) !important;
+  background-color: var(--jazzmin-panel) !important;
+  border: 1px solid var(--jazzmin-panel-hover) !important;
+  color: var(--jazzmin-fg) !important;
 }
 
 .card-header {
-  background-color: var(--secondary) !important;
-  border-bottom: 1px solid var(--accent) !important;
+  background-color: var(--jazzmin-panel-hover) !important;
+  border-bottom: 1px solid var(--jazzmin-border) !important;
 }
 
 /* =============================================== */
@@ -74,19 +73,19 @@ body, html {
 /* =============================================== */
 
 .table {
-  color: var(--foreground) !important;
+  color: var(--jazzmin-fg) !important;
 }
 
 .table thead {
-  background-color: var(--secondary) !important;
+  background-color: var(--jazzmin-panel-hover) !important;
 }
 
 .table tbody tr {
-  background-color: var(--primary) !important;
+  background-color: var(--jazzmin-panel) !important;
 }
 
 .table tbody tr:hover {
-  background-color: var(--secondary) !important;
+  background-color: var(--jazzmin-panel-hover) !important;
 }
 
 /* =============================================== */
@@ -94,18 +93,18 @@ body, html {
 /* =============================================== */
 
 .btn {
+  background-color: var(--jazzmin-panel-hover) !important;
+  color: var(--jazzmin-fg) !important;
   border: none !important;
-  background-color: var(--secondary) !important;
-  color: var(--foreground) !important;
 }
 
 .btn:hover {
-  background-color: var(--accent) !important;
-  color: var(--highlight) !important;
+  background-color: var(--jazzmin-border) !important;
+  color: var(--jazzmin-highlight) !important;
 }
 
 /* =============================================== */
-/* ✨ ANIMACIONES (MISMAS QUE ABELISSE) */
+/* ✨ ANIMACIONES */
 /* =============================================== */
 
 @keyframes float {
