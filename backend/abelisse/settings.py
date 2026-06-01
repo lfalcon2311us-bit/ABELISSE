@@ -59,8 +59,8 @@ JAZZMIN_SETTINGS = {
     "copyright": "ABELISSE",
 
     # Tema gris profesional
-    "theme": none,
-    "dark_mode_theme": none,
+    "theme": None,
+    "dark_mode_theme": None,
 
     # Logos (cuando tengas uno)
     "site_logo": None,
