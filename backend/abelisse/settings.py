@@ -26,10 +26,8 @@ ALLOWED_HOSTS = ["*"]
 #   APPS
 # ============================
 INSTALLED_APPS = [
-    # Jazzmin primero
     'jazzmin',
 
-    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,11 +35,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Terceros
     'rest_framework',
     'corsheaders',
 
-    # Apps internas
     'comunidad',
     'inventario',
     'pagos',
@@ -58,20 +54,16 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Panel Administrativo de ABELISSE",
     "copyright": "ABELISSE",
 
-    # Tema gris profesional
     "theme": None,
     "dark_mode_theme": None,
 
-    # Logos (cuando tengas uno)
     "site_logo": None,
     "login_logo": None,
     "login_logo_dark": None,
 
-    # Sidebar
     "show_sidebar": True,
     "navigation_expanded": False,
 
-    # Iconos
     "icons": {
         "auth": "fas fa-users",
         "auth.user": "fas fa-user",
@@ -81,7 +73,7 @@ JAZZMIN_SETTINGS = {
         "pagos.Orden": "fas fa-shopping-cart",
     },
 
-    # CSS personalizado
+    # ARCHIVO CSS PERSONALIZADO
     "custom_css": "css/custom_admin.css",
 }
 
@@ -163,10 +155,12 @@ USE_TZ = True
 #   STATIC FILES
 # ============================
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
