@@ -73,8 +73,14 @@ JAZZMIN_SETTINGS = {
         "pagos.Orden": "fas fa-shopping-cart",
     },
 
-    # ARCHIVO CSS PERSONALIZADO
+    # 🔥 FIX OBLIGATORIO PARA JAZZMIN 2.6.0
+    "custom_links": {},
+
+    # 🔥 AQUÍ SE CARGA TU CSS
     "custom_css": "css/custom_admin.css",
+    "custom_js": None,
+
+    "show_ui_builder": True,
 }
 
 
