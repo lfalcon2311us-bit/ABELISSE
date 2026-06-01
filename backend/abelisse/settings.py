@@ -156,7 +156,7 @@ USE_TZ = True
 # ============================
 #   STATIC FILES
 # ============================
-STATIC_URL = '/https://abelisse-static.onrender.com/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # IMPORTANTE: aquí le decimos a Django dónde está tu carpeta backend/static
