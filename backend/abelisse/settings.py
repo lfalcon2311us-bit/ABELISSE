@@ -2,7 +2,6 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 import os
-import logging
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +19,6 @@ SECRET_KEY = config("SECRET_KEY", default="inseguro")
 DEBUG = config("DEBUG", default="False") == "True"
 
 ALLOWED_HOSTS = ["*"]
-
 
 # ============================
 #   APPS
@@ -43,7 +41,6 @@ INSTALLED_APPS = [
     'pagos',
 ]
 
-
 # ============================
 #   JAZZMIN CONFIG
 # ============================
@@ -54,16 +51,6 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Panel Administrativo de ABELISSE",
     "copyright": "ABELISSE",
 
-    "theme": None,
-    "dark_mode_theme": None,
-
-    "site_logo": None,
-    "login_logo": None,
-    "login_logo_dark": None,
-
-    "show_sidebar": True,
-    "navigation_expanded": False,
-
     "icons": {
         "auth": "fas fa-users",
         "auth.user": "fas fa-user",
@@ -73,31 +60,28 @@ JAZZMIN_SETTINGS = {
         "pagos.Orden": "fas fa-shopping-cart",
     },
 
-    "custom_links": {},
-    # Tu archivo está en backend/static/css/custom_admin.css
     "custom_css": "css/custom_admin.css",
-    "custom_js": None,
 }
-
 
 # ============================
 #   MIDDLEWARE
 # ============================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← OBLIGATORIO AQUÍ
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # ← DEBE IR DESPUÉS DE CommonMiddleware
+
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 ROOT_URLCONF = 'abelisse.urls'
-
 
 # ============================
 #   TEMPLATES
@@ -117,9 +101,7 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'abelisse.wsgi.application'
-
 
 # ============================
 #   BASE DE DATOS
@@ -132,7 +114,6 @@ DATABASES = {
     )
 }
 
-
 # ============================
 #   PASSWORDS
 # ============================
@@ -143,7 +124,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
 # ============================
 #   INTERNACIONALIZACIÓN
 # ============================
@@ -152,17 +132,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
 # ============================
 #   STATIC FILES
 # ============================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# IMPORTANTE: aquí le decimos a Django dónde está tu carpeta backend/static
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # backend/static
-]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -171,10 +145,11 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-
 # ============================
 #   CORS / CSRF
 # ============================
+CORS_ALLOW_ALL_ORIGINS = False
+
 CORS_ALLOWED_ORIGINS = [
     "https://abelisse.com",
     "https://www.abelisse.com",
@@ -188,29 +163,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
-
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
-
 
 # ============================
 #   LOGGING
@@ -223,13 +176,3 @@ LOGGING = {
     },
     "root": {"handlers": ["console"], "level": "ERROR"},
 }
-
-
-# ============================
-#   DEBUG DE CORS
-# ============================
-print("=== CORS DEBUG ===")
-print("CORS_ALLOWED_ORIGINS:", CORS_ALLOWED_ORIGINS)
-print("CORS_ALLOW_ALL_ORIGINS:", CORS_ALLOW_ALL_ORIGINS)
-print("CSRF_TRUSTED_ORIGINS:", CSRF_TRUSTED_ORIGINS)
-print("===================")
