@@ -155,7 +155,7 @@ USE_TZ = True
 # ============================
 #   STATIC FILES
 # ============================
-STATIC_URL = '/staticfiles/'
+STATIC_URL = '/assents/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
