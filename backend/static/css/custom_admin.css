@@ -1,0 +1,128 @@
+/* =============================================== */
+/* 🎨 PALETA CORPORATIVA – ABELISSE BACKEND (GRIS) */
+/* =============================================== */
+
+:root {
+  --background: #1a1a1a;        /* Fondo gris oscuro elegante */
+  --foreground: #e5e5e5;        /* Texto gris claro */
+  --primary: #2d2d2d;           /* Paneles y sidebar */
+  --secondary: #3a3a3a;         /* Hover y elementos activos */
+  --accent: #8a8a8a;            /* Bordes y detalles */
+  --highlight: #ffffff;         /* Texto destacado */
+}
+
+/* =============================================== */
+/* 🧱 ESTILOS BASE */
+/* =============================================== */
+
+body, html {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+/* =============================================== */
+/* 🧭 SIDEBAR */
+/* =============================================== */
+
+.sidebar {
+  background-color: var(--primary) !important;
+  border-right: 1px solid var(--secondary) !important;
+}
+
+.sidebar .nav-link {
+  color: var(--foreground) !important;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: var(--secondary) !important;
+  color: var(--highlight) !important;
+}
+
+/* =============================================== */
+/* 🧩 HEADER / TOPBAR */
+/* =============================================== */
+
+.navbar {
+  background-color: var(--primary) !important;
+  border-bottom: 1px solid var(--secondary) !important;
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+  color: var(--foreground) !important;
+}
+
+/* =============================================== */
+/* 📦 TARJETAS / PANELES */
+/* =============================================== */
+
+.card {
+  background-color: var(--primary) !important;
+  border: 1px solid var(--secondary) !important;
+  color: var(--foreground) !important;
+}
+
+.card-header {
+  background-color: var(--secondary) !important;
+  border-bottom: 1px solid var(--accent) !important;
+}
+
+/* =============================================== */
+/* 📝 TABLAS */
+/* =============================================== */
+
+.table {
+  color: var(--foreground) !important;
+}
+
+.table thead {
+  background-color: var(--secondary) !important;
+}
+
+.table tbody tr {
+  background-color: var(--primary) !important;
+}
+
+.table tbody tr:hover {
+  background-color: var(--secondary) !important;
+}
+
+/* =============================================== */
+/* 🔘 BOTONES */
+/* =============================================== */
+
+.btn {
+  border: none !important;
+  background-color: var(--secondary) !important;
+  color: var(--foreground) !important;
+}
+
+.btn:hover {
+  background-color: var(--accent) !important;
+  color: var(--highlight) !important;
+}
+
+/* =============================================== */
+/* ✨ ANIMACIONES (MISMAS QUE ABELISSE) */
+/* =============================================== */
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1.2s ease-out forwards;
+}
