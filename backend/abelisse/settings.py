@@ -73,10 +73,7 @@ JAZZMIN_SETTINGS = {
         "pagos.Orden": "fas fa-shopping-cart",
     },
 
-    # FIX obligatorio para Jazzmin 2.6.0
     "custom_links": {},
-
-    # Tu CSS personalizado
     "custom_css": "css/custom_admin.css",
     "custom_js": None,
 }
@@ -87,10 +84,10 @@ JAZZMIN_SETTINGS = {
 # ============================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← ORDEN CORRECTO
-    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← OBLIGATORIO AQUÍ
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # ← DEBE IR DESPUÉS DE CommonMiddleware
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -159,16 +156,10 @@ USE_TZ = True
 #   STATIC FILES
 # ============================
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# 🔥 FIX DEFINITIVO: Django ahora sí encontrará los CSS del admin y Jazzmin
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
