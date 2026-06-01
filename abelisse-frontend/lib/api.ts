@@ -1,4 +1,10 @@
-const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`;
+const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+if (!backend) {
+  console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+}
+
+const API_URL = `${backend}/api`;
 
 export async function getProductos() {
   const res = await fetch(`${API_URL}/productos/`, { cache: "no-store" });
