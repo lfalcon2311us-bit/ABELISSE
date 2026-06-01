@@ -2,6 +2,7 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 import os
+import logging
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,8 +26,10 @@ ALLOWED_HOSTS = ["*"]
 #   APPS
 # ============================
 INSTALLED_APPS = [
-    # Django
+    # Jazzmin primero
     'jazzmin',
+
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +46,44 @@ INSTALLED_APPS = [
     'inventario',
     'pagos',
 ]
+
+
+# ============================
+#   JAZZMIN CONFIG
+# ============================
+JAZZMIN_SETTINGS = {
+    "site_title": "ABELISSE Admin",
+    "site_header": "ABELISSE",
+    "site_brand": "ABELISSE",
+    "welcome_sign": "Panel Administrativo de ABELISSE",
+    "copyright": "ABELISSE",
+
+    # Tema gris profesional
+    "theme": "slate",
+    "dark_mode_theme": "slate",
+
+    # Logos (cuando tengas uno)
+    "site_logo": None,
+    "login_logo": None,
+    "login_logo_dark": None,
+
+    # Sidebar
+    "show_sidebar": True,
+    "navigation_expanded": False,
+
+    # Iconos
+    "icons": {
+        "auth": "fas fa-users",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users-cog",
+        "inventario.Producto": "fas fa-box",
+        "inventario.Categoria": "fas fa-tags",
+        "pagos.Orden": "fas fa-shopping-cart",
+    },
+
+    # CSS personalizado
+    "custom_css": "css/custom_admin.css",
+}
 
 
 # ============================
@@ -123,15 +164,16 @@ USE_TZ = True
 # ============================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = []
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # ============================
-#   CORS / CSRF (CORREGIDO + DEBUG)
+#   CORS / CSRF
 # ============================
-
 CORS_ALLOWED_ORIGINS = [
     "https://abelisse.com",
     "https://www.abelisse.com",
@@ -145,7 +187,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-# Headers permitidos
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",
@@ -157,7 +198,6 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-# Métodos permitidos
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -167,37 +207,26 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 
-# Permitir credenciales
 CORS_ALLOW_CREDENTIALS = True
-
-# Permitir todos los orígenes (Render a veces ignora la lista)
 CORS_ALLOW_ALL_ORIGINS = True
 
 
 # ============================
 #   LOGGING
 # ============================
-import logging
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
+        "console": {"class": "logging.StreamHandler"},
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "ERROR",
-    },
+    "root": {"handlers": ["console"], "level": "ERROR"},
 }
 
 
 # ============================
-#   DEBUG DE CORS (TRUCO)
+#   DEBUG DE CORS
 # ============================
-
 print("=== CORS DEBUG ===")
 print("CORS_ALLOWED_ORIGINS:", CORS_ALLOWED_ORIGINS)
 print("CORS_ALLOW_ALL_ORIGINS:", CORS_ALLOW_ALL_ORIGINS)
