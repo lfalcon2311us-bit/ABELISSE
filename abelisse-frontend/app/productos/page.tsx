@@ -16,7 +16,7 @@ export default function ProductosPage() {
   const [search, setSearch] = useState("");
   const [marca, setMarca] = useState("");
   const [precioMin, setPrecioMin] = useState(0);
-  const [precioMax, setPrecioMax] = useState(""); 
+  const [precioMax, setPrecioMax] = useState("");
   const [precioMaxDefault, setPrecioMaxDefault] = useState(0);
   const [soloDescuento, setSoloDescuento] = useState(false);
   const [orden, setOrden] = useState("");
@@ -27,7 +27,21 @@ export default function ProductosPage() {
     async function fetchProductos() {
       try {
         const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
-        const res = await fetch(`${backend}/api/productos/`);
+
+        if (!backend) {
+          console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+          return;
+        }
+
+        const res = await fetch(`${backend}/api/productos/`, {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          console.error("❌ Error cargando productos");
+          return;
+        }
+
         const data = await res.json();
 
         setProductos(data);
@@ -44,7 +58,7 @@ export default function ProductosPage() {
         setPrecioMax(String(max));
         setPrecioMaxDefault(max);
       } catch (error) {
-        console.error("Error cargando productos:", error);
+        console.error("❌ Error cargando productos:", error);
       } finally {
         setLoading(false);
       }
@@ -128,7 +142,6 @@ export default function ProductosPage() {
     currency,
   ]);
 
-  // Obtener marcas únicas
   const marcasUnicas = [...new Set(productos.map((p: any) => p.marca))].filter(
     Boolean
   );
@@ -153,7 +166,6 @@ export default function ProductosPage() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-16">
-      {/* BREADCRUMBS */}
       <Breadcrumbs
         items={[{ label: "Home", href: "/" }, { label: "Productos" }]}
       />
