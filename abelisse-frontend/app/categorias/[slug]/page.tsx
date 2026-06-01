@@ -1,15 +1,23 @@
 import ProductCardPremium from "@/components/ProductCardPremium";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// 🔥 Fetch real al backend
+// 🔥 Fetch real al backend usando variable correcta
 async function getProductosPorCategoria(slug: string) {
-  const backend = process.env.NEXT_PUBLIC_API_URL;
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  if (!backend) {
+    console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+    return [];
+  }
 
   const res = await fetch(`${backend}/api/categorias/${slug}/productos/`, {
     cache: "no-store",
   });
 
-  if (!res.ok) return [];
+  if (!res.ok) {
+    console.error("❌ Error cargando productos por categoría");
+    return [];
+  }
 
   return res.json();
 }
