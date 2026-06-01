@@ -80,7 +80,6 @@ JAZZMIN_SETTINGS = {
     "custom_css": "css/custom_admin.css",
     "custom_js": None,
 
-    "show_ui_builder": True,
 }
 
 
