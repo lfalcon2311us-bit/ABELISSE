@@ -11,7 +11,7 @@ export default function CheckoutPage() {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
 
-  // ⭐ TOTAL SEGURO (NUNCA NaN)
+  // ⭐ TOTAL SEGURO
   const total = cart.reduce((acc, item) => {
     const raw = item.precio_usd;
     const price = parseFloat(String(raw).replace(",", "."));
@@ -21,6 +21,11 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!email || !nombre) {
+      alert("Por favor completa tus datos");
+      return;
+    }
 
     await iniciarPago({
       total,
