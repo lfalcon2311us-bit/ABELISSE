@@ -1,22 +1,25 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// 🔥 Fetch del backend real (hardcoded para evitar fallos en SSR)
 async function getProducto(id: string) {
-  const backend = "https://abelisse-backend.onrender.com";
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  if (!backend) {
+    console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+    return null;
+  }
 
   const res = await fetch(`${backend}/api/productos/${id}/`, {
     cache: "no-store",
   });
 
   if (!res.ok) {
-    console.error("Error al cargar producto");
+    console.error("❌ Error al cargar producto");
     return null;
   }
 
   return res.json();
 }
 
-// 🔥 SEO dinámico PRO
 export async function generateMetadata({ params }: any) {
   const producto = await getProducto(params.id);
 
@@ -36,29 +39,19 @@ export async function generateMetadata({ params }: any) {
   return {
     title: `${nombre} | ABELISSE`,
     description: descripcion,
-
     openGraph: {
       title: nombre,
       description: descripcion,
       type: "product",
       url: `https://www.abelisse.com/productos/${params.id}`,
-      images: [
-        {
-          url: imagen,
-          width: 1200,
-          height: 630,
-          alt: nombre,
-        },
-      ],
+      images: [{ url: imagen, width: 1200, height: 630, alt: nombre }],
     },
-
     twitter: {
       card: "summary_large_image",
       title: nombre,
       description: descripcion,
       images: [imagen],
     },
-
     alternates: {
       canonical: `https://www.abelisse.com/productos/${params.id}`,
     },
@@ -66,8 +59,7 @@ export async function generateMetadata({ params }: any) {
 }
 
 export default async function ProductoPage({ params }: any) {
-  const { id } = params;
-  const producto = await getProducto(id);
+  const producto = await getProducto(params.id);
 
   if (!producto) {
     return (
@@ -88,7 +80,7 @@ export default async function ProductoPage({ params }: any) {
         items={[
           { label: "Home", href: "/" },
           { label: "Categorías", href: "/categorias" },
-          categoriaNombre && categoriaSlug
+          categoriaSlug
             ? { label: categoriaNombre, href: `/categorias/${categoriaSlug}` }
             : null,
           { label: producto.nombre },
