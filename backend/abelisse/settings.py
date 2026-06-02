@@ -15,6 +15,10 @@ STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
 FRONTEND_URL = config("FRONTEND_URL", default="https://abelisse.com")
 BACKEND_URL = config("BACKEND_URL", default="https://abelisse-backend.onrender.com")
 
+# ⭐ AGREGAR ESTO (FALTABA)
+PAYPAL_CLIENT_ID = config("PAYPAL_CLIENT_ID")
+PAYPAL_SECRET = config("PAYPAL_SECRET")
+
 SECRET_KEY = config("SECRET_KEY", default="inseguro")
 DEBUG = config("DEBUG", default="False") == "True"
 
@@ -24,8 +28,6 @@ ALLOWED_HOSTS = ["*"]
 #   APPS
 # ============================
 INSTALLED_APPS = [
-    # Jazzmin removido para compatibilidad con Django 5
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
