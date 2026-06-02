@@ -1,5 +1,6 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 
+// 🔥 Fetch único al backend
 async function getProducto(id: string) {
   const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -13,13 +14,14 @@ async function getProducto(id: string) {
   });
 
   if (!res.ok) {
-    console.error("❌ Error al cargar producto");
+    console.error("❌ Error cargando producto");
     return null;
   }
 
   return res.json();
 }
 
+// 🔥 SEO dinámico PRO
 export async function generateMetadata({ params }: any) {
   const producto = await getProducto(params.id);
 
@@ -39,19 +41,29 @@ export async function generateMetadata({ params }: any) {
   return {
     title: `${nombre} | ABELISSE`,
     description: descripcion,
+
     openGraph: {
       title: nombre,
       description: descripcion,
       type: "product",
       url: `https://www.abelisse.com/productos/${params.id}`,
-      images: [{ url: imagen, width: 1200, height: 630, alt: nombre }],
+      images: [
+        {
+          url: imagen,
+          width: 1200,
+          height: 630,
+          alt: nombre,
+        },
+      ],
     },
+
     twitter: {
       card: "summary_large_image",
       title: nombre,
       description: descripcion,
       images: [imagen],
     },
+
     alternates: {
       canonical: `https://www.abelisse.com/productos/${params.id}`,
     },
@@ -59,7 +71,8 @@ export async function generateMetadata({ params }: any) {
 }
 
 export default async function ProductoPage({ params }: any) {
-  const producto = await getProducto(params.id);
+  const { id } = params;
+  const producto = await getProducto(id);
 
   if (!producto) {
     return (
@@ -90,7 +103,7 @@ export default async function ProductoPage({ params }: any) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
           <img
-            src={producto.imagen_principal}
+            src={producto.imagen_principal || "/placeholder.png"}
             alt={producto.nombre}
             className="w-full rounded-xl shadow-md"
           />
@@ -104,9 +117,9 @@ export default async function ProductoPage({ params }: any) {
               S/ {producto.precio_venta_soles}
             </p>
 
-            {producto.precio_mercado && (
+            {producto.precio_mercado_soles > 0 && (
               <p className="text-gray-500 line-through">
-                S/ {producto.precio_mercado}
+                S/ {producto.precio_mercado_soles}
               </p>
             )}
 
@@ -118,7 +131,7 @@ export default async function ProductoPage({ params }: any) {
           </div>
 
           <p className="text-gray-700 mb-8 leading-relaxed">
-            {producto.descripcion}
+            {producto.descripcion || "Sin descripción disponible."}
           </p>
 
           <button className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition">
