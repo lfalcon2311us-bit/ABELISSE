@@ -32,8 +32,8 @@ export default function PayPalButton({
     const script = document.createElement("script");
     script.id = "paypal-sdk";
 
-    // ⭐ SDK CORRECTO (PayPal + Pay Later)
-    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&intent=CAPTURE&components=buttons&enable-funding=paylater`;
+    // ⭐ SDK CORRECTO (PayPal + Pay Later) — SIN intent=CAPTURE
+    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&components=buttons&enable-funding=paylater`;
     script.async = true;
 
     script.onload = () => {
