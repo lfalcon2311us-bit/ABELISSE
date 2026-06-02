@@ -2,8 +2,8 @@ import HeroPremium from "@/components/HeroPremium";
 import ProductCardPremium from "@/components/ProductCardPremium";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
 
-// 🔥 Fetch seguro usando variable de entorno
-async function fetchData(endpoint: string) {
+// 🔥 Fetch único al backend
+async function getProductos() {
   const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!backend) {
@@ -11,10 +11,10 @@ async function fetchData(endpoint: string) {
     return [];
   }
 
-  const res = await fetch(`${backend}${endpoint}`, { cache: "no-store" });
+  const res = await fetch(`${backend}/api/productos/`, { cache: "no-store" });
 
   if (!res.ok) {
-    console.error(`❌ Error cargando ${endpoint}`);
+    console.error("❌ Error cargando productos");
     return [];
   }
 
@@ -22,11 +22,29 @@ async function fetchData(endpoint: string) {
 }
 
 export default async function Home() {
-  // 🔥 Endpoints REALES del backend
-  const masVendidos = await fetchData("/api/productos/mas-vendidos/");
-  const masBuscados = await fetchData("/api/productos/mas-buscados/");
-  const nuevos = await fetchData("/api/productos/nuevos/");
-  const mejorCalificados = await fetchData("/api/productos/mejor-calificados/");
+  // 🔥 Un solo fetch
+  const productos = await getProductos();
+
+  // 🔥 Cálculos desde el array
+  const masVendidos = [...productos]
+    .sort((a, b) => b.ventas_totales - a.ventas_totales)
+    .slice(0, 6);
+
+  const masBuscados = [...productos]
+    .sort((a, b) => b.busquedas_totales - a.busquedas_totales)
+    .slice(0, 6);
+
+  const nuevos = [...productos]
+    .sort(
+      (a, b) =>
+        new Date(b.fecha_creacion).getTime() -
+        new Date(a.fecha_creacion).getTime()
+    )
+    .slice(0, 6);
+
+  const mejorCalificados = [...productos]
+    .sort((a, b) => b.calificacion_promedio - a.calificacion_promedio)
+    .slice(0, 6);
 
   const categorias = [
     { nombre: "Maquillaje", slug: "maquillaje" },
