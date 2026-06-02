@@ -20,46 +20,18 @@ async function getProductos() {
   return res.json();
 }
 
-// 🔥 SEO dinámico PRO
 export async function generateMetadata({ params }: any) {
   const nombre = params.slug.replace(/-/g, " ");
 
   return {
     title: `${nombre} | ABELISSE`,
     description: `Explora productos de la categoría ${nombre} en ABELISSE.`,
-
-    openGraph: {
-      title: `${nombre} | ABELISSE`,
-      description: `Productos seleccionados de la categoría ${nombre}.`,
-      url: `https://www.abelisse.com/categorias/${params.slug}`,
-      type: "website",
-      images: [
-        {
-          url: "/og-image.jpg",
-          width: 1200,
-          height: 630,
-          alt: nombre,
-        },
-      ],
-    },
-
-    twitter: {
-      card: "summary_large_image",
-      title: `${nombre} | ABELISSE`,
-      description: `Explora productos de la categoría ${nombre}.`,
-      images: ["/og-image.jpg"],
-    },
-
-    alternates: {
-      canonical: `https://www.abelisse.com/categorias/${params.slug}`,
-    },
   };
 }
 
 export default async function CategoriaProductos({ params }: any) {
   const { slug } = params;
 
-  // 🔥 Un solo fetch
   const productos = await getProductos();
 
   // 🔥 Filtrar por categoría
