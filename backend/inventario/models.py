@@ -16,6 +16,9 @@ def to_decimal(value):
         return Decimal("0.00")
 
 
+# ---------------------------------------------------------
+#  CATEGORÍA PRINCIPAL
+# ---------------------------------------------------------
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
@@ -29,6 +32,9 @@ class Categoria(models.Model):
         return self.nombre
 
 
+# ---------------------------------------------------------
+#  SUBCATEGORÍA
+# ---------------------------------------------------------
 class Subcategoria(models.Model):
     categoria = models.ForeignKey(
         Categoria,
@@ -40,22 +46,35 @@ class Subcategoria(models.Model):
 
     class Meta:
         unique_together = ("categoria", "nombre")
+        verbose_name = "Subcategoría"
+        verbose_name_plural = "Subcategorías"
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.nombre)
+            base_slug = slugify(self.nombre)
+            slug = base_slug
+            contador = 1
+            while Subcategoria.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{contador}"
+                contador += 1
+            self.slug = slug
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.categoria.nombre} → {self.nombre}"
 
 
+# ---------------------------------------------------------
+#  PRODUCTO
+# ---------------------------------------------------------
 class Producto(models.Model):
 
     VERIFICACION_CHOICES = [
         ('recibido', 'Recibido'),
         ('no_recibido', 'No recibido'),
     ]
+
     verificacion_katy = models.CharField(
         max_length=20,
         choices=VERIFICACION_CHOICES,
@@ -78,6 +97,7 @@ class Producto(models.Model):
         null=True,
         related_name="productos",
     )
+
     subcategoria = models.ForeignKey(
         Subcategoria,
         on_delete=models.SET_NULL,
