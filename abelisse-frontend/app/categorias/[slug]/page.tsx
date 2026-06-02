@@ -1,8 +1,8 @@
 import ProductCardPremium from "@/components/ProductCardPremium";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// 🔥 Fetch real al backend usando variable correcta
-async function getProductosPorCategoria(slug: string) {
+// 🔥 Fetch único al backend
+async function getProductos() {
   const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!backend) {
@@ -10,12 +10,10 @@ async function getProductosPorCategoria(slug: string) {
     return [];
   }
 
-  const res = await fetch(`${backend}/api/categorias/${slug}/productos/`, {
-    cache: "no-store",
-  });
+  const res = await fetch(`${backend}/api/productos/`, { cache: "no-store" });
 
   if (!res.ok) {
-    console.error("❌ Error cargando productos por categoría");
+    console.error("❌ Error cargando productos");
     return [];
   }
 
@@ -60,7 +58,14 @@ export async function generateMetadata({ params }: any) {
 
 export default async function CategoriaProductos({ params }: any) {
   const { slug } = params;
-  const products = await getProductosPorCategoria(slug);
+
+  // 🔥 Un solo fetch
+  const productos = await getProductos();
+
+  // 🔥 Filtrar por categoría
+  const products = productos.filter(
+    (p: any) => p.categoria?.slug === slug
+  );
 
   const categoriaNombre = slug.replace(/-/g, " ");
 
@@ -77,6 +82,10 @@ export default async function CategoriaProductos({ params }: any) {
       <h1 className="text-3xl font-semibold mb-10 capitalize">
         Productos en {categoriaNombre}
       </h1>
+
+      {products.length === 0 && (
+        <p className="text-gray-600">No hay productos en esta categoría.</p>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {products.map((p: any) => (
