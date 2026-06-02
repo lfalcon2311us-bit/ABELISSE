@@ -9,10 +9,16 @@ export default function OfertasPage() {
   useEffect(() => {
     async function fetchOfertas() {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/productos/`,
-          { cache: "no-store" }
-        );
+        const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+        if (!backend) {
+          console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+          return;
+        }
+
+        const res = await fetch(`${backend}/api/productos/`, {
+          cache: "no-store",
+        });
 
         if (!res.ok) {
           throw new Error("Error al cargar productos");
@@ -20,6 +26,7 @@ export default function OfertasPage() {
 
         const data = await res.json();
 
+        // 🔥 Filtrar productos con descuento
         const filtrados = data
           .filter((p: any) => Number(p.descuento_porcentaje) > 0)
           .sort(
@@ -44,20 +51,13 @@ export default function OfertasPage() {
         Aprovecha descuentos exclusivos por tiempo limitado.
       </p>
 
+      {ofertas.length === 0 && (
+        <p className="text-gray-600">No hay productos en oferta.</p>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {ofertas.map((p: any) => (
-          <ProductCardPremium
-            key={p.id}
-            id={p.id}
-            nombre={p.nombre}
-            precio_venta_soles={p.precio_venta_soles}
-            precio_mercado_soles={p.precio_mercado_soles}
-            descuento_porcentaje={p.descuento_porcentaje}
-            imagen_principal={p.imagen_principal}
-            precio_venta_usd={p.precio_venta_usd}
-            descripcion={p.descripcion}
-            calificacion_promedio={p.calificacion_promedio}
-          />
+          <ProductCardPremium key={p.id} {...p} />
         ))}
       </div>
     </main>
