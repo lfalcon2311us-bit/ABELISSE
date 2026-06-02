@@ -131,7 +131,7 @@ export default function CarritoPage() {
         </button>
 
         <div className="w-full">
-          <PayPalButton total={total} currency={isPeru ? "PEN" : "USD"} />
+          <PayPalButton total={total} currency={isPeru ? "USD"} />
         </div>
       </div>
     </div>
