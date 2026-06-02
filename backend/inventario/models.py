@@ -141,7 +141,7 @@ class Producto(models.Model):
     destacado = models.BooleanField(default=False)
     activo = models.BooleanField(default=True)
 
-    # Analítica
+    # Analítica (Render YA tiene estas columnas)
     ventas_totales = models.IntegerField(default=0)
     busquedas_totales = models.IntegerField(default=0)
     calificacion_promedio = models.FloatField(default=0)
