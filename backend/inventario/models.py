@@ -1,18 +1,21 @@
 from django.db import models
 from django.utils.text import slugify
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 TASA_USD_PEN = Decimal("3.5")
 
 
 def to_decimal(value):
-    if value is None:
+    """
+    Convierte cualquier valor a Decimal de forma segura.
+    Si viene None, vacío, string inválido o cualquier cosa rara → devuelve 0.00
+    """
+    if value in [None, "", " ", "None"]:
         return Decimal("0.00")
-    if isinstance(value, Decimal):
-        return value
+
     try:
         return Decimal(str(value))
-    except:
+    except (InvalidOperation, ValueError, TypeError):
         return Decimal("0.00")
 
 
@@ -141,7 +144,7 @@ class Producto(models.Model):
     destacado = models.BooleanField(default=False)
     activo = models.BooleanField(default=True)
 
-    # Analítica (Render YA tiene estas columnas)
+    # Analítica
     ventas_totales = models.IntegerField(default=0)
     busquedas_totales = models.IntegerField(default=0)
     calificacion_promedio = models.FloatField(default=0)
@@ -186,10 +189,16 @@ class Producto(models.Model):
         self.ganancia_unidad = (self.precio_venta_usd - self.valor_total_unidad).quantize(Decimal("0.01"))
         self.ganancia_total = (self.ganancia_unidad * Decimal(self.stock)).quantize(Decimal("0.01"))
 
-        # DESCUENTOS
+        # DESCUENTOS (blindado)
         if mercado_soles > 0 and venta_soles > 0:
             self.descuento_soles = (mercado_soles - venta_soles).quantize(Decimal("0.01"))
-            self.descuento_porcentaje = ((self.descuento_soles / mercado_soles) * 100).quantize(Decimal("0.01"))
+
+            if mercado_soles > 0:
+                self.descuento_porcentaje = (
+                    (self.descuento_soles / mercado_soles) * 100
+                ).quantize(Decimal("0.01"))
+            else:
+                self.descuento_porcentaje = Decimal("0.00")
         else:
             self.descuento_soles = Decimal("0.00")
             self.descuento_porcentaje = Decimal("0.00")
