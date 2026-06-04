@@ -2,90 +2,30 @@
 
 export const dynamic = "force-dynamic";
 
+import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// 🔥 Fetch único al backend REAL
-async function getProducto(id: string) {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+export default function ProductoPage({ params }: any) {
+  const { id } = params;
+  const [producto, setProducto] = useState<any>(null);
 
-  if (!backend) {
-    console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
-    return null;
-  }
+  useEffect(() => {
+    async function fetchProducto() {
+      const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+      if (!backend) return;
 
-  try {
-    const res = await fetch(`${backend}/api/productos/${id}/`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      console.error("❌ Error cargando producto:", res.status);
-      return null;
+      try {
+        const res = await fetch(`${backend}/api/productos/${id}/`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setProducto(data);
+      } catch (e) {
+        console.error("Error cargando producto", e);
+      }
     }
 
-    return res.json();
-  } catch (error) {
-    console.error("❌ Error de conexión con el backend:", error);
-    return null;
-  }
-}
-
-// 🔥 SEO dinámico PRO
-export async function generateMetadata({ params }: any) {
-  const producto = await getProducto(params.id);
-
-  if (!producto) {
-    return {
-      title: "Producto no encontrado | ABELISSE",
-      description: "Este producto no existe o fue retirado.",
-    };
-  }
-
-  const nombre = producto.nombre || "Producto";
-  const descripcion =
-    producto.descripcion?.slice(0, 150) ||
-    "Producto de belleza y cosmética premium.";
-
-  const imagen =
-    producto.imagen_principal && producto.imagen_principal !== ""
-      ? producto.imagen_principal
-      : "/placeholder.png";
-
-  return {
-    title: `${nombre} | ABELISSE`,
-    description: descripcion,
-
-    openGraph: {
-      title: nombre,
-      description: descripcion,
-      type: "product",
-      url: `https://www.abelisse.com/productos/${params.id}`,
-      images: [
-        {
-          url: imagen,
-          width: 1200,
-          height: 630,
-          alt: nombre,
-        },
-      ],
-    },
-
-    twitter: {
-      card: "summary_large_image",
-      title: nombre,
-      description: descripcion,
-      images: [imagen],
-    },
-
-    alternates: {
-      canonical: `https://www.abelisse.com/productos/${params.id}`,
-    },
-  };
-}
-
-export default async function ProductoPage({ params }: any) {
-  const { id } = params;
-  const producto = await getProducto(id);
+    fetchProducto();
+  }, [id]);
 
   if (!producto) {
     return (
