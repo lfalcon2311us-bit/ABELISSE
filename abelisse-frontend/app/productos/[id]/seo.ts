@@ -40,19 +40,22 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   return {
     title: `${nombre} | ABELISSE`,
     description: descripcion,
+
     openGraph: {
       title: nombre,
       description: descripcion,
-      type: "product",
+      type: "website", // ← FIX
       url: `https://www.abelisse.com/productos/${params.id}`,
       images: [{ url: imagen }],
     },
+
     twitter: {
       card: "summary_large_image",
       title: nombre,
       description: descripcion,
       images: [imagen],
     },
+
     alternates: {
       canonical: `https://www.abelisse.com/productos/${params.id}`,
     },
