@@ -12,7 +12,7 @@ class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
 class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Producto.objects.filter(activo=True).order_by("-fecha_creacion")
     serializer_class = ProductoSerializer
-    lookup_field = "id"
+    lookup_field = "pk"  # ← FIX REAL
 
 
 class ProductosDestacados(generics.ListAPIView):
