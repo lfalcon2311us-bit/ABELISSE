@@ -1,11 +1,11 @@
-// 🔥 Forzar que esta página sea dinámica (OBLIGATORIO)
+// 🔥 Forzar que esta página sea dinámica
 export const dynamic = "force-dynamic";
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 // 🔥 Fetch único al backend REAL
 async function getProducto(id: string) {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
   if (!backend) {
     console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
