@@ -1,4 +1,4 @@
-const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
 if (!backend) {
   console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
