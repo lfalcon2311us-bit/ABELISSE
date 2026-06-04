@@ -29,8 +29,6 @@ export default function ProductosPage() {
       try {
         const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-        console.log("BACKEND:", backend); // DEBUG
-
         if (!backend) {
           console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
           return;
@@ -39,8 +37,6 @@ export default function ProductosPage() {
         const res = await fetch(`${backend}/api/productos/`, {
           cache: "no-store",
         });
-
-        console.log("STATUS:", res.status); // DEBUG
 
         if (!res.ok) {
           console.error("❌ Error cargando productos");
