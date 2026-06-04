@@ -15,7 +15,6 @@ STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
 FRONTEND_URL = config("FRONTEND_URL", default="https://abelisse.com")
 BACKEND_URL = config("BACKEND_URL", default="https://abelisse-backend.onrender.com")
 
-# ⭐ AGREGAR ESTO (FALTABA)
 PAYPAL_CLIENT_ID = config("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET = config("PAYPAL_SECRET")
 
@@ -51,9 +50,8 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',   # ← DEBE IR ANTES DE CommonMiddleware
     'django.middleware.common.CommonMiddleware',
-
-    'corsheaders.middleware.CorsMiddleware',
 
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -135,6 +133,10 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.abelisse.com",
     "http://localhost:3000",
 ]
+
+# ⭐ AGREGAR ESTO PARA PERMITIR PETICIONES DEL FRONTEND
+CORS_ALLOW_HEADERS = ["*"]
+CORS_ALLOW_METHODS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://abelisse.com",
