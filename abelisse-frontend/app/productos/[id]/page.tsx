@@ -1,6 +1,6 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// 🔥 Fetch único al backend
+// 🔥 Fetch único al backend REAL
 async function getProducto(id: string) {
   const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -9,16 +9,21 @@ async function getProducto(id: string) {
     return null;
   }
 
-  const res = await fetch(`${backend}/api/productos/${id}/`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${backend}/api/productos/${id}/`, {
+      cache: "no-store",
+    });
 
-  if (!res.ok) {
-    console.error("❌ Error cargando producto");
+    if (!res.ok) {
+      console.error("❌ Error cargando producto:", res.status);
+      return null;
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error("❌ Error de conexión con el backend:", error);
     return null;
   }
-
-  return res.json();
 }
 
 // 🔥 SEO dinámico PRO
@@ -36,7 +41,12 @@ export async function generateMetadata({ params }: any) {
   const descripcion =
     producto.descripcion?.slice(0, 150) ||
     "Producto de belleza y cosmética premium.";
-  const imagen = producto.imagen_principal || "/og-image.jpg";
+
+  // Si no hay imagen, usamos un placeholder premium
+  const imagen =
+    producto.imagen_principal && producto.imagen_principal !== ""
+      ? producto.imagen_principal
+      : "/placeholder.png";
 
   return {
     title: `${nombre} | ABELISSE`,
@@ -103,7 +113,11 @@ export default async function ProductoPage({ params }: any) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
           <img
-            src={producto.imagen_principal || "/placeholder.png"}
+            src={
+              producto.imagen_principal && producto.imagen_principal !== ""
+                ? producto.imagen_principal
+                : "/placeholder.png"
+            }
             alt={producto.nombre}
             className="w-full rounded-xl shadow-md"
           />
