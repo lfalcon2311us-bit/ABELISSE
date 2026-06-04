@@ -1,4 +1,5 @@
-// 🔥 Forzar que esta página sea dinámica
+"use client";
+
 export const dynamic = "force-dynamic";
 
 import Breadcrumbs from "@/components/Breadcrumbs";
