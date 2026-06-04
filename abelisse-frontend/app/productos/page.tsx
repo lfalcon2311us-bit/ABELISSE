@@ -43,7 +43,13 @@ export default function ProductosPage() {
           return;
         }
 
-        const data = await res.json();
+        let data = await res.json();
+
+        // ⭐ FIX CRÍTICO: asegurar que id sea número
+        data = data.map((p: any) => ({
+          ...p,
+          id: Number(p.id),
+        }));
 
         setProductos(data);
         setFiltered(data);
