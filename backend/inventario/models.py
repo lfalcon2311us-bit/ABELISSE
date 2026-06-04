@@ -8,14 +8,16 @@ TASA_USD_PEN = Decimal("3.5")
 def to_decimal(value):
     """
     Convierte cualquier valor a Decimal de forma segura.
-    Si viene None, vacío, string inválido o cualquier cosa rara → devuelve 0.00
+    Acepta 0.00 como valor válido.
     """
-    if value in [None, "", " ", "None"]:
-        return Decimal("0.00")
-
     try:
-        return Decimal(str(value))
-    except (InvalidOperation, ValueError, TypeError):
+        if value is None:
+            return Decimal("0.00")
+        value = str(value).strip()
+        if value == "":
+            return Decimal("0.00")
+        return Decimal(value)
+    except:
         return Decimal("0.00")
 
 
@@ -166,7 +168,7 @@ class Producto(models.Model):
                 contador += 1
             self.slug = slug
 
-        # Convertir todo a Decimal de forma segura
+        # Convertir valores
         costo = to_decimal(self.costo_compra)
         taxes = to_decimal(self.taxes)
         imp = to_decimal(self.precio_importacion)
@@ -179,26 +181,18 @@ class Producto(models.Model):
         # VALOR GENERAL
         self.valor_general = (self.valor_total_unidad * Decimal(self.stock)).quantize(Decimal("0.01"))
 
-        # PRECIO VENTA USD
-        if venta_soles > 0:
-            self.precio_venta_usd = (venta_soles / TASA_USD_PEN).quantize(Decimal("0.01"))
-        else:
-            self.precio_venta_usd = Decimal("0.00")
+        # PRECIO VENTA USD (acepta 0.00)
+        self.precio_venta_usd = (venta_soles / TASA_USD_PEN).quantize(Decimal("0.01"))
 
         # GANANCIAS
         self.ganancia_unidad = (self.precio_venta_usd - self.valor_total_unidad).quantize(Decimal("0.01"))
         self.ganancia_total = (self.ganancia_unidad * Decimal(self.stock)).quantize(Decimal("0.01"))
 
-        # DESCUENTOS (blindado)
-        if mercado_soles > 0 and venta_soles > 0:
+        # DESCUENTOS
+        if mercado_soles > 0:
             self.descuento_soles = (mercado_soles - venta_soles).quantize(Decimal("0.01"))
-
             if mercado_soles > 0:
-                self.descuento_porcentaje = (
-                    (self.descuento_soles / mercado_soles) * 100
-                ).quantize(Decimal("0.01"))
-            else:
-                self.descuento_porcentaje = Decimal("0.00")
+                self.descuento_porcentaje = ((self.descuento_soles / mercado_soles) * 100).quantize(Decimal("0.01"))
         else:
             self.descuento_soles = Decimal("0.00")
             self.descuento_porcentaje = Decimal("0.00")
