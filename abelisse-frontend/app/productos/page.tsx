@@ -1,6 +1,6 @@
 "use client";
 
-export const dynamic = "force-dynamic"; // ← FIX CRÍTICO
+export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import ProductCardPremium from "@/components/ProductCardPremium";
@@ -27,12 +27,10 @@ export default function ProductosPage() {
   useEffect(() => {
     async function fetchProductos() {
       try {
-        const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-        if (!backend) {
-          console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
-          return;
-        }
+        // 🔥 FIX DEFINITIVO: fallback si la variable NO existe en el cliente
+        const backend =
+          process.env.NEXT_PUBLIC_BACKEND_URL ??
+          "https://abelisse-backend.onrender.com";
 
         const res = await fetch(`${backend}/api/productos/`, {
           cache: "no-store",
@@ -45,7 +43,6 @@ export default function ProductosPage() {
 
         let data = await res.json();
 
-        // ⭐ FIX CRÍTICO: asegurar que id sea número
         data = data.map((p: any) => ({
           ...p,
           id: Number(p.id),
