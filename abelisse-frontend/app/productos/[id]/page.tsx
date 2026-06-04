@@ -1,3 +1,6 @@
+// 🔥 Forzar que esta página sea dinámica (OBLIGATORIO)
+export const dynamic = "force-dynamic";
+
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 // 🔥 Fetch único al backend REAL
@@ -42,7 +45,6 @@ export async function generateMetadata({ params }: any) {
     producto.descripcion?.slice(0, 150) ||
     "Producto de belleza y cosmética premium.";
 
-  // Si no hay imagen, usamos un placeholder premium
   const imagen =
     producto.imagen_principal && producto.imagen_principal !== ""
       ? producto.imagen_principal
