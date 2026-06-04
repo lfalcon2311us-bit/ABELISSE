@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic"; // ← FIX CRÍTICO
+
 import { useState, useEffect } from "react";
 import ProductCardPremium from "@/components/ProductCardPremium";
 import { useDetectCountry, useCountryStore } from "@/store/countryStore";
@@ -7,12 +9,11 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function ProductosPage() {
   useDetectCountry();
-  const { currency } = useCountryStore(); // "PEN" o "USD"
+  const { currency } = useCountryStore();
 
   const [productos, setProductos] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
-  // Filtros
   const [search, setSearch] = useState("");
   const [marca, setMarca] = useState("");
   const [precioMin, setPrecioMin] = useState(0);
@@ -28,6 +29,8 @@ export default function ProductosPage() {
       try {
         const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+        console.log("BACKEND:", backend); // DEBUG
+
         if (!backend) {
           console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
           return;
@@ -36,6 +39,8 @@ export default function ProductosPage() {
         const res = await fetch(`${backend}/api/productos/`, {
           cache: "no-store",
         });
+
+        console.log("STATUS:", res.status); // DEBUG
 
         if (!res.ok) {
           console.error("❌ Error cargando productos");
@@ -47,7 +52,6 @@ export default function ProductosPage() {
         setProductos(data);
         setFiltered(data);
 
-        // Calcular precio máximo según moneda
         const precios = data.map((p: any) =>
           currency === "PEN" ? p.precio_venta_soles : p.precio_venta_usd
         );
@@ -67,29 +71,24 @@ export default function ProductosPage() {
     fetchProductos();
   }, [currency]);
 
-  // Aplicar filtros
   useEffect(() => {
     let result = [...productos];
 
-    // Búsqueda
     if (search.trim() !== "") {
       result = result.filter((p: any) =>
         p.nombre.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // Marca
     if (marca) {
       result = result.filter(
         (p: any) => p.marca?.toLowerCase() === marca.toLowerCase()
       );
     }
 
-    // Determinar precio máximo efectivo
     const maxToUse =
       precioMax === "" ? precioMaxDefault : Number(precioMax || precioMaxDefault);
 
-    // Precio según moneda
     result = result.filter((p: any) => {
       const precio =
         currency === "PEN" ? p.precio_venta_soles : p.precio_venta_usd;
@@ -97,12 +96,10 @@ export default function ProductosPage() {
       return precio >= Number(precioMin) && precio <= maxToUse;
     });
 
-    // Solo descuento
     if (soloDescuento) {
       result = result.filter((p: any) => p.descuento_porcentaje > 0);
     }
 
-    // Ordenamiento
     if (orden === "precio-asc") {
       result.sort((a: any, b: any) => {
         const pa = currency === "PEN" ? a.precio_venta_soles : a.precio_venta_usd;
