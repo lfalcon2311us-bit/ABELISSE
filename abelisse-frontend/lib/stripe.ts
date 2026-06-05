@@ -3,7 +3,17 @@ import { loadStripe } from "@stripe/stripe-js";
 const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export async function iniciarPago({ total, carrito, email, nombre }) {
+export async function iniciarPago({
+  total,
+  carrito,
+  email,
+  nombre,
+}: {
+  total: number;
+  carrito: any[];
+  email: string;
+  nombre: string;
+}) {
   if (!STRIPE_PUBLIC_KEY) {
     throw new Error("Falta NEXT_PUBLIC_STRIPE_PUBLIC_KEY en variables de entorno");
   }
@@ -12,12 +22,10 @@ export async function iniciarPago({ total, carrito, email, nombre }) {
     throw new Error("Falta NEXT_PUBLIC_BACKEND_URL en variables de entorno");
   }
 
-  // Validación de total
   if (!Number.isFinite(total) || total <= 0) {
     throw new Error("El total del pago no es válido");
   }
 
-  // Cargar Stripe.js (aunque no uses redirectToCheckout, Stripe recomienda cargarlo)
   await loadStripe(STRIPE_PUBLIC_KEY);
 
   let response;
@@ -50,11 +58,9 @@ export async function iniciarPago({ total, carrito, email, nombre }) {
     throw new Error("No se recibió checkout_url de Stripe");
   }
 
-  // Asegurar que la URL sea HTTPS
   const checkoutUrl = data.checkout_url.startsWith("http")
     ? data.checkout_url
     : `https://${data.checkout_url}`;
 
-  // Redirección manual
   window.location.href = checkoutUrl;
 }
