@@ -2,50 +2,51 @@
 // Tipos globales para archivos
 // ===============================
 
-// Imágenes
+// Imágenes comunes
 declare module "*.png" {
-  const value: string;
-  export default value;
+  const src: string;
+  export default src;
 }
 
 declare module "*.jpg" {
-  const value: string;
-  export default value;
+  const src: string;
+  export default src;
 }
 
 declare module "*.jpeg" {
-  const value: string;
-  export default value;
+  const src: string;
+  export default src;
 }
 
 declare module "*.gif" {
-  const value: string;
-  export default value;
+  const src: string;
+  export default src;
 }
 
 declare module "*.webp" {
-  const value: string;
-  export default value;
+  const src: string;
+  export default src;
 }
 
-// SVG (solo UNA declaración, la correcta)
+// SVG — versión correcta para Next.js 16
 declare module "*.svg" {
-  const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+  import type { FC, SVGProps } from "react";
+  const ReactComponent: FC<SVGProps<SVGSVGElement>>;
   export default ReactComponent;
 }
 
 // Videos
 declare module "*.mp4" {
-  const value: string;
-  export default value;
+  const src: string;
+  export default src;
 }
 
 declare module "*.webm" {
-  const value: string;
-  export default value;
+  const src: string;
+  export default src;
 }
 
 declare module "*.ogg" {
-  const value: string;
-  export default value;
+  const src: string;
+  export default src;
 }
