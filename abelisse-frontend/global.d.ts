@@ -1,37 +1,51 @@
 // ===============================
-// Tipos globales para ABELISSE
+// Tipos globales para archivos
 // ===============================
 
-// Archivos CSS
-declare module "*.css";
-declare module "*.scss";
-declare module "*.sass";
-
 // Imágenes
-declare module "*.png";
-declare module "*.jpg";
-declare module "*.jpeg";
-declare module "*.gif";
-declare module "*.webp";
+declare module "*.png" {
+  const value: string;
+  export default value;
+}
+
+declare module "*.jpg" {
+  const value: string;
+  export default value;
+}
+
+declare module "*.jpeg" {
+  const value: string;
+  export default value;
+}
+
+declare module "*.gif" {
+  const value: string;
+  export default value;
+}
+
+declare module "*.webp" {
+  const value: string;
+  export default value;
+}
+
+// SVG (solo UNA declaración, la correcta)
 declare module "*.svg" {
-  const content: any;
-  export default content;
+  const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+  export default ReactComponent;
 }
 
 // Videos
-declare module "*.mp4";
-declare module "*.webm";
+declare module "*.mp4" {
+  const value: string;
+  export default value;
+}
 
-// JSON
-declare module "*.json";
+declare module "*.webm" {
+  const value: string;
+  export default value;
+}
 
-// ===============================
-// Variables de entorno
-// ===============================
-declare namespace NodeJS {
-  interface ProcessEnv {
-    NEXT_PUBLIC_BACKEND_URL: string;
-    NEXT_PUBLIC_STRIPE_PUBLIC_KEY: string;
-    NEXT_PUBLIC_PAYPAL_CLIENT_ID?: string;
-  }
+declare module "*.ogg" {
+  const value: string;
+  export default value;
 }
