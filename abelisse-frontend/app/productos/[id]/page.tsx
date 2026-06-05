@@ -5,27 +5,28 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-export default function ProductoPage({ params }: any) {
+export default function ProductoPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const [producto, setProducto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchProducto() {
-      const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+      const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
       if (!backend) {
         console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
         setLoading(false);
         return;
       }
 
+      const url = `${backend.replace(/\/$/, "")}/api/productos/${id}/`;
+
       try {
-        const res = await fetch(`${backend}/api/productos/${id}/`, {
-          cache: "no-store",
-        });
+        const res = await fetch(url, { cache: "no-store" });
 
         if (!res.ok) {
-          console.error("❌ Error cargando producto:", res.status);
+          console.error("❌ Error cargando producto:", res.status, url);
           setLoading(false);
           return;
         }
