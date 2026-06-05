@@ -1,68 +1,42 @@
 // SERVER FILE — NO "use client"
 
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 async function getProducto(id: string) {
   const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (!backend) return null;
+  if (!backend) throw new Error("Falta NEXT_PUBLIC_BACKEND_URL");
 
-  try {
-    const res = await fetch(`${backend}/api/productos/${id}/`, {
-      cache: "no-store",
-    });
+  const res = await fetch(`${backend}/api/productos/${id}/`, {
+    cache: "no-store",
+  });
 
-    if (!res.ok) return null;
-
-    return await res.json();
-  } catch {
-    return null;
+  if (!res.ok) {
+    throw new Error("Error al obtener producto");
   }
+
+  return res.json();
 }
 
-export async function generateMetadata({ params }: any): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
   const producto = await getProducto(params.id);
 
-  if (!producto) {
-    return {
-      title: "Producto no encontrado | ABELISSE",
-      description: "Este producto no existe o fue retirado.",
-      robots: "noindex, nofollow",
-    };
-  }
-
-  const nombre = producto.nombre || "Producto";
-  const descripcion =
-    producto.descripcion?.slice(0, 150) ||
-    "Producto de belleza y cosmética premium.";
-
-  const imagen =
-    producto.imagen_principal && producto.imagen_principal !== ""
-      ? producto.imagen_principal
-      : "/placeholder.png";
-
-  const url = `https://www.abelisse.com/productos/${params.id}`;
-
   return {
-    title: `${nombre} | ABELISSE`,
-    description: descripcion,
-
+    title: producto.nombre,
+    description: producto.descripcion,
     openGraph: {
-      title: nombre,
-      description: descripcion,
-      type: "product",
-      url,
-      images: [{ url: imagen }],
-    },
-
-    twitter: {
-      card: "summary_large_image",
-      title: nombre,
-      description: descripcion,
-      images: [imagen],
-    },
-
-    alternates: {
-      canonical: url,
+      title: producto.nombre,
+      description: producto.descripcion,
+      images: [
+        {
+          url: producto.imagen,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
   };
 }
