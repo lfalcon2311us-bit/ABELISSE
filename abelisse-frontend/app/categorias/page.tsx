@@ -4,15 +4,17 @@ import { useEffect, useState } from "react";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
 
 export default function CategoriasPage() {
-  const [categorias, setCategorias] = useState([]);
+  const [categorias, setCategorias] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchCategorias() {
       try {
-        const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
         if (!backend) {
           console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+          setLoading(false);
           return;
         }
 
@@ -20,17 +22,31 @@ export default function CategoriasPage() {
           cache: "no-store",
         });
 
-        if (!res.ok) throw new Error("Error al cargar categorías");
+        if (!res.ok) {
+          console.error("❌ Error al cargar categorías:", res.status);
+          setLoading(false);
+          return;
+        }
 
         const data = await res.json();
-        setCategorias(data);
+        setCategorias(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("❌ Error cargando categorías:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchCategorias();
   }, []);
+
+  if (loading) {
+    return (
+      <main className="max-w-6xl mx-auto px-4 py-16">
+        <h1 className="text-2xl font-semibold">Cargando categorías...</h1>
+      </main>
+    );
+  }
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">

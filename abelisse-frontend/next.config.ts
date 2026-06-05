@@ -3,21 +3,69 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  // 🔥 Requerido para Render
+  output: "standalone",
+
+  // 🔥 Seguridad
+  poweredByHeader: false,
+  compress: true,
+
+  // 🔥 Imágenes optimizadas
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**", // Permite imágenes desde tu backend y CDNs
+        hostname: "abelisse-backend.onrender.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
       },
     ],
   },
 
+  // 🔥 Optimización avanzada
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ["lucide-react"], // Optimiza imports pesados
+    optimizePackageImports: ["lucide-react"],
   },
 
-  compress: true, // Activa compresión GZIP/Brotli en producción
+  // 🔥 Modularización de imports
+  modularizeImports: {
+    "lucide-react": {
+      transform: "lucide-react/dist/esm/icons/{{member}}",
+    },
+  },
+
+  // 🔥 Rewrites para backend
+  async rewrites() {
+    return [
+      {
+        source: "/backend/:path*",
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/:path*`,
+      },
+    ];
+  },
+
+  // 🔥 Logging útil para Render
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+
+  // 🔥 Evitar que un error de TS rompa producción
+  typescript: {
+    ignoreBuildErrors: false,
+  },
 };
 
 export default nextConfig;

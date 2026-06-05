@@ -6,7 +6,13 @@ export default function HeroPremium() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-pink-100 to-white py-20">
       {/* Fondo decorativo */}
-      <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1200&q=60')] bg-cover bg-center blur-sm"></div>
+      <div
+        className="
+          absolute inset-0 opacity-30 
+          bg-[url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1200&q=60')] 
+          bg-cover bg-center blur-sm
+        "
+      ></div>
 
       <div className="relative max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         
@@ -31,6 +37,7 @@ export default function HeroPremium() {
             >
               Explorar productos
             </a>
+
             <a
               href="/ofertas"
               className="px-8 py-3 border border-pink-400 text-pink-600 rounded-full text-sm font-medium hover:bg-pink-50 transition"
@@ -48,6 +55,7 @@ export default function HeroPremium() {
               alt="Logo ABELISSE"
               width={260}
               height={260}
+              priority
               className="object-contain"
             />
           </div>

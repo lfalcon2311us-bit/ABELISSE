@@ -15,7 +15,13 @@ export default function ContactoPage() {
     setLoading(true);
 
     try {
-      const backend = process.env.NEXT_PUBLIC_API_URL;
+      const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+
+      if (!backend) {
+        alert("Error: Falta NEXT_PUBLIC_BACKEND_URL");
+        setLoading(false);
+        return;
+      }
 
       const res = await fetch(`${backend}/api/contactar/`, {
         method: "POST",

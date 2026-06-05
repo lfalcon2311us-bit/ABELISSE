@@ -3,21 +3,28 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 
 // 🔥 Fetch único al backend
 async function getProductos() {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
   if (!backend) {
     console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
     return [];
   }
 
-  const res = await fetch(`${backend}/api/productos/`, { cache: "no-store" });
+  try {
+    const res = await fetch(`${backend}/api/productos/`, {
+      cache: "no-store",
+    });
 
-  if (!res.ok) {
-    console.error("❌ Error cargando productos");
+    if (!res.ok) {
+      console.error("❌ Error cargando productos:", res.status);
+      return [];
+    }
+
+    return await res.json();
+  } catch (e) {
+    console.error("❌ Error conectando al backend:", e);
     return [];
   }
-
-  return res.json();
 }
 
 export async function generateMetadata({ params }: any) {

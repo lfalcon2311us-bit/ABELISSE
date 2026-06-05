@@ -12,32 +12,49 @@ export async function iniciarPago({ total, carrito, email, nombre }) {
     throw new Error("Falta NEXT_PUBLIC_BACKEND_URL en variables de entorno");
   }
 
-  // Ya no se usa redirectToCheckout, pero Stripe.js sigue siendo útil para otras funciones
+  // Validación de total
+  if (!Number.isFinite(total) || total <= 0) {
+    throw new Error("El total del pago no es válido");
+  }
+
+  // Cargar Stripe.js (aunque no uses redirectToCheckout, Stripe recomienda cargarlo)
   await loadStripe(STRIPE_PUBLIC_KEY);
 
-  const response = await fetch(`${BACKEND_URL}/api/checkout/create-session/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      total,
-      carrito,
-      email,
-      nombre,
-    }),
-  });
+  let response;
+  try {
+    response = await fetch(`${BACKEND_URL}/api/checkout/create-session/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        total,
+        carrito,
+        email,
+        nombre,
+      }),
+    });
+  } catch (err) {
+    console.error("❌ Error de conexión con el backend:", err);
+    throw new Error("No se pudo conectar con el servidor de pagos");
+  }
 
   if (!response.ok) {
-    console.error(await response.text());
+    const errorText = await response.text();
+    console.error("❌ Error del backend:", errorText);
     throw new Error("Error al crear sesión de pago");
   }
 
   const data = await response.json();
 
   if (!data.checkout_url) {
-    console.error("Respuesta inesperada del backend:", data);
+    console.error("❌ Respuesta inesperada del backend:", data);
     throw new Error("No se recibió checkout_url de Stripe");
   }
 
-  // 🔥 Nuevo método oficial: redirección manual
-  window.location.href = data.checkout_url;
+  // Asegurar que la URL sea HTTPS
+  const checkoutUrl = data.checkout_url.startsWith("http")
+    ? data.checkout_url
+    : `https://${data.checkout_url}`;
+
+  // Redirección manual
+  window.location.href = checkoutUrl;
 }

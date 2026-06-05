@@ -2,8 +2,17 @@
 
 import { useScreenSize } from "@/hooks/useScreenSize";
 
-export default function ResponsiveWrapper({ children }: { children: React.ReactNode }) {
+export default function ResponsiveWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { width } = useScreenSize();
+
+  // Evitar errores mientras width es undefined en el primer render
+  if (!width) {
+    return <div className="px-4">{children}</div>;
+  }
 
   if (width < 640) {
     return <div className="px-3">{children}</div>;

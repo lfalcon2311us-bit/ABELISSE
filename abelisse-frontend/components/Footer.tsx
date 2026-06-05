@@ -43,6 +43,8 @@ export default function Footer() {
             <li>
               <a
                 href="https://www.instagram.com/abelisse_usa/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:text-pink-600 transition"
               >
                 Instagram
@@ -50,6 +52,8 @@ export default function Footer() {
               ·{" "}
               <a
                 href="https://www.tiktok.com/@abelisse_usa"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:text-pink-600 transition"
               >
                 TikTok

@@ -29,48 +29,53 @@ export default function PayPalButton({
     const oldScript = document.getElementById("paypal-sdk");
     if (oldScript) oldScript.remove();
 
+    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+    const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+    if (!clientId || !backend) {
+      console.error("❌ Falta configuración de PayPal o BACKEND_URL");
+      return;
+    }
+
     const script = document.createElement("script");
     script.id = "paypal-sdk";
 
-    // ⭐ SDK CORRECTO (PayPal + Pay Later) — SIN intent=CAPTURE
-    script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&components=buttons&enable-funding=paylater`;
+    // ⭐ SDK CORRECTO (PayPal + Pay Later)
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&components=buttons&enable-funding=paylater`;
     script.async = true;
 
     script.onload = () => {
-      if (!window.paypal) return;
+      if (!window.paypal) {
+        console.error("❌ PayPal SDK no cargó correctamente");
+        return;
+      }
 
       window.paypal
         .Buttons({
           fundingSource: undefined,
 
           createOrder: async () => {
-            const res = await fetch(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/paypal/create-order/`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  total,
-                  carrito: cart,
-                  email,
-                  nombre,
-                }),
-              }
-            );
+            const res = await fetch(`${backend}/api/paypal/create-order/`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                total,
+                carrito: cart,
+                email,
+                nombre,
+              }),
+            });
 
             const data = await res.json();
             return data.order_id || data.id;
           },
 
           onApprove: async (data: any) => {
-            const res = await fetch(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/paypal/capture-order/`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ order_id: data.orderID }),
-              }
-            );
+            const res = await fetch(`${backend}/api/paypal/capture-order/`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ order_id: data.orderID }),
+            });
 
             if (res.ok) window.location.href = "/pago-exitoso";
             else window.location.href = "/pago-fallido";

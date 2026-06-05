@@ -18,8 +18,8 @@ interface AddProductPayload {
   id: number;
   nombre: string;
   imagen_principal: string | null;
-  precio_venta_soles: number;
-  precio_venta_usd?: number;
+  precio_venta_soles: number | string | null;
+  precio_venta_usd?: number | string | null;
 }
 
 // Tipo del estado del store
@@ -43,6 +43,17 @@ export const useCartStore = create<CartState>()(
         set((state) => {
           const exists = state.cart.find((p) => p.id === product.id);
 
+          // Conversión segura
+          const precioSoles = Number(product.precio_venta_soles ?? 0);
+          const precioUSD = Number(
+            product.precio_venta_usd ??
+              (precioSoles > 0 ? precioSoles / 3.5 : 0)
+          );
+
+          // Evitar NaN
+          const safeSoles = Number.isFinite(precioSoles) ? precioSoles : 0;
+          const safeUSD = Number.isFinite(precioUSD) ? precioUSD : 0;
+
           if (exists) {
             return {
               cart: state.cart.map((p) =>
@@ -61,13 +72,8 @@ export const useCartStore = create<CartState>()(
                 nombre: product.nombre,
                 imagen_principal: product.imagen_principal,
                 quantity: 1,
-
-                // Guardamos ambas monedas SIEMPRE
-                precio_soles: Number(product.precio_venta_soles),
-                precio_usd: Number(
-                  product.precio_venta_usd ??
-                    Number(product.precio_venta_soles) / 3.5
-                ),
+                precio_soles: safeSoles,
+                precio_usd: safeUSD,
               },
             ],
           };
@@ -106,7 +112,24 @@ export const useCartStore = create<CartState>()(
         }),
     }),
     {
-      name: "abelisse-cart", // clave en localStorage
+      name: "abelisse-cart",
+      version: 2,
+
+      // Limpieza automática de datos corruptos
+      migrate: (persistedState: any) => {
+        if (!persistedState?.cart) return { cart: [] };
+
+        const cleaned = persistedState.cart.filter((item: any) => {
+          return (
+            item &&
+            Number.isFinite(item.precio_soles) &&
+            Number.isFinite(item.precio_usd) &&
+            item.quantity > 0
+          );
+        });
+
+        return { ...persistedState, cart: cleaned };
+      },
     }
   )
 );

@@ -41,6 +41,7 @@ export default function ProductCardPremium(props: Props) {
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
+  // ⭐ Conversión segura
   const precioSoles = Number(precio_venta_soles ?? 0);
   const precioMercado = Number(precio_mercado_soles ?? 0);
   const precioUSD = Number(precio_venta_usd ?? precioSoles / 3.5);
@@ -63,7 +64,7 @@ export default function ProductCardPremium(props: Props) {
       <div className="product-card-premium bg-white rounded-xl shadow-sm hover:shadow-xl transition border border-transparent overflow-hidden group">
         <div className="w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
           <Image
-            src={imagen_principal ? imagen_principal : "/placeholder.png"}
+            src={imagen_principal || "/placeholder.png"}
             alt={nombre}
             width={400}
             height={400}
@@ -75,6 +76,7 @@ export default function ProductCardPremium(props: Props) {
         <div className="p-5">
           <h3 className="text-lg font-semibold mb-1">{nombre}</h3>
 
+          {/* ⭐ Rating */}
           <div className="flex items-center gap-1 mb-2">
             {Array.from({ length: 5 }).map((_, i) => (
               <span key={i} className="text-yellow-400 text-sm">
@@ -86,6 +88,7 @@ export default function ProductCardPremium(props: Props) {
             </span>
           </div>
 
+          {/* ⭐ Descripción */}
           <p
             className="text-sm text-gray-600 mb-3 cursor-pointer"
             onClick={(e) => {
@@ -96,6 +99,7 @@ export default function ProductCardPremium(props: Props) {
             {showFullDesc ? descripcion : shortDescription}
           </p>
 
+          {/* ⭐ Precios */}
           <div className="mb-4">
             <p className="text-pink-600 font-semibold text-lg">
               {symbol} {priceDisplay.toFixed(2)}
@@ -114,14 +118,15 @@ export default function ProductCardPremium(props: Props) {
             )}
           </div>
 
+          {/* ⭐ Botón */}
           <button
             onClick={(e) => {
               e.preventDefault();
               addToCart({
                 id,
                 nombre,
-                precio_venta_soles: precioSoles,
-                precio_venta_usd: precioUSD,
+                precio_soles: precioSoles,
+                precio_usd: precioUSD,
                 imagen_principal,
               });
             }}

@@ -29,20 +29,36 @@ export function useDetectCountry() {
   const setCountry = useCountryStore((s) => s.setCountry);
 
   useEffect(() => {
+    // 1. Revisar si ya está en localStorage
+    const cached = localStorage.getItem("abelisse-country");
+    if (cached) {
+      setCountry(cached);
+      return;
+    }
+
     async function detect() {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/geo/`
-        );
+        const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+        if (!backend) {
+          console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+          setCountry(null);
+          return;
+        }
+
+        const res = await fetch(`${backend}/api/geo/`, {
+          cache: "no-store",
+        });
 
         const data = await res.json();
 
-        if (data && data.country) {
+        if (data && typeof data.country === "string") {
+          localStorage.setItem("abelisse-country", data.country);
           setCountry(data.country);
         } else {
           setCountry(null);
         }
       } catch (e) {
+        console.error("❌ Error detectando país:", e);
         setCountry(null);
       }
     }

@@ -1,18 +1,20 @@
 export default function CancelPage() {
   return (
-    <div className="py-16 text-center px-4">
-      <h1 className="text-3xl font-semibold mb-4">Pago cancelado ❌</h1>
+    <main className="max-w-3xl mx-auto px-6 py-20 text-center">
+      <h1 className="text-3xl font-semibold text-red-600 mb-4">
+        Pago cancelado ❌
+      </h1>
 
-      <p className="text-gray-700 mb-6">
+      <p className="text-gray-700 mb-8">
         No te preocupes, puedes intentarlo nuevamente cuando quieras.
       </p>
 
       <a
         href="/"
-        className="text-blue-600 underline hover:text-blue-800 transition"
+        className="inline-block bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition font-medium"
       >
         Volver a la tienda
       </a>
-    </div>
+    </main>
   );
 }

@@ -12,7 +12,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #000000; /* ← COLOR NEGRO REAL */
+  --foreground: #000000; /* Negro real */
 }
 
 @media (prefers-color-scheme: dark) {

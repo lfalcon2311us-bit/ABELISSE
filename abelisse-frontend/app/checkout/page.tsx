@@ -27,12 +27,17 @@ export default function CheckoutPage() {
       return;
     }
 
-    await iniciarPago({
-      total,
-      carrito: cart,
-      email,
-      nombre,
-    });
+    try {
+      await iniciarPago({
+        total,
+        carrito: cart,
+        email,
+        nombre,
+      });
+    } catch (error) {
+      alert("Hubo un error al iniciar el pago.");
+      console.error(error);
+    }
   };
 
   return (

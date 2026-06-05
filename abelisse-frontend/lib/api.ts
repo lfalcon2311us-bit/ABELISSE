@@ -1,19 +1,54 @@
-const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+const rawBackend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
-if (!backend) {
+// Validación básica
+if (!rawBackend) {
   console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
 }
 
-const API_URL = `${backend}/api`;
+// Normalizar URL (evitar doble slash o falta de protocolo)
+const backend = rawBackend?.replace(/\/+$/, ""); // quita slashes finales
 
+// Si no tiene http/https, agregar https
+const safeBackend = backend?.startsWith("http")
+  ? backend
+  : `https://${backend}`;
+
+const API_URL = `${safeBackend}/api`;
+
+// -----------------------------
+// 🔥 Fetch seguro y reutilizable
+// -----------------------------
+async function safeFetch(url: string) {
+  let res;
+
+  try {
+    res = await fetch(url, { cache: "no-store" });
+  } catch (err) {
+    console.error("❌ Error de conexión con el backend:", err);
+    throw new Error("No se pudo conectar con el servidor");
+  }
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ Error del backend:", text);
+    throw new Error("Error al cargar datos del servidor");
+  }
+
+  try {
+    return await res.json();
+  } catch (err) {
+    console.error("❌ Respuesta no es JSON válido:", err);
+    throw new Error("El servidor devolvió datos inválidos");
+  }
+}
+
+// -----------------------------
+// 🔥 Endpoints
+// -----------------------------
 export async function getProductos() {
-  const res = await fetch(`${API_URL}/productos/`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Error al cargar productos");
-  return res.json();
+  return safeFetch(`${API_URL}/productos/`);
 }
 
 export async function getCategorias() {
-  const res = await fetch(`${API_URL}/categorias/`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Error al cargar categorías");
-  return res.json();
+  return safeFetch(`${API_URL}/categorias/`);
 }

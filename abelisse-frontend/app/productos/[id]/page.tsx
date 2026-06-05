@@ -8,24 +8,47 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export default function ProductoPage({ params }: any) {
   const { id } = params;
   const [producto, setProducto] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchProducto() {
       const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-      if (!backend) return;
+      if (!backend) {
+        console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+        setLoading(false);
+        return;
+      }
 
       try {
-        const res = await fetch(`${backend}/api/productos/${id}/`);
-        if (!res.ok) return;
+        const res = await fetch(`${backend}/api/productos/${id}/`, {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          console.error("❌ Error cargando producto:", res.status);
+          setLoading(false);
+          return;
+        }
+
         const data = await res.json();
         setProducto(data);
       } catch (e) {
-        console.error("Error cargando producto", e);
+        console.error("❌ Error de conexión con el backend:", e);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchProducto();
   }, [id]);
+
+  if (loading) {
+    return (
+      <main className="max-w-4xl mx-auto px-4 py-16">
+        <h1 className="text-2xl font-semibold">Cargando producto...</h1>
+      </main>
+    );
+  }
 
   if (!producto) {
     return (

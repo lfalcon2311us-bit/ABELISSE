@@ -10,8 +10,10 @@ async function getProducto(id: string) {
     const res = await fetch(`${backend}/api/productos/${id}/`, {
       cache: "no-store",
     });
+
     if (!res.ok) return null;
-    return res.json();
+
+    return await res.json();
   } catch {
     return null;
   }
@@ -24,6 +26,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     return {
       title: "Producto no encontrado | ABELISSE",
       description: "Este producto no existe o fue retirado.",
+      robots: "noindex, nofollow",
     };
   }
 
@@ -37,6 +40,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
       ? producto.imagen_principal
       : "/placeholder.png";
 
+  const url = `https://www.abelisse.com/productos/${params.id}`;
+
   return {
     title: `${nombre} | ABELISSE`,
     description: descripcion,
@@ -44,8 +49,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     openGraph: {
       title: nombre,
       description: descripcion,
-      type: "website", // ← FIX
-      url: `https://www.abelisse.com/productos/${params.id}`,
+      type: "product",
+      url,
       images: [{ url: imagen }],
     },
 
@@ -57,7 +62,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     },
 
     alternates: {
-      canonical: `https://www.abelisse.com/productos/${params.id}`,
+      canonical: url,
     },
   };
 }

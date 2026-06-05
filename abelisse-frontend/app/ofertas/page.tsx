@@ -4,15 +4,17 @@ import { useEffect, useState } from "react";
 import ProductCardPremium from "@/components/ProductCardPremium";
 
 export default function OfertasPage() {
-  const [ofertas, setOfertas] = useState([]);
+  const [ofertas, setOfertas] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchOfertas() {
       try {
-        const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
         if (!backend) {
           console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+          setLoading(false);
           return;
         }
 
@@ -21,27 +23,41 @@ export default function OfertasPage() {
         });
 
         if (!res.ok) {
-          throw new Error("Error al cargar productos");
+          console.error("❌ Error al cargar productos:", res.status);
+          setLoading(false);
+          return;
         }
 
         const data = await res.json();
 
-        // 🔥 Filtrar productos con descuento
-        const filtrados = data
-          .filter((p: any) => Number(p.descuento_porcentaje) > 0)
-          .sort(
-            (a: any, b: any) =>
-              Number(b.descuento_porcentaje) - Number(a.descuento_porcentaje)
-          );
+        const filtrados = Array.isArray(data)
+          ? data
+              .filter((p: any) => Number(p.descuento_porcentaje) > 0)
+              .sort(
+                (a: any, b: any) =>
+                  Number(b.descuento_porcentaje) -
+                  Number(a.descuento_porcentaje)
+              )
+          : [];
 
         setOfertas(filtrados);
       } catch (error) {
-        console.error("Error cargando ofertas:", error);
+        console.error("❌ Error cargando ofertas:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchOfertas();
   }, []);
+
+  if (loading) {
+    return (
+      <main className="max-w-6xl mx-auto px-4 py-16">
+        <h1 className="text-2xl font-semibold">Cargando ofertas...</h1>
+      </main>
+    );
+  }
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">

@@ -4,46 +4,54 @@ import CategoryCardPremium from "@/components/CategoryCardPremium";
 
 // 🔥 Fetch único al backend
 async function getProductos() {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
 
   if (!backend) {
     console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
     return [];
   }
 
-  const res = await fetch(`${backend}/api/productos/`, { cache: "no-store" });
+  try {
+    const res = await fetch(`${backend}/api/productos/`, {
+      cache: "no-store",
+    });
 
-  if (!res.ok) {
-    console.error("❌ Error cargando productos");
+    if (!res.ok) {
+      console.error("❌ Error cargando productos:", res.status);
+      return [];
+    }
+
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.error("❌ Error conectando al backend:", e);
     return [];
   }
-
-  return res.json();
 }
 
 export default async function Home() {
   // 🔥 Un solo fetch
   const productos = await getProductos();
 
-  // 🔥 Cálculos desde el array
+  // 🔥 Cálculos desde el array (seguros)
   const masVendidos = [...productos]
-    .sort((a, b) => b.ventas_totales - a.ventas_totales)
+    .sort((a, b) => (b.ventas_totales || 0) - (a.ventas_totales || 0))
     .slice(0, 6);
 
   const masBuscados = [...productos]
-    .sort((a, b) => b.busquedas_totales - a.busquedas_totales)
+    .sort((a, b) => (b.busquedas_totales || 0) - (a.busquedas_totales || 0))
     .slice(0, 6);
 
   const nuevos = [...productos]
     .sort(
       (a, b) =>
-        new Date(b.fecha_creacion).getTime() -
-        new Date(a.fecha_creacion).getTime()
+        new Date(b.fecha_creacion || 0).getTime() -
+        new Date(a.fecha_creacion || 0).getTime()
     )
     .slice(0, 6);
 
   const mejorCalificados = [...productos]
-    .sort((a, b) => b.calificacion_promedio - a.calificacion_promedio)
+    .sort((a, b) => (b.calificacion_promedio || 0) - (a.calificacion_promedio || 0))
     .slice(0, 6);
 
   const categorias = [
