@@ -1,63 +1,100 @@
+"use client";
+
 export const dynamic = "force-dynamic";
 
-async function getProductos() {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (!backend) return [];
+import { useEffect, useState } from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
-  try {
-    const res = await fetch(`${backend}/api/productos/`, {
-      cache: "no-store",
-    });
+export default function ProductoPage({ params }: any) {
+  const { id } = params;
+  const [producto, setProducto] = useState<any>(null);
 
-    if (!res.ok) return [];
-    return await res.json();
-  } catch (e) {
-    console.error("Error cargando productos", e);
-    return [];
+  useEffect(() => {
+    async function fetchProducto() {
+      const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+      if (!backend) return;
+
+      try {
+        const res = await fetch(`${backend}/api/productos/${id}/`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setProducto(data);
+      } catch (e) {
+        console.error("Error cargando producto", e);
+      }
+    }
+
+    fetchProducto();
+  }, [id]);
+
+  if (!producto) {
+    return (
+      <main className="max-w-4xl mx-auto px-4 py-16">
+        <h1 className="text-2xl font-semibold">Producto no encontrado</h1>
+      </main>
+    );
   }
-}
 
-export default async function ProductosPage() {
-  const productos = await getProductos();
+  const categoriaSlug = producto.categoria?.slug || null;
+  const categoriaNombre = categoriaSlug
+    ? categoriaSlug.replace(/-/g, " ")
+    : null;
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-semibold mb-10">Todos los Productos</h1>
+    <main className="max-w-6xl mx-auto px-4 py-16">
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Categorías", href: "/categorias" },
+          categoriaSlug
+            ? { label: categoriaNombre, href: `/categorias/${categoriaSlug}` }
+            : null,
+          { label: producto.nombre },
+        ].filter(Boolean) as any}
+      />
 
-      {productos.length === 0 && (
-        <p className="text-gray-600">No hay productos disponibles.</p>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div>
+          <img
+            src={
+              producto.imagen_principal && producto.imagen_principal !== ""
+                ? producto.imagen_principal
+                : "/placeholder.png"
+            }
+            alt={producto.nombre}
+            className="w-full rounded-xl shadow-md"
+          />
+        </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {productos.map((producto: any) => (
-          <a
-            key={producto.id}
-            href={`/productos/${producto.id}`}
-            className="block bg-white rounded-xl shadow hover:shadow-lg transition p-4"
-          >
-            <img
-              src={
-                producto.imagen_principal && producto.imagen_principal !== ""
-                  ? producto.imagen_principal
-                  : "/placeholder.png"
-              }
-              alt={producto.nombre}
-              className="w-full h-48 object-cover rounded-lg mb-4"
-            />
+        <div>
+          <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
 
-            <h2 className="text-lg font-semibold">{producto.nombre}</h2>
-
-            <p className="text-pink-600 font-bold mt-2">
+          <div className="mb-6">
+            <p className="text-2xl font-bold text-pink-600">
               S/ {producto.precio_venta_soles}
             </p>
 
             {producto.precio_mercado_soles > 0 && (
-              <p className="text-gray-500 line-through text-sm">
+              <p className="text-gray-500 line-through">
                 S/ {producto.precio_mercado_soles}
               </p>
             )}
-          </a>
-        ))}
+
+            {producto.descuento_porcentaje > 0 && (
+              <p className="text-green-600 font-semibold">
+                -{producto.descuento_porcentaje}% de descuento
+              </p>
+            )}
+          </div>
+
+          <p className="text-gray-700 mb-8 leading-relaxed">
+            {producto.descripcion || "Sin descripción disponible."}
+          </p>
+
+          <button className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition">
+            Agregar al carrito
+          </button>
+        </div>
       </div>
     </main>
   );
