@@ -125,8 +125,8 @@ export default function ProductCardPremium(props: Props) {
               addToCart({
                 id,
                 nombre,
-                precio_soles: precioSoles,
-                precio_usd: precioUSD,
+                precio_venta_soles: precioSoles,
+                precio_venta_usd: precioUSD,
                 imagen_principal,
               });
             }}
