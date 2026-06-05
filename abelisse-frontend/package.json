@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.11.0",
+    "cssnano": "^7.1.9",
     "next": "^16.2.7",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-nesting": "^14.0.0",
