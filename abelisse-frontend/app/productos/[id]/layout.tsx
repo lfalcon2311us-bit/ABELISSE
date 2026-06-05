@@ -1,7 +1,11 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
-export default function ProductoDetalleLayout({ children }: { children: ReactNode }) {
+export default function ProductoDetalleLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return <>{children}</>;
 }
