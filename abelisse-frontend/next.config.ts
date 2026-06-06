@@ -45,12 +45,12 @@ const nextConfig: NextConfig = {
     },
   },
 
-  // 🔥 Rewrites para backend
+  // 🔥 Rewrites para backend (SEGURO PARA STANDALONE)
   async rewrites() {
     return [
       {
         source: "/backend/:path*",
-        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL}/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://abelisse-backend.onrender.com"}/:path*`,
       },
     ];
   },
@@ -61,6 +61,9 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+
+  // 🔥 Requerido para standalone en Render
+  serverExternalPackages: ["sharp"],
 
   // 🔥 Evitar que un error de TS rompa producción
   typescript: {
