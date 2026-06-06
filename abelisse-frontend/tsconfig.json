@@ -1,16 +1,18 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
-
     "jsx": "react-jsx",
     "allowJs": false,
     "noEmit": true,
     "incremental": true,
-
     "strict": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
@@ -20,21 +22,19 @@
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": true,
     "noFallthroughCasesInSwitch": true,
-
     "skipLibCheck": false,
-
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
-
     "plugins": [
       {
         "name": "next"
       }
     ]
   },
-
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -43,8 +43,12 @@
     "components/**/*",
     "store/**/*",
     "hooks/**/*",
-    "lib/**/*"
+    "lib/**/*",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
-
-  "exclude": ["node_modules", ".next"]
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
 }

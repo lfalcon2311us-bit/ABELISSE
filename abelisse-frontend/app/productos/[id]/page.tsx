@@ -5,12 +5,24 @@ export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-export default function ProductoPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ProductoPage({ params }: { params: Promise<{ id: string }> }) {
+  const [id, setId] = useState<string | null>(null);
   const [producto, setProducto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Next.js 16: params es una PROMESA → hay que resolverla
   useEffect(() => {
+    async function unwrapParams() {
+      const resolved = await params;
+      setId(resolved.id);
+    }
+    unwrapParams();
+  }, [params]);
+
+  // Cuando ya tenemos el ID → hacemos el fetch
+  useEffect(() => {
+    if (!id) return;
+
     async function fetchProducto() {
       const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -43,6 +55,7 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     fetchProducto();
   }, [id]);
 
+  // Loading
   if (loading) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
@@ -51,6 +64,7 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     );
   }
 
+  // Producto no encontrado
   if (!producto) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
