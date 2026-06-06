@@ -3,8 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
-  // 🔥 Requerido para Render
-  output: "standalone",
+  // ❌ Eliminado: output: "standalone"
 
   // 🔥 Seguridad
   poweredByHeader: false,
@@ -45,7 +44,7 @@ const nextConfig: NextConfig = {
     },
   },
 
-  // 🔥 Rewrites para backend (SEGURO PARA STANDALONE)
+  // 🔥 Rewrites para backend
   async rewrites() {
     return [
       {
@@ -61,9 +60,6 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
-
-  // 🔥 Requerido para standalone en Render
-  serverExternalPackages: ["sharp"],
 
   // 🔥 Evitar que un error de TS rompa producción
   typescript: {
