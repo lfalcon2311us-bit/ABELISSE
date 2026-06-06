@@ -1,23 +1,27 @@
+export const dynamic = "force-dynamic";
+
 import HeroPremium from "@/components/HeroPremium";
 import ProductCardPremium from "@/components/ProductCardPremium";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
 
 // 🔥 Fetch único al backend
 async function getProductos() {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   if (!backend) {
     console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
     return [];
   }
 
+  const url = `${backend.replace(/\/$/, "")}/api/productos/`;
+
   try {
-    const res = await fetch(`${backend}/api/productos/`, {
+    const res = await fetch(url, {
       cache: "no-store",
     });
 
     if (!res.ok) {
-      console.error("❌ Error cargando productos:", res.status);
+      console.error("❌ Error cargando productos:", res.status, url);
       return [];
     }
 
