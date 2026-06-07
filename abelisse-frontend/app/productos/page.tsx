@@ -20,16 +20,21 @@ async function getProductos() {
 export default async function ProductosPage() {
   const productos = await getProductos();
 
+  // 🔥 Filtramos productos sin ID para evitar /undefined
+  const productosValidos = productos.filter(
+    (p: any) => p.id !== undefined && p.id !== null
+  );
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-semibold mb-10">Todos los Productos</h1>
 
-      {productos.length === 0 && (
+      {productosValidos.length === 0 && (
         <p className="text-gray-600">No hay productos disponibles.</p>
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {productos.map((producto: any) => (
+        {productosValidos.map((producto: any) => (
           <a
             key={producto.id}
             href={`/productos/${producto.id}`}
