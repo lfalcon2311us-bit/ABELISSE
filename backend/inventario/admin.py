@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django import forms
 from django.utils.html import format_html
+import base64
+
 from .models import Categoria, Subcategoria, Producto
 
 
@@ -128,33 +130,29 @@ class ProductoAdmin(admin.ModelAdmin):
     )
 
     # ---------------------------------------------------------
-    #  PREVIEWS DE IMÁGENES
+    #  PREVIEWS DE IMÁGENES (BASE64)
     # ---------------------------------------------------------
+    def _preview(self, binary_data, mime):
+        if not binary_data or not mime:
+            return "Sin imagen"
+
+        base64_data = base64.b64encode(binary_data).decode("utf-8")
+        return format_html(
+            '<img src="data:{};base64,{}" width="150" style="border-radius:8px;" />',
+            mime,
+            base64_data
+        )
+
     def preview_principal(self, obj):
-        if obj.imagen_principal:
-            return format_html(
-                '<img src="/api/productos/{}/imagen/principal/" width="150" style="border-radius:8px;" />',
-                obj.id
-            )
-        return "Sin imagen"
+        return self._preview(obj.imagen_principal, obj.imagen_principal_mime)
     preview_principal.short_description = "Vista previa principal"
 
     def preview_secundaria(self, obj):
-        if obj.imagen_secundaria:
-            return format_html(
-                '<img src="/api/productos/{}/imagen/secundaria/" width="150" style="border-radius:8px;" />',
-                obj.id
-            )
-        return "Sin imagen"
+        return self._preview(obj.imagen_secundaria, obj.imagen_secundaria_mime)
     preview_secundaria.short_description = "Vista previa secundaria"
 
     def preview_terciaria(self, obj):
-        if obj.imagen_terciaria:
-            return format_html(
-                '<img src="/api/productos/{}/imagen/terciaria/" width="150" style="border-radius:8px;" />',
-                obj.id
-            )
-        return "Sin imagen"
+        return self._preview(obj.imagen_terciaria, obj.imagen_terciaria_mime)
     preview_terciaria.short_description = "Vista previa terciaria"
 
 

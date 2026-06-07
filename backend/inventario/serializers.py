@@ -1,3 +1,4 @@
+import base64
 from rest_framework import serializers
 from .models import Categoria, Subcategoria, Producto
 
@@ -20,7 +21,7 @@ class ProductoSerializer(serializers.ModelSerializer):
     categoria = CategoriaSerializer(read_only=True)
     subcategoria = SubcategoriaSerializer(read_only=True)
 
-    # 🔥 URLs limpias para las imágenes
+    # 🔥 Convertimos las imágenes binario → base64
     imagen_principal = serializers.SerializerMethodField()
     imagen_secundaria = serializers.SerializerMethodField()
     imagen_terciaria = serializers.SerializerMethodField()
@@ -51,7 +52,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             "ganancia_unidad",
             "ganancia_total",
 
-            # 🔥 URLs generadas dinámicamente
+            # 🔥 Imágenes convertidas a base64
             "imagen_principal",
             "imagen_secundaria",
             "imagen_terciaria",
@@ -67,19 +68,20 @@ class ProductoSerializer(serializers.ModelSerializer):
         ]
 
     # ---------------------------------------------------------
-    # 🔥 MÉTODOS PARA GENERAR LAS URLs DE IMAGEN
+    # 🔥 MÉTODOS PARA CONVERTIR BINARIO → BASE64
     # ---------------------------------------------------------
+    def _convert_image(self, binary_data, mime_type):
+        if not binary_data or not mime_type:
+            return None
+
+        base64_data = base64.b64encode(binary_data).decode("utf-8")
+        return f"data:{mime_type};base64,{base64_data}"
+
     def get_imagen_principal(self, obj):
-        if obj.imagen_principal:
-            return f"/api/productos/{obj.id}/imagen/principal/"
-        return None
+        return self._convert_image(obj.imagen_principal, obj.imagen_principal_mime)
 
     def get_imagen_secundaria(self, obj):
-        if obj.imagen_secundaria:
-            return f"/api/productos/{obj.id}/imagen/secundaria/"
-        return None
+        return self._convert_image(obj.imagen_secundaria, obj.imagen_secundaria_mime)
 
     def get_imagen_terciaria(self, obj):
-        if obj.imagen_terciaria:
-            return f"/api/productos/{obj.id}/imagen/terciaria/"
-        return None
+        return self._convert_image(obj.imagen_terciaria, obj.imagen_terciaria_mime)
