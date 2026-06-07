@@ -104,7 +104,20 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {masVendidos.map((p: any) => (
-              <ProductCardPremium key={p.id} {...p} />
+              <ProductCardPremium
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                precio_venta_soles={p.precio_venta_soles}
+                precio_mercado_soles={p.precio_mercado_soles}
+                descuento_porcentaje={p.descuento_porcentaje}
+                imagen_principal={p.imagen_principal}
+                imagen_secundaria={p.imagen_secundaria}
+                imagen_terciaria={p.imagen_terciaria}
+                precio_venta_usd={p.precio_venta_usd}
+                descripcion={p.descripcion}
+                calificacion_promedio={p.calificacion_promedio}
+              />
             ))}
           </div>
         </div>
@@ -117,7 +130,20 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {masBuscados.map((p: any) => (
-              <ProductCardPremium key={p.id} {...p} />
+              <ProductCardPremium
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                precio_venta_soles={p.precio_venta_soles}
+                precio_mercado_soles={p.precio_mercado_soles}
+                descuento_porcentaje={p.descuento_porcentaje}
+                imagen_principal={p.imagen_principal}
+                imagen_secundaria={p.imagen_secundaria}
+                imagen_terciaria={p.imagen_terciaria}
+                precio_venta_usd={p.precio_venta_usd}
+                descripcion={p.descripcion}
+                calificacion_promedio={p.calificacion_promedio}
+              />
             ))}
           </div>
         </div>
@@ -130,7 +156,20 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {nuevos.map((p: any) => (
-              <ProductCardPremium key={p.id} {...p} />
+              <ProductCardPremium
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                precio_venta_soles={p.precio_venta_soles}
+                precio_mercado_soles={p.precio_mercado_soles}
+                descuento_porcentaje={p.descuento_porcentaje}
+                imagen_principal={p.imagen_principal}
+                imagen_secundaria={p.imagen_secundaria}
+                imagen_terciaria={p.imagen_terciaria}
+                precio_venta_usd={p.precio_venta_usd}
+                descripcion={p.descripcion}
+                calificacion_promedio={p.calificacion_promedio}
+              />
             ))}
           </div>
         </div>
@@ -143,7 +182,20 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {mejorCalificados.map((p: any) => (
-              <ProductCardPremium key={p.id} {...p} />
+              <ProductCardPremium
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                precio_venta_soles={p.precio_venta_soles}
+                precio_mercado_soles={p.precio_mercado_soles}
+                descuento_porcentaje={p.descuento_porcentaje}
+                imagen_principal={p.imagen_principal}
+                imagen_secundaria={p.imagen_secundaria}
+                imagen_terciaria={p.imagen_terciaria}
+                precio_venta_usd={p.precio_venta_usd}
+                descripcion={p.descripcion}
+                calificacion_promedio={p.calificacion_promedio}
+              />
             ))}
           </div>
         </div>

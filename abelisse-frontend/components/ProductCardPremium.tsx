@@ -13,7 +13,6 @@ interface Props {
   precio_mercado_soles: number | string | null;
   descuento_porcentaje: number | string | null;
 
-  // 🔥 Ahora recibimos las 3 imágenes
   imagen_principal: string | null;
   imagen_secundaria?: string | null;
   imagen_terciaria?: string | null;
@@ -40,26 +39,32 @@ export default function ProductCardPremium(props: Props) {
     calificacion_promedio = 0,
   } = props;
 
-  // ⭐ Armamos el array de imágenes del carrusel
+  // ⭐ Armamos el array de imágenes (solo válidas)
   const imagenes = [
     imagen_principal,
     imagen_secundaria,
     imagen_terciaria,
-  ].filter(Boolean) as string[];
+  ].filter((img) => img && img.trim() !== "") as string[];
 
   // ⭐ Estado del carrusel
   const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-  // ⭐ Cambio automático cada 2.5 segundos
+  // ⭐ Reset del índice si cambia la cantidad de imágenes
   useEffect(() => {
-    if (imagenes.length <= 1) return;
+    setIndex(0);
+  }, [imagenes.length]);
+
+  // ⭐ Autoplay inteligente
+  useEffect(() => {
+    if (imagenes.length <= 1 || paused) return;
 
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % imagenes.length);
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [imagenes.length]);
+  }, [imagenes.length, paused]);
 
   const [showFullDesc, setShowFullDesc] = useState(false);
 
@@ -93,8 +98,11 @@ export default function ProductCardPremium(props: Props) {
       <div className="product-card-premium bg-white rounded-xl shadow-sm hover:shadow-xl transition border border-transparent overflow-hidden group">
 
         {/* 🔥 CARRUSEL DE IMÁGENES */}
-        <div className="relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center">
-
+        <div
+          className="relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
           <Image
             src={imagenes[index] || "/placeholder.png"}
             alt={nombre}

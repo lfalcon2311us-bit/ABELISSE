@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
@@ -20,14 +20,19 @@ export default function Navbar() {
 
   const [open, setOpen] = useState(false);
 
+  // Cerrar menú móvil al cambiar de ruta
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
-    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b">
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b shadow-sm">
       <nav className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        
+
         {/* LOGO */}
         <Link
           href="/"
-          className="text-2xl font-semibold tracking-[0.25em] text-gray-900"
+          className="text-2xl font-bold tracking-[0.25em] text-gray-900 hover:text-pink-600 transition"
         >
           ABELISSE
         </Link>
@@ -35,9 +40,10 @@ export default function Navbar() {
         {/* BOTÓN HAMBURGUESA (MÓVIL) */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-gray-700 text-xl"
+          aria-label="Abrir menú"
+          className="md:hidden text-gray-700 text-2xl hover:text-pink-600 transition"
         >
-          ☰
+          {open ? "✕" : "☰"}
         </button>
 
         {/* LINKS DESKTOP */}
@@ -50,8 +56,8 @@ export default function Navbar() {
                 href={link.href}
                 className={`px-3 py-1 rounded-full transition ${
                   active
-                    ? "bg-pink-500 text-white"
-                    : "text-gray-700 hover:bg-pink-50"
+                    ? "bg-pink-500 text-white shadow"
+                    : "text-gray-700 hover:bg-pink-50 hover:text-pink-600"
                 }`}
               >
                 {link.label}
@@ -62,11 +68,15 @@ export default function Navbar() {
           {/* Carrito */}
           <Link
             href="/carrito"
-            className="ml-2 px-4 py-1.5 rounded-full border border-pink-500 text-pink-600 text-sm hover:bg-pink-50 transition flex items-center gap-2"
+            className="
+              ml-2 px-4 py-1.5 rounded-full border border-pink-500 
+              text-pink-600 text-sm hover:bg-pink-50 hover:border-pink-600 
+              transition flex items-center gap-2
+            "
           >
             Carrito
             {cartCount > 0 && (
-              <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full shadow">
                 {cartCount}
               </span>
             )}
@@ -75,19 +85,23 @@ export default function Navbar() {
       </nav>
 
       {/* MENU MÓVIL */}
-      {open && (
-        <div className="md:hidden bg-white border-t px-4 py-4 space-y-3">
+      <div
+        className={`
+          md:hidden bg-white border-t overflow-hidden transition-all duration-300 
+          ${open ? "max-h-96 opacity-100 py-4" : "max-h-0 opacity-0 py-0"}
+        `}
+      >
+        <div className="px-4 space-y-3">
           {links.map((link) => {
             const active = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setOpen(false)}
                 className={`block px-3 py-2 rounded-lg transition ${
                   active
                     ? "bg-pink-500 text-white"
-                    : "text-gray-700 hover:bg-pink-50"
+                    : "text-gray-700 hover:bg-pink-50 hover:text-pink-600"
                 }`}
               >
                 {link.label}
@@ -98,18 +112,20 @@ export default function Navbar() {
           {/* Carrito móvil */}
           <Link
             href="/carrito"
-            onClick={() => setOpen(false)}
-            className="block px-3 py-2 rounded-lg border border-pink-500 text-pink-600 hover:bg-pink-50 transition flex items-center justify-between"
+            className="
+              block px-3 py-2 rounded-lg border border-pink-500 
+              text-pink-600 hover:bg-pink-50 transition flex items-center justify-between
+            "
           >
             Carrito
             {cartCount > 0 && (
-              <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full shadow">
                 {cartCount}
               </span>
             )}
           </Link>
         </div>
-      )}
+      </div>
     </header>
   );
 }

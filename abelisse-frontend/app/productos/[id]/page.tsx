@@ -8,6 +8,16 @@ import Image from "next/image";
 
 export default function ProductoPage({ params }: { params: { id: string } }) {
   const id = params.id;
+
+  // 🛑 Protección contra IDs inválidos
+  if (!id || id === "undefined" || id === "null") {
+    return (
+      <main className="max-w-4xl mx-auto px-4 py-16">
+        <h1 className="text-2xl font-semibold">Producto no encontrado</h1>
+      </main>
+    );
+  }
+
   const [producto, setProducto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -54,8 +64,8 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     );
   }
 
-  // Producto no encontrado (🔥 FIX REAL)
-  if (!loading && !producto) {
+  // Producto no encontrado
+  if (!producto) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
         <h1 className="text-2xl font-semibold">Producto no encontrado</h1>
@@ -63,26 +73,32 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     );
   }
 
-  // ⭐ Armamos el array de imágenes
+  // ⭐ Armamos el array de imágenes (solo válidas)
   const imagenes = [
     producto.imagen_principal,
     producto.imagen_secundaria,
     producto.imagen_terciaria,
-  ].filter(Boolean) as string[];
+  ].filter((img) => img && img.trim() !== "") as string[];
 
   // ⭐ Estado del carrusel
   const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-  // ⭐ Autoplay cada 3 segundos
+  // ⭐ Reset del índice si cambia la cantidad de imágenes
   useEffect(() => {
-    if (imagenes.length <= 1) return;
+    setIndex(0);
+  }, [imagenes.length]);
+
+  // ⭐ Autoplay inteligente
+  useEffect(() => {
+    if (imagenes.length <= 1 || paused) return;
 
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % imagenes.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [imagenes.length]);
+  }, [imagenes.length, paused]);
 
   const categoriaSlug = producto.categoria?.slug || null;
   const categoriaNombre = categoriaSlug
@@ -105,8 +121,11 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
 
         {/* 🔥 CARRUSEL GRANDE */}
-        <div className="relative w-full rounded-xl overflow-hidden shadow-md bg-gray-100">
-
+        <div
+          className="relative w-full rounded-xl overflow-hidden shadow-md bg-gray-100"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
           <Image
             src={imagenes[index] || "/placeholder.png"}
             alt={producto.nombre}
@@ -145,8 +164,8 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
                 <button
                   key={i}
                   onClick={() => setIndex(i)}
-                  className={`w-20 h-20 rounded-lg overflow-hidden border ${
-                    index === i ? "border-pink-500" : "border-gray-300"
+                  className={`w-20 h-20 rounded-lg overflow-hidden border transition ${
+                    index === i ? "border-pink-500 scale-105" : "border-gray-300"
                   }`}
                 >
                   <Image

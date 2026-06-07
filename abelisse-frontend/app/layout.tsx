@@ -75,8 +75,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body className="bg-white text-gray-900 antialiased min-h-screen flex flex-col">
+    <html lang="es" dir="ltr">
+      <body
+        className="
+          bg-white text-gray-900 antialiased 
+          min-h-screen flex flex-col 
+          scroll-smooth
+        "
+      >
         <Navbar />
 
         <ResponsiveWrapper>
