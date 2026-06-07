@@ -6,24 +6,13 @@ import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Image from "next/image";
 
-export default function ProductoPage({ params }: { params: Promise<{ id: string }> }) {
-  const [id, setId] = useState<string | null>(null);
+export default function ProductoPage({ params }: { params: { id: string } }) {
+  const id = params.id;
   const [producto, setProducto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // ⭐ Next.js 16: params es una PROMESA → hay que resolverla
-  useEffect(() => {
-    async function unwrapParams() {
-      const resolved = await params;
-      setId(resolved.id);
-    }
-    unwrapParams();
-  }, [params]);
-
   // ⭐ Fetch del producto
   useEffect(() => {
-    if (!id) return;
-
     async function fetchProducto() {
       const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
