@@ -8,6 +8,7 @@ from inventario.views import (
     CategoriaViewSet,
     ProductoViewSet,
     ProductosDestacados,
+    imagen_producto,   # ← NUEVO IMPORT
 )
 
 # Comunidad
@@ -71,6 +72,11 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("api/productos-destacados/", ProductosDestacados.as_view()),
     path("api/suscribirse/", suscribirse),
+
+    # ---------------------------------------------------------
+    # 🔥 ENDPOINTS DE IMÁGENES DE PRODUCTO (NUEVO)
+    # ---------------------------------------------------------
+    path("api/productos/<int:id>/imagen/<str:tipo>/", imagen_producto),
 
     # GEO
     path("api/geo/", detectar_pais),

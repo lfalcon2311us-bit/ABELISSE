@@ -137,10 +137,17 @@ class Producto(models.Model):
     ganancia_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ganancia_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # Imágenes
-    imagen_principal = models.URLField(max_length=500, blank=True, null=True)
-    imagen_secundaria = models.URLField(max_length=500, blank=True, null=True)
-    imagen_terciaria = models.URLField(max_length=500, blank=True, null=True)
+    # ---------------------------------------------------------
+    #  NUEVO SISTEMA DE IMÁGENES (BINARIO + MIME TYPE)
+    # ---------------------------------------------------------
+    imagen_principal = models.BinaryField(null=True, blank=True)
+    imagen_principal_mime = models.CharField(max_length=50, null=True, blank=True)
+
+    imagen_secundaria = models.BinaryField(null=True, blank=True)
+    imagen_secundaria_mime = models.CharField(max_length=50, null=True, blank=True)
+
+    imagen_terciaria = models.BinaryField(null=True, blank=True)
+    imagen_terciaria_mime = models.CharField(max_length=50, null=True, blank=True)
 
     # Estado
     destacado = models.BooleanField(default=False)
@@ -181,7 +188,7 @@ class Producto(models.Model):
         # VALOR GENERAL
         self.valor_general = (self.valor_total_unidad * Decimal(self.stock)).quantize(Decimal("0.01"))
 
-        # PRECIO VENTA USD (acepta 0.00)
+        # PRECIO VENTA USD
         self.precio_venta_usd = (venta_soles / TASA_USD_PEN).quantize(Decimal("0.01"))
 
         # GANANCIAS

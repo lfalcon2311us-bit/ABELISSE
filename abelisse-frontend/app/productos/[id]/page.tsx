@@ -4,13 +4,14 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import Image from "next/image";
 
 export default function ProductoPage({ params }: { params: Promise<{ id: string }> }) {
   const [id, setId] = useState<string | null>(null);
   const [producto, setProducto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Next.js 16: params es una PROMESA → hay que resolverla
+  // ⭐ Next.js 16: params es una PROMESA → hay que resolverla
   useEffect(() => {
     async function unwrapParams() {
       const resolved = await params;
@@ -19,7 +20,7 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
     unwrapParams();
   }, [params]);
 
-  // Cuando ya tenemos el ID → hacemos el fetch
+  // ⭐ Fetch del producto
   useEffect(() => {
     if (!id) return;
 
@@ -73,6 +74,27 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
     );
   }
 
+  // ⭐ Armamos el array de imágenes
+  const imagenes = [
+    producto.imagen_principal,
+    producto.imagen_secundaria,
+    producto.imagen_terciaria,
+  ].filter(Boolean) as string[];
+
+  // ⭐ Estado del carrusel
+  const [index, setIndex] = useState(0);
+
+  // ⭐ Autoplay cada 3 segundos
+  useEffect(() => {
+    if (imagenes.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % imagenes.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [imagenes.length]);
+
   const categoriaSlug = producto.categoria?.slug || null;
   const categoriaNombre = categoriaSlug
     ? categoriaSlug.replace(/-/g, " ")
@@ -92,18 +114,67 @@ export default function ProductoPage({ params }: { params: Promise<{ id: string 
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div>
-          <img
-            src={
-              producto.imagen_principal && producto.imagen_principal !== ""
-                ? producto.imagen_principal
-                : "/placeholder.png"
-            }
+
+        {/* 🔥 CARRUSEL GRANDE */}
+        <div className="relative w-full rounded-xl overflow-hidden shadow-md bg-gray-100">
+
+          <Image
+            src={imagenes[index] || "/placeholder.png"}
             alt={producto.nombre}
-            className="w-full rounded-xl shadow-md"
+            width={800}
+            height={800}
+            unoptimized
+            className="w-full h-full object-cover transition-all duration-500"
           />
+
+          {/* Botón anterior */}
+          {imagenes.length > 1 && (
+            <button
+              onClick={() =>
+                setIndex((index - 1 + imagenes.length) % imagenes.length)
+              }
+              className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-3 py-2 rounded-full shadow text-2xl"
+            >
+              ‹
+            </button>
+          )}
+
+          {/* Botón siguiente */}
+          {imagenes.length > 1 && (
+            <button
+              onClick={() => setIndex((index + 1) % imagenes.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-3 py-2 rounded-full shadow text-2xl"
+            >
+              ›
+            </button>
+          )}
+
+          {/* Miniaturas */}
+          {imagenes.length > 1 && (
+            <div className="flex gap-3 mt-4 justify-center p-4">
+              {imagenes.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setIndex(i)}
+                  className={`w-20 h-20 rounded-lg overflow-hidden border ${
+                    index === i ? "border-pink-500" : "border-gray-300"
+                  }`}
+                >
+                  <Image
+                    src={img}
+                    alt={`Miniatura ${i}`}
+                    width={80}
+                    height={80}
+                    unoptimized
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
+        {/* 🔥 INFORMACIÓN DEL PRODUCTO */}
         <div>
           <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
 
