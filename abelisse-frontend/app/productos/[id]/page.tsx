@@ -54,8 +54,8 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     );
   }
 
-  // Producto no encontrado
-  if (!producto) {
+  // Producto no encontrado (🔥 FIX REAL)
+  if (!loading && !producto) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
         <h1 className="text-2xl font-semibold">Producto no encontrado</h1>
