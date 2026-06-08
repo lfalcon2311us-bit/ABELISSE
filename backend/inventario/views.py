@@ -27,4 +27,4 @@ class ProductosDestacados(generics.ListAPIView):
         return Producto.objects.filter(
             activo=True,
             destacado=True
-        ).order_by("-fecha_creacion")
+        ).order_by("sku")
