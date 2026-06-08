@@ -9,7 +9,6 @@ import Image from "next/image";
 export default function ProductoPage({ params }: { params: { id: string } }) {
   const id = params.id;
 
-  // 🛑 Protección contra IDs inválidos
   if (!id || id === "undefined" || id === "null") {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
@@ -21,33 +20,21 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
   const [producto, setProducto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // ⭐ Fetch del producto
   useEffect(() => {
     async function fetchProducto() {
       const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backend) return;
 
-      if (!backend) {
-        console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
-        setLoading(false);
-        return;
-      }
-
-      // 🔥 FIX: SIN SLASH FINAL
       const url = `${backend.replace(/\/$/, "")}/api/productos/${id}`;
 
       try {
         const res = await fetch(url, { cache: "no-store" });
-
-        if (!res.ok) {
-          console.error("❌ Error cargando producto:", res.status, url);
-          setLoading(false);
-          return;
-        }
+        if (!res.ok) return;
 
         const data = await res.json();
         setProducto(data);
       } catch (e) {
-        console.error("❌ Error de conexión con el backend:", e);
+        console.error("❌ Error:", e);
       } finally {
         setLoading(false);
       }
@@ -56,7 +43,6 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     fetchProducto();
   }, [id]);
 
-  // Loading
   if (loading) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
@@ -65,7 +51,6 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     );
   }
 
-  // Producto no encontrado
   if (!producto) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
@@ -74,23 +59,19 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     );
   }
 
-  // ⭐ Armamos el array de imágenes (solo válidas)
   const imagenes = [
     producto.imagen_principal,
     producto.imagen_secundaria,
     producto.imagen_terciaria,
-  ].filter((img) => img && img.trim() !== "") as string[];
+  ].filter((img) => typeof img === "string" && img.trim().length > 10);
 
-  // ⭐ Estado del carrusel
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  // ⭐ Reset del índice si cambia la cantidad de imágenes
   useEffect(() => {
     setIndex(0);
   }, [imagenes.length]);
 
-  // ⭐ Autoplay inteligente
   useEffect(() => {
     if (imagenes.length <= 1 || paused) return;
 
@@ -121,14 +102,15 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
 
-        {/* 🔥 CARRUSEL GRANDE */}
+        {/* 🔥 CARRUSEL */}
         <div
           className="relative w-full rounded-xl overflow-hidden shadow-md bg-gray-100"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
           <Image
-            src={imagenes[index] || "/placeholder.png"}
+            key={imagenes[index] ?? "placeholder"}
+            src={imagenes[index] ?? "/placeholder.png"}
             alt={producto.nombre}
             width={800}
             height={800}
@@ -136,54 +118,28 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
             className="w-full h-full object-cover transition-all duration-500"
           />
 
-          {/* Botón anterior */}
           {imagenes.length > 1 && (
-            <button
-              onClick={() =>
-                setIndex((index - 1 + imagenes.length) % imagenes.length)
-              }
-              className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-3 py-2 rounded-full shadow text-2xl"
-            >
-              ‹
-            </button>
-          )}
+            <>
+              <button
+                onClick={() =>
+                  setIndex((index - 1 + imagenes.length) % imagenes.length)
+                }
+                className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-3 py-2 rounded-full shadow text-2xl"
+              >
+                ‹
+              </button>
 
-          {/* Botón siguiente */}
-          {imagenes.length > 1 && (
-            <button
-              onClick={() => setIndex((index + 1) % imagenes.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-3 py-2 rounded-full shadow text-2xl"
-            >
-              ›
-            </button>
-          )}
-
-          {/* Miniaturas */}
-          {imagenes.length > 1 && (
-            <div className="flex gap-3 mt-4 justify-center p-4">
-              {imagenes.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setIndex(i)}
-                  className={`w-20 h-20 rounded-lg overflow-hidden border transition ${
-                    index === i ? "border-pink-500 scale-105" : "border-gray-300"
-                  }`}
-                >
-                  <Image
-                    src={img}
-                    alt={`Miniatura ${i}`}
-                    width={80}
-                    height={80}
-                    unoptimized
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+              <button
+                onClick={() => setIndex((index + 1) % imagenes.length)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-3 py-2 rounded-full shadow text-2xl"
+              >
+                ›
+              </button>
+            </>
           )}
         </div>
 
-        {/* 🔥 INFORMACIÓN DEL PRODUCTO */}
+        {/* 🔥 INFO */}
         <div>
           <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
 

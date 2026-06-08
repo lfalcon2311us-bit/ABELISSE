@@ -39,23 +39,20 @@ export default function ProductCardPremium(props: Props) {
     calificacion_promedio = 0,
   } = props;
 
-  // ⭐ Armamos el array de imágenes (solo válidas)
+  // ⭐ Imágenes seguras
   const imagenes = [
     imagen_principal,
     imagen_secundaria,
     imagen_terciaria,
-  ].filter((img) => img && img.trim() !== "") as string[];
+  ].filter((img) => typeof img === "string" && img.trim().length > 10);
 
-  // ⭐ Estado del carrusel
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  // ⭐ Reset del índice si cambia la cantidad de imágenes
   useEffect(() => {
     setIndex(0);
   }, [imagenes.length]);
 
-  // ⭐ Autoplay inteligente
   useEffect(() => {
     if (imagenes.length <= 1 || paused) return;
 
@@ -97,14 +94,15 @@ export default function ProductCardPremium(props: Props) {
     <Link href={`/productos/${id}`} className="block">
       <div className="product-card-premium bg-white rounded-xl shadow-sm hover:shadow-xl transition border border-transparent overflow-hidden group">
 
-        {/* 🔥 CARRUSEL DE IMÁGENES */}
+        {/* 🔥 CARRUSEL */}
         <div
           className="relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
           <Image
-            src={imagenes[index] || "/placeholder.png"}
+            key={imagenes[index] ?? "placeholder"}
+            src={imagenes[index] ?? "/placeholder.png"}
             alt={nombre}
             width={400}
             height={400}
@@ -112,37 +110,34 @@ export default function ProductCardPremium(props: Props) {
             className="w-full h-full object-cover transition-all duration-500"
           />
 
-          {/* Botón anterior */}
           {imagenes.length > 1 && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setIndex((index - 1 + imagenes.length) % imagenes.length);
-              }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-2 py-1 rounded-full shadow"
-            >
-              ‹
-            </button>
-          )}
+            <>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIndex((index - 1 + imagenes.length) % imagenes.length);
+                }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-2 py-1 rounded-full shadow"
+              >
+                ‹
+              </button>
 
-          {/* Botón siguiente */}
-          {imagenes.length > 1 && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setIndex((index + 1) % imagenes.length);
-              }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-2 py-1 rounded-full shadow"
-            >
-              ›
-            </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIndex((index + 1) % imagenes.length);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-2 py-1 rounded-full shadow"
+              >
+                ›
+              </button>
+            </>
           )}
         </div>
 
         <div className="p-5">
           <h3 className="text-lg font-semibold mb-1">{nombre}</h3>
 
-          {/* ⭐ Rating */}
           <div className="flex items-center gap-1 mb-2">
             {Array.from({ length: 5 }).map((_, i) => (
               <span key={i} className="text-yellow-400 text-sm">
@@ -154,7 +149,6 @@ export default function ProductCardPremium(props: Props) {
             </span>
           </div>
 
-          {/* ⭐ Descripción */}
           <p
             className="text-sm text-gray-600 mb-3 cursor-pointer"
             onClick={(e) => {
@@ -165,7 +159,6 @@ export default function ProductCardPremium(props: Props) {
             {showFullDesc ? descripcion : shortDescription}
           </p>
 
-          {/* ⭐ Precios */}
           <div className="mb-4">
             <p className="text-pink-600 font-semibold text-lg">
               {symbol} {priceDisplay.toFixed(2)}
@@ -184,7 +177,6 @@ export default function ProductCardPremium(props: Props) {
             )}
           </div>
 
-          {/* ⭐ Botón */}
           <button
             onClick={(e) => {
               e.preventDefault();
