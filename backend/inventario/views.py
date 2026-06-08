@@ -15,7 +15,7 @@ class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Producto.objects.filter(activo=True).order_by("-fecha_creacion")
+    queryset = Producto.objects.filter(activo=True).order_by("sku")
     serializer_class = ProductoSerializer
     lookup_field = "pk"  # ← correcto
 
