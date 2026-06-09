@@ -23,18 +23,26 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     async function fetchProducto() {
       const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
-      if (!backend) return;
+      if (!backend) {
+        console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+        setLoading(false);
+        return;
+      }
 
       const url = `${backend.replace(/\/$/, "")}/api/productos/${id}`;
 
       try {
         const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) return;
+        if (!res.ok) {
+          console.error("❌ Error cargando producto:", res.status);
+          setLoading(false);
+          return;
+        }
 
         const data = await res.json();
         setProducto(data);
       } catch (e) {
-        console.error("❌ Error:", e);
+        console.error("❌ Error de conexión:", e);
       } finally {
         setLoading(false);
       }
@@ -101,8 +109,6 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-
-        {/* 🔥 CARRUSEL */}
         <div
           className="relative w-full rounded-xl overflow-hidden shadow-md bg-gray-100"
           onMouseEnter={() => setPaused(true)}
@@ -117,29 +123,8 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
             unoptimized
             className="w-full h-full object-cover transition-all duration-500"
           />
-
-          {imagenes.length > 1 && (
-            <>
-              <button
-                onClick={() =>
-                  setIndex((index - 1 + imagenes.length) % imagenes.length)
-                }
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-3 py-2 rounded-full shadow text-2xl"
-              >
-                ‹
-              </button>
-
-              <button
-                onClick={() => setIndex((index + 1) % imagenes.length)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-3 py-2 rounded-full shadow text-2xl"
-              >
-                ›
-              </button>
-            </>
-          )}
         </div>
 
-        {/* 🔥 INFO */}
         <div>
           <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
 
@@ -147,18 +132,6 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
             <p className="text-2xl font-bold text-pink-600">
               S/ {producto.precio_venta_soles}
             </p>
-
-            {producto.precio_mercado_soles > 0 && (
-              <p className="text-gray-500 line-through">
-                S/ {producto.precio_mercado_soles}
-              </p>
-            )}
-
-            {producto.descuento_porcentaje > 0 && (
-              <p className="text-green-600 font-semibold">
-                -{producto.descuento_porcentaje}% de descuento
-              </p>
-            )}
           </div>
 
           <p className="text-gray-700 mb-8 leading-relaxed">
