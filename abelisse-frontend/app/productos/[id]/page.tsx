@@ -21,7 +21,8 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
         return;
       }
 
-      const url = `${backend.replace(/\/$/, "")}/api/productos/${id}`;
+      // 🔥 FIX CRÍTICO: SLASH FINAL OBLIGATORIO
+      const url = `${backend.replace(/\/$/, "")}/api/productos/${id}/`;
 
       try {
         const res = await fetch(url, { cache: "no-store" });
