@@ -9,14 +9,6 @@ import Image from "next/image";
 export default function ProductoPage({ params }: { params: { id: string } }) {
   const id = params.id;
 
-  if (!id || id === "undefined" || id === "null") {
-    return (
-      <main className="max-w-4xl mx-auto px-4 py-16">
-        <h1 className="text-2xl font-semibold">Producto no encontrado</h1>
-      </main>
-    );
-  }
-
   const [producto, setProducto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -90,23 +82,9 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     return () => clearInterval(interval);
   }, [imagenes.length, paused]);
 
-  const categoriaSlug = producto.categoria?.slug || null;
-  const categoriaNombre = categoriaSlug
-    ? categoriaSlug.replace(/-/g, " ")
-    : null;
-
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">
-      <Breadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Categorías", href: "/categorias" },
-          categoriaSlug
-            ? { label: categoriaNombre, href: `/categorias/${categoriaSlug}` }
-            : null,
-          { label: producto.nombre },
-        ].filter(Boolean) as any}
-      />
+      <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div
@@ -126,21 +104,13 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
         </div>
 
         <div>
-          <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
-
-          <div className="mb-6">
-            <p className="text-2xl font-bold text-pink-600">
-              S/ {producto.precio_venta_soles}
-            </p>
-          </div>
+          <p className="text-2xl font-bold text-pink-600 mb-4">
+            S/ {producto.precio_venta_soles}
+          </p>
 
           <p className="text-gray-700 mb-8 leading-relaxed">
             {producto.descripcion || "Sin descripción disponible."}
           </p>
-
-          <button className="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition">
-            Agregar al carrito
-          </button>
         </div>
       </div>
     </main>
