@@ -18,7 +18,9 @@ export default function OfertasPage() {
           return;
         }
 
-        const res = await fetch(`${backend}/api/productos/`, {
+        const cleanBackend = backend.replace(/\/$/, "");
+
+        const res = await fetch(`${cleanBackend}/api/productos/`, {
           cache: "no-store",
         });
 
@@ -30,9 +32,18 @@ export default function OfertasPage() {
 
         const data = await res.json();
 
+        // 🔥 Filtrar productos con descuento Y con ID válido
         const filtrados = Array.isArray(data)
           ? data
-              .filter((p: any) => Number(p.descuento_porcentaje) > 0)
+              .filter((p: any) => {
+                const id = Number(p.id ?? p.pk);
+                return (
+                  id &&
+                  !isNaN(id) &&
+                  id > 0 &&
+                  Number(p.descuento_porcentaje) > 0
+                );
+              })
               .sort(
                 (a: any, b: any) =>
                   Number(b.descuento_porcentaje) -
@@ -72,9 +83,29 @@ export default function OfertasPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {ofertas.map((p: any) => (
-          <ProductCardPremium key={p.id} {...p} />
-        ))}
+        {ofertas.map((p: any) => {
+          const id = Number(p.id ?? p.pk);
+
+          // 🔥 Seguridad total: si el ID no es válido, no renderiza
+          if (!id || isNaN(id) || id <= 0) return null;
+
+          return (
+            <ProductCardPremium
+              key={id}
+              id={id}
+              nombre={p.nombre}
+              precio_venta_soles={p.precio_venta_soles}
+              precio_mercado_soles={p.precio_mercado_soles}
+              descuento_porcentaje={p.descuento_porcentaje}
+              imagen_principal={p.imagen_principal}
+              imagen_secundaria={p.imagen_secundaria}
+              imagen_terciaria={p.imagen_terciaria}
+              precio_venta_usd={p.precio_venta_usd}
+              descripcion={p.descripcion}
+              calificacion_promedio={p.calificacion_promedio}
+            />
+          );
+        })}
       </div>
     </main>
   );
