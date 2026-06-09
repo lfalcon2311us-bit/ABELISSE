@@ -17,7 +17,18 @@ class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
 class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Producto.objects.filter(activo=True).order_by("sku")
     serializer_class = ProductoSerializer
-    lookup_field = "pk"  # ← correcto
+
+    # 🔥 FIX DEFINITIVO PARA NEXT.JS 16 + RSC + _rsc PARAMS
+    lookup_field = "pk"
+    lookup_url_kwarg = "pk"
+
+    def get_object(self):
+        """
+        Permite que DRF acepte parámetros GET como ?_rsc=...
+        y que Next.js pueda acceder a /api/productos/<id> sin romper.
+        """
+        pk = self.kwargs.get(self.lookup_url_kwarg)
+        return get_object_or_404(self.queryset, pk=pk)
 
 
 class ProductosDestacados(generics.ListAPIView):
