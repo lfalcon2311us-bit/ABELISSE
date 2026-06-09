@@ -5,9 +5,6 @@ from .models import Categoria, Producto
 from .serializers import CategoriaSerializer, ProductoSerializer
 
 
-# ---------------------------------------------------------
-#  VIEWSETS EXISTENTES
-# ---------------------------------------------------------
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Categoria.objects.all().order_by("nombre")
     serializer_class = CategoriaSerializer
@@ -17,18 +14,19 @@ class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
 class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Producto.objects.filter(activo=True).order_by("sku")
     serializer_class = ProductoSerializer
-
-    # 🔥 FIX DEFINITIVO PARA NEXT.JS 16 + RSC + _rsc PARAMS
     lookup_field = "pk"
     lookup_url_kwarg = "pk"
 
     def get_object(self):
-        """
-        Permite que DRF acepte parámetros GET como ?_rsc=...
-        y que Next.js pueda acceder a /api/productos/<id> sin romper.
-        """
         pk = self.kwargs.get(self.lookup_url_kwarg)
-        return get_object_or_404(self.queryset, pk=pk)
+
+        # Si viene "undefined", None, vacío, etc. → 404 limpio
+        try:
+            pk_int = int(pk)
+        except (TypeError, ValueError):
+            raise get_object_or_404(self.queryset, pk=-1)  # fuerza 404
+
+        return get_object_or_404(self.queryset, pk=pk_int)
 
 
 class ProductosDestacados(generics.ListAPIView):
