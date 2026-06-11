@@ -1,65 +1,25 @@
-"use client";
-
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import Image from "next/image";
+import CarouselProducto from "./carousel";
 
-export default function ProductoPage({ params }: { params: { id: string } }) {
-  // 🔥 FIX DEFINITIVO: asegurar que el ID sea válido
-  const rawId = params?.id;
-  const id = rawId && !isNaN(Number(rawId)) ? Number(rawId) : null;
+async function getProducto(id: string) {
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+  if (!backend) return null;
 
-  const [producto, setProducto] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const clean = backend.replace(/\/$/, "");
+  const res = await fetch(`${clean}/api/productos/${id}/`, {
+    cache: "no-store",
+  });
 
-  useEffect(() => {
-    // ❌ Si el ID viene undefined/null → NO LLAMAR AL BACKEND
-    if (!id) {
-      console.error("❌ ID inválido recibido:", rawId);
-      setLoading(false);
-      return;
-    }
+  if (!res.ok) return null;
+  return await res.json();
+}
 
-    async function fetchProducto() {
-      const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
-      if (!backend) {
-        console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
-        setLoading(false);
-        return;
-      }
+export default async function ProductoPage({ params }: { params: { id: string } }) {
+  const { id } = params;
 
-      // 🔥 URL SIEMPRE CORRECTA
-      const url = `${backend.replace(/\/$/, "")}/api/productos/${id}/`;
-
-      try {
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) {
-          console.error("❌ Error cargando producto:", res.status);
-          setLoading(false);
-          return;
-        }
-
-        const data = await res.json();
-        setProducto(data);
-      } catch (e) {
-        console.error("❌ Error de conexión:", e);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProducto();
-  }, [id, rawId]);
-
-  if (loading) {
-    return (
-      <main className="max-w-4xl mx-auto px-4 py-16">
-        <h1 className="text-2xl font-semibold">Cargando producto...</h1>
-      </main>
-    );
-  }
+  const producto = await getProducto(id);
 
   if (!producto) {
     return (
@@ -75,43 +35,13 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     producto.imagen_terciaria,
   ].filter((img) => typeof img === "string" && img.trim().length > 10);
 
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    setIndex(0);
-  }, [imagenes.length]);
-
-  useEffect(() => {
-    if (imagenes.length <= 1 || paused) return;
-
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % imagenes.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [imagenes.length, paused]);
-
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div
-          className="relative w-full rounded-xl overflow-hidden shadow-md bg-gray-100"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          <Image
-            key={imagenes[index] ?? "placeholder"}
-            src={imagenes[index] ?? "/placeholder.png"}
-            alt={producto.nombre}
-            width={800}
-            height={800}
-            unoptimized
-            className="w-full h-full object-cover transition-all duration-500"
-          />
-        </div>
+        {/* Carrusel */}
+        <CarouselProducto imagenes={imagenes} nombre={producto.nombre} />
 
         <div>
           <p className="text-2xl font-bold text-pink-600 mb-4">
