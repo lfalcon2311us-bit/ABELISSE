@@ -7,12 +7,21 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Image from "next/image";
 
 export default function ProductoPage({ params }: { params: { id: string } }) {
-  const id = params.id;
+  // 🔥 FIX DEFINITIVO: asegurar que el ID sea válido
+  const rawId = params?.id;
+  const id = rawId && !isNaN(Number(rawId)) ? Number(rawId) : null;
 
   const [producto, setProducto] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // ❌ Si el ID viene undefined/null → NO LLAMAR AL BACKEND
+    if (!id) {
+      console.error("❌ ID inválido recibido:", rawId);
+      setLoading(false);
+      return;
+    }
+
     async function fetchProducto() {
       const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backend) {
@@ -21,7 +30,7 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
         return;
       }
 
-      // 🔥 FIX CRÍTICO: SLASH FINAL OBLIGATORIO
+      // 🔥 URL SIEMPRE CORRECTA
       const url = `${backend.replace(/\/$/, "")}/api/productos/${id}/`;
 
       try {
@@ -42,7 +51,7 @@ export default function ProductoPage({ params }: { params: { id: string } }) {
     }
 
     fetchProducto();
-  }, [id]);
+  }, [id, rawId]);
 
   if (loading) {
     return (
