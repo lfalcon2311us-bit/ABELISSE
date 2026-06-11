@@ -65,29 +65,6 @@ export default async function Home() {
     { nombre: "Cuidado Corporal", slug: "cuidado-corporal" },
   ];
 
-  // 🔥 Función para renderizar tarjetas con datos correctos desde stock
-  const renderProductos = (lista: any[]) =>
-    lista.map((p: any) => {
-      const stock = p.stock ?? {};
-
-      return (
-        <ProductCardPremium
-          key={p.id}
-          id={p.id}
-          nombre={p.nombre}
-          precio_venta_soles={stock.precio_venta_soles}
-          precio_mercado_soles={stock.precio_mercado_soles}
-          descuento_porcentaje={stock.descuento_porcentaje}
-          imagen_principal={stock.imagen_principal}
-          imagen_secundaria={stock.imagen_secundaria}
-          imagen_terciaria={stock.imagen_terciaria}
-          precio_venta_usd={stock.precio_venta_usd}
-          descripcion={p.descripcion}
-          calificacion_promedio={p.calificacion_promedio}
-        />
-      );
-    });
-
   return (
     <main className="min-h-screen bg-white text-gray-900">
       <HeroPremium />
@@ -126,7 +103,22 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {renderProductos(masVendidos)}
+            {masVendidos.map((p: any) => (
+              <ProductCardPremium
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                precio_venta_soles={p.precio_venta_soles}
+                precio_mercado_soles={p.precio_mercado_soles}
+                descuento_porcentaje={p.descuento_porcentaje}
+                imagen_principal={p.imagen_principal}
+                imagen_secundaria={p.imagen_secundaria}
+                imagen_terciaria={p.imagen_terciaria}
+                precio_venta_usd={p.precio_venta_usd}
+                descripcion={p.descripcion}
+                calificacion_promedio={p.calificacion_promedio}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -137,7 +129,22 @@ export default async function Home() {
           <h2 className="text-2xl font-semibold mb-6">Más buscados</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {renderProductos(masBuscados)}
+            {masBuscados.map((p: any) => (
+              <ProductCardPremium
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                precio_venta_soles={p.precio_venta_soles}
+                precio_mercado_soles={p.precio_mercado_soles}
+                descuento_porcentaje={p.descuento_porcentaje}
+                imagen_principal={p.imagen_principal}
+                imagen_secundaria={p.imagen_secundaria}
+                imagen_terciaria={p.imagen_terciaria}
+                precio_venta_usd={p.precio_venta_usd}
+                descripcion={p.descripcion}
+                calificacion_promedio={p.calificacion_promedio}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -148,7 +155,22 @@ export default async function Home() {
           <h2 className="text-2xl font-semibold mb-6">Nuevos</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {renderProductos(nuevos)}
+            {nuevos.map((p: any) => (
+              <ProductCardPremium
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                precio_venta_soles={p.precio_venta_soles}
+                precio_mercado_soles={p.precio_mercado_soles}
+                descuento_porcentaje={p.descuento_porcentaje}
+                imagen_principal={p.imagen_principal}
+                imagen_secundaria={p.imagen_secundaria}
+                imagen_terciaria={p.imagen_terciaria}
+                precio_venta_usd={p.precio_venta_usd}
+                descripcion={p.descripcion}
+                calificacion_promedio={p.calificacion_promedio}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -159,7 +181,22 @@ export default async function Home() {
           <h2 className="text-2xl font-semibold mb-6">Mejor calificados</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {renderProductos(mejorCalificados)}
+            {mejorCalificados.map((p: any) => (
+              <ProductCardPremium
+                key={p.id}
+                id={p.id}
+                nombre={p.nombre}
+                precio_venta_soles={p.precio_venta_soles}
+                precio_mercado_soles={p.precio_mercado_soles}
+                descuento_porcentaje={p.descuento_porcentaje}
+                imagen_principal={p.imagen_principal}
+                imagen_secundaria={p.imagen_secundaria}
+                imagen_terciaria={p.imagen_terciaria}
+                precio_venta_usd={p.precio_venta_usd}
+                descripcion={p.descripcion}
+                calificacion_promedio={p.calificacion_promedio}
+              />
+            ))}
           </div>
         </div>
       </section>
