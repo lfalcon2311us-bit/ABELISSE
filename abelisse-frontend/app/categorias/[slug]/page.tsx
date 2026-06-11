@@ -69,22 +69,26 @@ export default async function CategoriaProductos({ params }: any) {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {products.map((p: any) => (
-          <ProductCardPremium
-            key={p.id}
-            id={p.id}
-            nombre={p.nombre}
-            precio_venta_soles={p.precio_venta_soles}
-            precio_mercado_soles={p.precio_mercado_soles}
-            descuento_porcentaje={p.descuento_porcentaje}
-            imagen_principal={p.imagen_principal}
-            imagen_secundaria={p.imagen_secundaria}
-            imagen_terciaria={p.imagen_terciaria}
-            precio_venta_usd={p.precio_venta_usd}
-            descripcion={p.descripcion}
-            calificacion_promedio={p.calificacion_promedio}
-          />
-        ))}
+        {products.map((p: any) => {
+          const stock = p.stock ?? {};
+
+          return (
+            <ProductCardPremium
+              key={p.id}
+              id={p.id}
+              nombre={p.nombre}
+              precio_venta_soles={stock.precio_venta_soles}
+              precio_mercado_soles={stock.precio_mercado_soles}
+              descuento_porcentaje={stock.descuento_porcentaje}
+              imagen_principal={stock.imagen_principal}
+              imagen_secundaria={stock.imagen_secundaria}
+              imagen_terciaria={stock.imagen_terciaria}
+              precio_venta_usd={stock.precio_venta_usd}
+              descripcion={p.descripcion}
+              calificacion_promedio={p.calificacion_promedio}
+            />
+          );
+        })}
       </div>
     </main>
   );
