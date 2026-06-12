@@ -33,7 +33,7 @@ export default function CarritoPage() {
         </p>
 
         <Link
-          href="/"
+          href="https://abelisse.com/productos"
           className="inline-block px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition"
         >
           Ver productos
