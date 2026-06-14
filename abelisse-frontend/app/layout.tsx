@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ResponsiveWrapper from "@/components/ResponsiveWrapper";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.abelisse.com"),
@@ -83,13 +84,15 @@ export default function RootLayout({
           scroll-smooth
         "
       >
-        <Navbar />
+        <ErrorBoundary>
+          <Navbar />
 
-        <ResponsiveWrapper>
-          <main className="flex-1 bg-white">{children}</main>
-        </ResponsiveWrapper>
+          <ResponsiveWrapper>
+            <main className="flex-1 bg-white">{children}</main>
+          </ResponsiveWrapper>
 
-        <Footer />
+          <Footer />
+        </ErrorBoundary>
       </body>
     </html>
   );

@@ -1,71 +1,87 @@
 export const dynamic = "force-dynamic";
 
 import Image from "next/image";
+import { safeFetch, API_URL } from "@/lib/api";
 import CarouselProducto from "./carousel";
 
 async function getProducto(id: string) {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (!backend) return null;
+  const url = `${API_URL}/productos/${id}/`;
 
-  // Eliminar slash final si existe
-  const clean = backend.replace(/\/$/, "");
+  const data = await safeFetch(
+    url,
+    { method: "GET" },
+    {
+      file: "app/productos/[id]/page.tsx",
+      functionName: "getProducto",
+      route: `/productos/${id}`,
+    }
+  );
 
-  try {
-    const res = await fetch(`${clean}/api/productos/${id}`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (error) {
-    console.error("Error fetching producto:", error);
-    return null;
-  }
+  return data;
 }
 
 export default async function ProductoPage({ params }: { params: { id: string } }) {
   const { id } = params;
 
-  const producto = await getProducto(id);
+  let producto = null;
+
+  try {
+    producto = await getProducto(id);
+  } catch (error) {
+    console.error("❌ Error cargando producto:", error);
+  }
 
   if (!producto) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
-        <h1 className="text-2xl font-semibold">Producto no encontrado</h1>
+        <h1 className="text-2xl font-bold text-center">Producto no encontrado</h1>
+        <p className="text-center mt-4 text-gray-500">
+          No pudimos cargar la información del producto.
+        </p>
       </main>
     );
   }
 
-  // Filtrar imágenes válidas
+  // Construir array de imágenes válidas
   const imagenes = [
     producto.imagen_principal,
     producto.imagen_secundaria,
     producto.imagen_terciaria,
-  ].filter((img) => typeof img === "string" && img.trim().length > 10);
+  ].filter((img) => typeof img === "string" && img.length > 20);
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
+    <main className="max-w-4xl mx-auto px-4 py-16">
+      <h1 className="text-3xl font-bold mb-6">{producto.nombre}</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Carrusel seguro */}
-        {imagenes.length > 0 ? (
-          <CarouselProducto imagenes={imagenes} nombre={producto.nombre} />
-        ) : (
-          <div className="w-full h-80 bg-gray-100 flex items-center justify-center rounded-lg">
-            <span className="text-gray-500">Sin imágenes disponibles</span>
-          </div>
-        )}
+      {/* Carrusel de imágenes */}
+      <CarouselProducto
+        imagenes={imagenes}
+        nombre={producto.nombre}
+      />
 
-        <div>
-          <p className="text-2xl font-bold text-pink-600 mb-4">
-            S/ {producto.precio_venta_soles}
-          </p>
+      {/* Información del producto */}
+      <div className="mt-8 space-y-4">
+        <p className="text-gray-700">{producto.descripcion}</p>
 
-          <p className="text-gray-700 mb-8 leading-relaxed">
-            {producto.descripcion || "Sin descripción disponible."}
-          </p>
-        </div>
+        <p>
+          <strong>Marca:</strong> {producto.marca}
+        </p>
+
+        <p>
+          <strong>Tamaño:</strong> {producto.tamano}
+        </p>
+
+        <p>
+          <strong>Precio:</strong> S/ {producto.precio_venta_soles}
+        </p>
+
+        <p>
+          <strong>Categoría:</strong> {producto.categoria?.nombre}
+        </p>
+
+        <p>
+          <strong>Subcategoría:</strong> {producto.subcategoria?.nombre}
+        </p>
       </div>
     </main>
   );
