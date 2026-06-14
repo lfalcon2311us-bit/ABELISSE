@@ -118,3 +118,11 @@ export async function getCategorias() {
     route: "/categorias",
   });
 }
+
+export async function getProducto(id: string | number) {
+  return safeFetch(`${API_URL}/productos/${id}/`, {}, {
+    file: "lib/api.ts",
+    functionName: "getProducto",
+    route: `/productos/${id}`,
+  });
+}
