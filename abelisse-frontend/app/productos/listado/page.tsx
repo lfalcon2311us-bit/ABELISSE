@@ -1,30 +1,11 @@
 export const dynamic = "force-dynamic";
 
 import ProductCardPremium from "@/components/ProductCardPremium";
-
-async function getProductos() {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-  if (!backend) return [];
-
-  try {
-    const cleanBackend = backend.replace(/\/$/, "");
-
-    const res = await fetch(`${cleanBackend}/api/productos/`, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) return [];
-    return await res.json();
-  } catch (e) {
-    console.error("Error cargando productos", e);
-    return [];
-  }
-}
+import { getProductos } from "@/lib/api";
 
 export default async function ProductosPage() {
   const productos = await getProductos();
 
-  // 🔥 Filtramos productos con ID válido (id o pk)
   const productosValidos = productos.filter((p: any) => {
     const id = Number(p.id ?? p.pk);
     return id && !isNaN(id) && id > 0;
