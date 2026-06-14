@@ -128,13 +128,13 @@ STATICFILES_FINDERS = [
 # ============================
 #   CORS / CSRF
 # ============================
-CORS_ALLOW_ALL_ORIGINS = True
+#CORS_ALLOW_ALL_ORIGINS = True
 
-#CORS_ALLOWED_ORIGINS = [
- #   "https://abelisse.com",
-  #  "https://www.abelisse.com",
-   # "http://localhost:3000",
-#]
+CORS_ALLOWED_ORIGINS = [
+    "https://abelisse.com",
+    "https://www.abelisse.com",
+    "http://localhost:3000",
+]
 
 # ⭐ AGREGAR ESTO PARA PERMITIR PETICIONES DEL FRONTEND
 CORS_ALLOW_HEADERS = ["*"]
