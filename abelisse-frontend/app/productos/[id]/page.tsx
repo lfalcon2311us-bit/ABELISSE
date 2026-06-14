@@ -20,8 +20,24 @@ async function getProducto(id: string) {
   return data;
 }
 
-export default async function ProductoPage({ params }: { params: { id: string } }) {
+export default async function ProductoPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = params;
+
+  // Validación fuerte del ID
+  if (!id || isNaN(Number(id))) {
+    return (
+      <main className="max-w-4xl mx-auto px-4 py-16">
+        <h1 className="text-2xl font-bold text-center">Producto no válido</h1>
+        <p className="text-center mt-4 text-gray-500">
+          El ID del producto no es válido.
+        </p>
+      </main>
+    );
+  }
 
   let producto = null;
 
@@ -54,10 +70,7 @@ export default async function ProductoPage({ params }: { params: { id: string } 
       <h1 className="text-3xl font-bold mb-6">{producto.nombre}</h1>
 
       {/* Carrusel de imágenes */}
-      <CarouselProducto
-        imagenes={imagenes}
-        nombre={producto.nombre}
-      />
+      <CarouselProducto imagenes={imagenes} nombre={producto.nombre} />
 
       {/* Información del producto */}
       <div className="mt-8 space-y-4">
