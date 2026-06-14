@@ -25,10 +25,14 @@ export default async function ProductoPage({
 }: {
   params: { id: string };
 }) {
-  const { id } = params;
+  // Normalizar ID
+  const rawId = params.id?.toString().trim();
 
-  // Validación fuerte del ID
-  if (!id || isNaN(Number(id))) {
+  // Extraer solo números (por si viene con basura tipo "1?utm=google")
+  const id = rawId?.match(/^\d+/)?.[0];
+
+  // Validación PRO del ID
+  if (!id) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
         <h1 className="text-2xl font-bold text-center">Producto no válido</h1>
