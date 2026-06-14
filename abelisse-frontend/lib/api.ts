@@ -3,23 +3,32 @@ import { reportErrorToBackend } from "./logger";
 // -----------------------------
 // 🔧 Normalización del backend
 // -----------------------------
-const rawBackend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+function normalizeBackendUrl() {
+  let raw = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
-if (!rawBackend) {
-  console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
+  raw = raw.trim();
+
+  if (!raw) {
+    console.error("❌ NEXT_PUBLIC_BACKEND_URL está vacío");
+    return null;
+  }
+
+  // Quitar slashes finales
+  raw = raw.replace(/\/+$/, "");
+
+  // Asegurar protocolo
+  if (!raw.startsWith("http://") && !raw.startsWith("https://")) {
+    raw = `https://${raw}`;
+  }
+
+  return raw;
 }
 
-const backend = rawBackend?.replace(/\/+$/, ""); // quita slashes finales
-
-const safeBackend = backend?.startsWith("http")
-  ? backend
-  : `https://${backend}`;
-
-export const API_URL = `${safeBackend}/api`;
-
+const safeBackend = normalizeBackendUrl();
+export const API_URL = safeBackend ? `${safeBackend}/api` : "";
 
 // -----------------------------
-// 🔥 safeFetch con reportes
+// 🔥 safeFetch con fallback
 // -----------------------------
 export async function safeFetch(
   url: string,
@@ -30,27 +39,35 @@ export async function safeFetch(
     route?: string;
   }
 ) {
+  if (!safeBackend) {
+    console.error("❌ Backend no configurado");
+    return null;
+  }
+
   let res;
 
   try {
     res = await fetch(url, { cache: "no-store", ...options });
   } catch (error) {
-    // Error de red, Render caído, DNS, timeout, etc.
-    await reportErrorToBackend(
-      "Error de conexión con el backend",
-      error,
-      {
-        ...context,
-        requestUrl: url,
-        requestMethod: options.method || "GET",
-      }
-    );
+    await reportErrorToBackend("Error de conexión con el backend", error, {
+      ...context,
+      requestUrl: url,
+      requestMethod: options.method || "GET",
+    });
 
     console.error("❌ Error de conexión con el backend:", error);
-    throw new Error("No se pudo conectar con el servidor");
+
+    // Fallback directo
+    try {
+      const fallback = await fetch(url, { cache: "no-store" });
+      if (!fallback.ok) return null;
+      return await fallback.json();
+    } catch (e) {
+      console.error("❌ Fallback fetch también falló:", e);
+      return null;
+    }
   }
 
-  // Si la respuesta NO es OK (400, 404, 500, etc.)
   if (!res.ok) {
     const text = await res.text();
 
@@ -66,28 +83,22 @@ export async function safeFetch(
     );
 
     console.error("❌ Error del backend:", text);
-    throw new Error("Error al cargar datos del servidor");
+    return null;
   }
 
-  // Intentar parsear JSON
   try {
     return await res.json();
   } catch (error) {
-    await reportErrorToBackend(
-      "Respuesta no es JSON válido",
-      error,
-      {
-        ...context,
-        requestUrl: url,
-        requestMethod: options.method || "GET",
-      }
-    );
+    await reportErrorToBackend("Respuesta no es JSON válido", error, {
+      ...context,
+      requestUrl: url,
+      requestMethod: options.method || "GET",
+    });
 
     console.error("❌ Respuesta no es JSON válido:", error);
-    throw new Error("El servidor devolvió datos inválidos");
+    return null;
   }
 }
-
 
 // -----------------------------
 // 🔥 Endpoints
