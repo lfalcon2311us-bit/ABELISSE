@@ -7,13 +7,20 @@ async function getProducto(id: string) {
   const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
   if (!backend) return null;
 
+  // Eliminar slash final si existe
   const clean = backend.replace(/\/$/, "");
-  const res = await fetch(`${clean}/api/productos/${id}/`, {
-    cache: "no-store",
-  });
 
-  if (!res.ok) return null;
-  return await res.json();
+  try {
+    const res = await fetch(`${clean}/api/productos/${id}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching producto:", error);
+    return null;
+  }
 }
 
 export default async function ProductoPage({ params }: { params: { id: string } }) {
@@ -29,6 +36,7 @@ export default async function ProductoPage({ params }: { params: { id: string } 
     );
   }
 
+  // Filtrar imágenes válidas
   const imagenes = [
     producto.imagen_principal,
     producto.imagen_secundaria,
@@ -40,8 +48,14 @@ export default async function ProductoPage({ params }: { params: { id: string } 
       <h1 className="text-3xl font-semibold mb-4">{producto.nombre}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Carrusel */}
-        <CarouselProducto imagenes={imagenes} nombre={producto.nombre} />
+        {/* Carrusel seguro */}
+        {imagenes.length > 0 ? (
+          <CarouselProducto imagenes={imagenes} nombre={producto.nombre} />
+        ) : (
+          <div className="w-full h-80 bg-gray-100 flex items-center justify-center rounded-lg">
+            <span className="text-gray-500">Sin imágenes disponibles</span>
+          </div>
+        )}
 
         <div>
           <p className="text-2xl font-bold text-pink-600 mb-4">
