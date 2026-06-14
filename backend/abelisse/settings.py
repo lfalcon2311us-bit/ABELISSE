@@ -21,7 +21,13 @@ PAYPAL_SECRET = config("PAYPAL_SECRET")
 SECRET_KEY = config("SECRET_KEY", default="inseguro")
 DEBUG = config("DEBUG", default="False") == "True"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "abelisse.com",
+    "www.abelisse.com",
+    "abelisse-backend.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
 
 # ============================
 #   APPS
@@ -41,7 +47,6 @@ INSTALLED_APPS = [
     'inventario',
     'pagos',
     'reportes',
-
 ]
 
 # ============================
@@ -128,17 +133,16 @@ STATICFILES_FINDERS = [
 # ============================
 #   CORS / CSRF
 # ============================
-#CORS_ALLOW_ALL_ORIGINS = True
-
 CORS_ALLOWED_ORIGINS = [
     "https://abelisse.com",
     "https://www.abelisse.com",
+    "https://abelisse-backend.onrender.com",
     "http://localhost:3000",
 ]
 
-# ⭐ AGREGAR ESTO PARA PERMITIR PETICIONES DEL FRONTEND
 CORS_ALLOW_HEADERS = ["*"]
 CORS_ALLOW_METHODS = ["*"]
+CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://abelisse.com",
@@ -146,8 +150,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://abelisse-backend.onrender.com",
     "http://localhost:3000",
 ]
-
-CORS_ALLOW_CREDENTIALS = True
 
 # ============================
 #   LOGGING
