@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'comunidad',
     'inventario',
     'pagos',
+    'reportes',
+
 ]
 
 # ============================
