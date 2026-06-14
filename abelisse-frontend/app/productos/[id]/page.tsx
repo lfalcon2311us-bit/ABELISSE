@@ -4,34 +4,39 @@ import Image from "next/image";
 import { safeFetch, API_URL } from "@/lib/api";
 import CarouselProducto from "./carousel";
 
-async function getProducto(id: string) {
+async function getProductoSeguro(id: string) {
   const url = `${API_URL}/productos/${id}/`;
 
-  const data = await safeFetch(
-    url,
-    { method: "GET" },
-    {
-      file: "app/productos/[id]/page.tsx",
-      functionName: "getProducto",
-      route: `/productos/${id}`,
-    }
-  );
+  try {
+    return await safeFetch(
+      url,
+      { method: "GET" },
+      {
+        file: "app/productos/[id]/page.tsx",
+        functionName: "getProducto",
+        route: `/productos/${id}`,
+      }
+    );
+  } catch (error) {
+    console.error("❌ safeFetch falló:", error);
 
-  return data;
+    // Fallback directo SIN safeFetch (por si safeFetch falla por timeout)
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) {
+      console.error("❌ Fallback fetch también falló:", e);
+      return null;
+    }
+  }
 }
 
-export default async function ProductoPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function ProductoPage({ params }: { params: { id: string } }) {
   // Normalizar ID
-  const rawId = params.id?.toString().trim();
+  const rawId = params.id?.toString().trim() ?? "";
+  const id = rawId.match(/^\d+/)?.[0];
 
-  // Extraer solo números (por si viene con basura tipo "1?utm=google")
-  const id = rawId?.match(/^\d+/)?.[0];
-
-  // Validación PRO del ID
   if (!id) {
     return (
       <main className="max-w-4xl mx-auto px-4 py-16">
@@ -43,13 +48,7 @@ export default async function ProductoPage({
     );
   }
 
-  let producto = null;
-
-  try {
-    producto = await getProducto(id);
-  } catch (error) {
-    console.error("❌ Error cargando producto:", error);
-  }
+  const producto = await getProductoSeguro(id);
 
   if (!producto) {
     return (
@@ -62,7 +61,6 @@ export default async function ProductoPage({
     );
   }
 
-  // Construir array de imágenes válidas
   const imagenes = [
     producto.imagen_principal,
     producto.imagen_secundaria,
@@ -73,32 +71,16 @@ export default async function ProductoPage({
     <main className="max-w-4xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-bold mb-6">{producto.nombre}</h1>
 
-      {/* Carrusel de imágenes */}
       <CarouselProducto imagenes={imagenes} nombre={producto.nombre} />
 
-      {/* Información del producto */}
       <div className="mt-8 space-y-4">
         <p className="text-gray-700">{producto.descripcion}</p>
 
-        <p>
-          <strong>Marca:</strong> {producto.marca}
-        </p>
-
-        <p>
-          <strong>Tamaño:</strong> {producto.tamano}
-        </p>
-
-        <p>
-          <strong>Precio:</strong> S/ {producto.precio_venta_soles}
-        </p>
-
-        <p>
-          <strong>Categoría:</strong> {producto.categoria?.nombre}
-        </p>
-
-        <p>
-          <strong>Subcategoría:</strong> {producto.subcategoria?.nombre}
-        </p>
+        <p><strong>Marca:</strong> {producto.marca}</p>
+        <p><strong>Tamaño:</strong> {producto.tamano}</p>
+        <p><strong>Precio:</strong> S/ {producto.precio_venta_soles}</p>
+        <p><strong>Categoría:</strong> {producto.categoria?.nombre}</p>
+        <p><strong>Subcategoría:</strong> {producto.subcategoria?.nombre}</p>
       </div>
     </main>
   );
