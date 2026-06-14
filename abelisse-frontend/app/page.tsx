@@ -3,41 +3,11 @@ export const dynamic = "force-dynamic";
 import HeroPremium from "@/components/HeroPremium";
 import ProductCardPremium from "@/components/ProductCardPremium";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
-
-// 🔥 Fetch único al backend
-async function getProductos() {
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  if (!backend) {
-    console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
-    return [];
-  }
-
-  const url = `${backend.replace(/\/$/, "")}/api/productos/`;
-
-  try {
-    const res = await fetch(url, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      console.error("❌ Error cargando productos:", res.status, url);
-      return [];
-    }
-
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    console.error("❌ Error conectando al backend:", e);
-    return [];
-  }
-}
+import { getProductos } from "@/lib/api";
 
 export default async function Home() {
-  // 🔥 Un solo fetch
   const productos = await getProductos();
 
-  // 🔥 Cálculos desde el array (seguros)
   const masVendidos = [...productos]
     .sort((a, b) => (b.ventas_totales || 0) - (a.ventas_totales || 0))
     .slice(0, 6);
@@ -104,20 +74,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {masVendidos.map((p: any) => (
-              <ProductCardPremium
-                key={p.id}
-                id={p.id}
-                nombre={p.nombre}
-                precio_venta_soles={p.precio_venta_soles}
-                precio_mercado_soles={p.precio_mercado_soles}
-                descuento_porcentaje={p.descuento_porcentaje}
-                imagen_principal={p.imagen_principal}
-                imagen_secundaria={p.imagen_secundaria}
-                imagen_terciaria={p.imagen_terciaria}
-                precio_venta_usd={p.precio_venta_usd}
-                descripcion={p.descripcion}
-                calificacion_promedio={p.calificacion_promedio}
-              />
+              <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
         </div>
@@ -130,20 +87,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {masBuscados.map((p: any) => (
-              <ProductCardPremium
-                key={p.id}
-                id={p.id}
-                nombre={p.nombre}
-                precio_venta_soles={p.precio_venta_soles}
-                precio_mercado_soles={p.precio_mercado_soles}
-                descuento_porcentaje={p.descuento_porcentaje}
-                imagen_principal={p.imagen_principal}
-                imagen_secundaria={p.imagen_secundaria}
-                imagen_terciaria={p.imagen_terciaria}
-                precio_venta_usd={p.precio_venta_usd}
-                descripcion={p.descripcion}
-                calificacion_promedio={p.calificacion_promedio}
-              />
+              <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
         </div>
@@ -156,20 +100,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {nuevos.map((p: any) => (
-              <ProductCardPremium
-                key={p.id}
-                id={p.id}
-                nombre={p.nombre}
-                precio_venta_soles={p.precio_venta_soles}
-                precio_mercado_soles={p.precio_mercado_soles}
-                descuento_porcentaje={p.descuento_porcentaje}
-                imagen_principal={p.imagen_principal}
-                imagen_secundaria={p.imagen_secundaria}
-                imagen_terciaria={p.imagen_terciaria}
-                precio_venta_usd={p.precio_venta_usd}
-                descripcion={p.descripcion}
-                calificacion_promedio={p.calificacion_promedio}
-              />
+              <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
         </div>
@@ -182,20 +113,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {mejorCalificados.map((p: any) => (
-              <ProductCardPremium
-                key={p.id}
-                id={p.id}
-                nombre={p.nombre}
-                precio_venta_soles={p.precio_venta_soles}
-                precio_mercado_soles={p.precio_mercado_soles}
-                descuento_porcentaje={p.descuento_porcentaje}
-                imagen_principal={p.imagen_principal}
-                imagen_secundaria={p.imagen_secundaria}
-                imagen_terciaria={p.imagen_terciaria}
-                precio_venta_usd={p.precio_venta_usd}
-                descripcion={p.descripcion}
-                calificacion_promedio={p.calificacion_promedio}
-              />
+              <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
         </div>

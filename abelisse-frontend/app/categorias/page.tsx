@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
+import { getCategorias } from "@/lib/api";
 
 export default function CategoriasPage() {
   const [categorias, setCategorias] = useState<any[]>([]);
@@ -9,50 +10,22 @@ export default function CategoriasPage() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    async function fetchCategorias() {
+    async function load() {
       try {
-        const backend = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
-
-        if (!backend) {
-          console.error("❌ Falta NEXT_PUBLIC_BACKEND_URL");
-          setError(true);
-          setLoading(false);
-          return;
-        }
-
-        const cleanBackend = backend.replace(/\/$/, "");
-
-        const res = await fetch(`${cleanBackend}/api/categorias/`, {
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          console.error("❌ Error al cargar categorías:", res.status);
-          setError(true);
-          setLoading(false);
-          return;
-        }
-
-        const data = await res.json();
-
-        // 🔥 Filtrar categorías válidas
-        const validas = Array.isArray(data)
-          ? data.filter((c) => c && c.nombre && c.slug)
-          : [];
-
+        const data = await getCategorias();
+        const validas = data.filter((c: any) => c?.nombre && c?.slug);
         setCategorias(validas);
-      } catch (error) {
-        console.error("❌ Error cargando categorías:", error);
+      } catch (e) {
+        console.error("❌ Error cargando categorías:", e);
         setError(true);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchCategorias();
+    load();
   }, []);
 
-  // 🔥 Loading elegante
   if (loading) {
     return (
       <main className="max-w-6xl mx-auto px-4 py-16 text-center">
@@ -62,7 +35,6 @@ export default function CategoriasPage() {
     );
   }
 
-  // 🔥 Error visual
   if (error) {
     return (
       <main className="max-w-6xl mx-auto px-4 py-16 text-center">
