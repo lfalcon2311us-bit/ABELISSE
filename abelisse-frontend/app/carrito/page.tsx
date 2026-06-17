@@ -15,13 +15,23 @@ export default function CarritoPage() {
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
-  // ⭐ TOTAL SEGURO (sin NaN)
+  // ⭐ TOTAL SEGURO
   const total = cart.reduce((acc, item) => {
     const raw = isPeru ? item.precio_soles : item.precio_usd;
     const price = parseFloat(String(raw).replace(",", "."));
     if (!Number.isFinite(price)) return acc;
     return acc + price * item.quantity;
   }, 0);
+
+  // ⭐ GUARDAR CARRITO PAGADO ANTES DE IR AL CHECKOUT
+  const handleStripeCheckout = () => {
+    sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
+    window.location.href = "/checkout";
+  };
+
+  const handlePayPalCheckout = () => {
+    sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
+  };
 
   if (cart.length === 0) {
     return (
@@ -124,13 +134,13 @@ export default function CarritoPage() {
         )}
 
         <button
-          onClick={() => (window.location.href = "/checkout")}
+          onClick={handleStripeCheckout}
           className="px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition text-sm"
         >
           Pagar con Stripe
         </button>
 
-        <div className="w-full">
+        <div className="w-full" onClick={handlePayPalCheckout}>
           <PayPalButton total={total} currency="USD" />
         </div>
       </div>

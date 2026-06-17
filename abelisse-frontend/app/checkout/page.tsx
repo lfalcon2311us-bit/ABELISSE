@@ -27,6 +27,9 @@ export default function CheckoutPage() {
       return;
     }
 
+    // ⭐ Guardar carrito pagado ANTES de ir a Stripe
+    sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
+
     try {
       await iniciarPago({
         total,
@@ -38,6 +41,10 @@ export default function CheckoutPage() {
       alert("Hubo un error al iniciar el pago.");
       console.error(error);
     }
+  };
+
+  const handlePayPalClick = () => {
+    sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
   };
 
   return (
@@ -73,7 +80,7 @@ export default function CheckoutPage() {
       </form>
 
       {/* PAYPAL */}
-      <div className="pt-6 border-t">
+      <div className="pt-6 border-t" onClick={handlePayPalClick}>
         <PayPalButton
           total={total}
           currency="USD"
