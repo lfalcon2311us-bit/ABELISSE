@@ -1,4 +1,17 @@
+"use client";
+import { useEffect } from "react";
+
 export default function PagoExitosoPage() {
+  useEffect(() => {
+    // 🔥 Limpiar carrito local (localStorage)
+    try {
+      localStorage.removeItem("carrito");
+      console.log("🛒 Carrito limpiado después del pago");
+    } catch (e) {
+      console.log("⚠️ No se pudo limpiar el carrito:", e);
+    }
+  }, []);
+
   return (
     <main className="max-w-3xl mx-auto px-6 py-20 text-center">
       <h1 className="text-3xl font-semibold text-green-600 mb-4">
