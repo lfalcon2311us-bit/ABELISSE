@@ -1,39 +1,29 @@
 "use client";
+
 import { useEffect } from "react";
+import { useCartStore } from "@/store/cartStore";
 
 interface CarritoItem {
   id: number;
-  cantidad: number;
+  cantidad?: number;
 }
 
 export default function PagoExitosoPage() {
   useEffect(() => {
     try {
-      // Carrito completo guardado en el navegador
-      const carritoLocal: CarritoItem[] = JSON.parse(
-        localStorage.getItem("carrito") || "[]"
-      );
-
-      // Productos que el cliente realmente pagó
+      // Productos que el cliente realmente pagó (guardados antes del checkout)
       const carritoPagado: CarritoItem[] = JSON.parse(
         sessionStorage.getItem("carrito_pagado") || "[]"
       );
 
-      console.log("🛒 Carrito local:", carritoLocal);
-      console.log("💳 Carrito pagado:", carritoPagado);
+      console.log("💳 Productos pagados:", carritoPagado);
 
-      // Filtrar: dejar solo los productos NO pagados
-      const carritoActualizado = carritoLocal.filter(
-        (item: CarritoItem) =>
-          !carritoPagado.some(
-            (pagado: CarritoItem) => pagado.id === item.id
-          )
-      );
+      if (carritoPagado.length > 0) {
+        // ⭐ ELIMINAR SOLO LOS PRODUCTOS PAGADOS DEL STORE (Zustand)
+        useCartStore.getState().removePaidItems(carritoPagado);
 
-      // Guardar carrito actualizado
-      localStorage.setItem("carrito", JSON.stringify(carritoActualizado));
-
-      console.log("🧹 Carrito después del pago:", carritoActualizado);
+        console.log("🧹 Carrito actualizado en Zustand");
+      }
 
       // Limpiar carrito_pagado temporal
       sessionStorage.removeItem("carrito_pagado");

@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Tipo de cada producto dentro del carrito
 interface CartItem {
   id: number;
   nombre: string;
@@ -13,7 +12,6 @@ interface CartItem {
   precio_usd: number;
 }
 
-// Tipo del payload que recibe addToCart
 interface AddProductPayload {
   id: number;
   nombre: string;
@@ -22,7 +20,6 @@ interface AddProductPayload {
   precio_venta_usd?: number | string | null;
 }
 
-// Tipo del estado del store
 interface CartState {
   cart: CartItem[];
 
@@ -32,6 +29,9 @@ interface CartState {
 
   increaseQuantity: (id: number) => void;
   decreaseQuantity: (id: number) => void;
+
+  // ⭐ NUEVO: eliminar solo productos pagados
+  removePaidItems: (paidItems: { id: number }[]) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -43,14 +43,12 @@ export const useCartStore = create<CartState>()(
         set((state) => {
           const exists = state.cart.find((p) => p.id === product.id);
 
-          // Conversión segura
           const precioSoles = Number(product.precio_venta_soles ?? 0);
           const precioUSD = Number(
             product.precio_venta_usd ??
               (precioSoles > 0 ? precioSoles / 3.5 : 0)
           );
 
-          // Evitar NaN
           const safeSoles = Number.isFinite(precioSoles) ? precioSoles : 0;
           const safeUSD = Number.isFinite(precioUSD) ? precioUSD : 0;
 
@@ -110,12 +108,19 @@ export const useCartStore = create<CartState>()(
             ),
           };
         }),
+
+      // ⭐ ELIMINAR SOLO PRODUCTOS PAGADOS
+      removePaidItems: (paidItems) =>
+        set((state) => ({
+          cart: state.cart.filter(
+            (item) => !paidItems.some((p) => p.id === item.id)
+          ),
+        })),
     }),
     {
       name: "abelisse-cart",
       version: 2,
 
-      // Limpieza automática de datos corruptos
       migrate: (persistedState: any) => {
         if (!persistedState?.cart) return { cart: [] };
 
