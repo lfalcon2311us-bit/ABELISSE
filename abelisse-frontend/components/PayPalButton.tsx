@@ -40,7 +40,6 @@ export default function PayPalButton({
     const script = document.createElement("script");
     script.id = "paypal-sdk";
 
-    // ⭐ SDK CORRECTO (PayPal + Pay Later)
     script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&components=buttons&enable-funding=paylater`;
     script.async = true;
 
@@ -55,6 +54,9 @@ export default function PayPalButton({
           fundingSource: undefined,
 
           createOrder: async () => {
+            // ⭐ Guardar carrito pagado ANTES de crear la orden
+            sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
+
             const res = await fetch(`${backend}/api/paypal/create-order/`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },

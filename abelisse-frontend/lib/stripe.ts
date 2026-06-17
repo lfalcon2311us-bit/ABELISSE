@@ -26,6 +26,9 @@ export async function iniciarPago({
     throw new Error("El total del pago no es válido");
   }
 
+  // ⭐ Guardar carrito pagado ANTES de ir a Stripe
+  sessionStorage.setItem("carrito_pagado", JSON.stringify(carrito));
+
   await loadStripe(STRIPE_PUBLIC_KEY);
 
   let response;

@@ -11,7 +11,6 @@ export default function CheckoutPage() {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
 
-  // ⭐ TOTAL SEGURO
   const total = cart.reduce((acc, item) => {
     const raw = item.precio_usd;
     const price = parseFloat(String(raw).replace(",", "."));
@@ -51,7 +50,6 @@ export default function CheckoutPage() {
     <div className="max-w-lg mx-auto py-16 px-4 space-y-10">
       <h1 className="text-2xl font-semibold">Datos del comprador</h1>
 
-      {/* FORMULARIO */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -79,7 +77,6 @@ export default function CheckoutPage() {
         </button>
       </form>
 
-      {/* PAYPAL */}
       <div className="pt-6 border-t" onClick={handlePayPalClick}>
         <PayPalButton
           total={total}
