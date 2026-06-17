@@ -99,3 +99,46 @@ Equipo ABELISSE
             print("⚠️ Orden Stripe no encontrada:", stripe_id)
 
     return HttpResponse(status=200)
+
+
+
+# ---------------------------------------------------------
+# 🔵 WEBHOOK PAYPAL — BÁSICO (FUNCIONA Y EVITA 500)
+# ---------------------------------------------------------
+@csrf_exempt
+def paypal_webhook(request):
+    """
+    Webhook básico de PayPal.
+    Recibe el evento, imprime el contenido y devuelve 200 OK.
+    Luego lo mejoramos con lógica real de orden, stock y correo.
+    """
+    try:
+        body = request.body.decode("utf-8")
+        data = json.loads(body)
+        print("📨 Webhook PayPal recibido:", data)
+
+        # TODO:
+        # - Buscar la orden por ID de PayPal
+        # - Marcarla como COMPLETADA
+        # - Descontar stock
+        # - Limpiar carrito
+        # - Enviar correo
+
+    except Exception as e:
+        print("❌ Error en webhook PayPal:", e)
+
+    return HttpResponse(status=200)
+
+
+
+# ---------------------------------------------------------
+# 🟣 WEBHOOK YAPE — PLACEHOLDER
+# ---------------------------------------------------------
+@csrf_exempt
+def yape_webhook(request):
+    """
+    Webhook placeholder para Yape.
+    Lo dejamos listo para cuando lo implementes.
+    """
+    print("📨 Webhook Yape recibido")
+    return HttpResponse(status=200)

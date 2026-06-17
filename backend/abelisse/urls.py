@@ -68,7 +68,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/', include('reportes.urls')),
 
-
     # API REST
     path("api/", include(router.urls)),
     path("api/productos-destacados/", ProductosDestacados.as_view()),
