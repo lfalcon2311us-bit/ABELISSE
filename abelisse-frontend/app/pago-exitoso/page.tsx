@@ -1,14 +1,44 @@
 "use client";
 import { useEffect } from "react";
 
+interface CarritoItem {
+  id: number;
+  cantidad: number;
+}
+
 export default function PagoExitosoPage() {
   useEffect(() => {
-    // 🔥 Limpiar carrito local (localStorage)
     try {
-      localStorage.removeItem("carrito");
-      console.log("🛒 Carrito limpiado después del pago");
+      // Carrito completo guardado en el navegador
+      const carritoLocal: CarritoItem[] = JSON.parse(
+        localStorage.getItem("carrito") || "[]"
+      );
+
+      // Productos que el cliente realmente pagó
+      const carritoPagado: CarritoItem[] = JSON.parse(
+        sessionStorage.getItem("carrito_pagado") || "[]"
+      );
+
+      console.log("🛒 Carrito local:", carritoLocal);
+      console.log("💳 Carrito pagado:", carritoPagado);
+
+      // Filtrar: dejar solo los productos NO pagados
+      const carritoActualizado = carritoLocal.filter(
+        (item: CarritoItem) =>
+          !carritoPagado.some(
+            (pagado: CarritoItem) => pagado.id === item.id
+          )
+      );
+
+      // Guardar carrito actualizado
+      localStorage.setItem("carrito", JSON.stringify(carritoActualizado));
+
+      console.log("🧹 Carrito después del pago:", carritoActualizado);
+
+      // Limpiar carrito_pagado temporal
+      sessionStorage.removeItem("carrito_pagado");
     } catch (e) {
-      console.log("⚠️ No se pudo limpiar el carrito:", e);
+      console.log("⚠️ Error limpiando carrito:", e);
     }
   }, []);
 
