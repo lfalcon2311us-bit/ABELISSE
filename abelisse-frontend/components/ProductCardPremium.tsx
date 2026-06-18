@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { useCountryStore, useDetectCountry } from "@/store/countryStore";
-import ProductCardCarousel from "./ProductCardCarousel";
 
 interface Props {
   id: number;
@@ -30,18 +30,15 @@ export default function ProductCardPremium(props: Props) {
     precio_mercado_soles,
     descuento_porcentaje,
     imagen_principal,
-    imagen_secundaria,
-    imagen_terciaria,
     precio_venta_usd,
     descripcion = "",
     calificacion_promedio = 0,
   } = props;
 
-  const imagenes = [
-    imagen_principal,
-    imagen_secundaria,
-    imagen_terciaria,
-  ].filter((img): img is string => typeof img === "string" && img.trim().length > 10);
+  // ⭐ Imagen principal segura
+  const imagen = typeof imagen_principal === "string" && imagen_principal.length > 10
+    ? imagen_principal
+    : "/placeholder.png";
 
   const [showFullDesc, setShowFullDesc] = useState(false);
 
@@ -73,8 +70,17 @@ export default function ProductCardPremium(props: Props) {
     <Link href={`/productos/${id}`} className="block">
       <div className="product-card-premium bg-white rounded-xl shadow-sm hover:shadow-xl transition border border-transparent overflow-hidden group">
 
-        {/* 🔥 CARRUSEL CLIENTE */}
-        <ProductCardCarousel imagenes={imagenes} nombre={nombre} />
+        {/* 🔥 IMAGEN ESTÁTICA */}
+        <div className="relative w-full h-56 bg-gray-100 overflow-hidden">
+          <Image
+            src={imagen}
+            alt={nombre}
+            width={400}
+            height={400}
+            unoptimized
+            className="w-full h-full object-cover"
+          />
+        </div>
 
         <div className="p-5">
           <h3 className="text-lg font-semibold mb-1">{nombre}</h3>
@@ -126,7 +132,7 @@ export default function ProductCardPremium(props: Props) {
                 nombre,
                 precio_venta_soles: precioSoles,
                 precio_venta_usd: precioUSD,
-                imagen_principal: imagen_principal || "",
+                imagen_principal: imagen,
               });
             }}
             className="w-full text-sm px-4 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition"
