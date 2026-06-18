@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import ProductCardPremium from "@/components/ProductCardPremium";
-import { getProductos } from "@/lib/api";
+import { getProductos } from "@/lib/server/api";
 
 export default async function ProductosPage() {
   const productos = await getProductos();

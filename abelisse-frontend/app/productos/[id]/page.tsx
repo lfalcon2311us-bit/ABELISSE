@@ -1,18 +1,16 @@
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
-import Image from "next/image";
-import { safeFetch, API_URL } from "@/lib/api";
+import { safeFetch, API_URL } from "@/lib/server/api";
 import CarouselProducto from "./carousel";
 
-// 🔥 Normaliza y limpia el ID (quita query params raros)
+// 🔥 Normaliza y limpia el ID
 function limpiarId(raw: string): string | null {
   if (!raw) return null;
 
-  // Quitar cualquier cosa después de "?" o "&"
   const limpio = raw.split("?")[0].split("&")[0].trim();
 
-  // Asegurar que sea un número
   return /^\d+$/.test(limpio) ? limpio : null;
 }
 

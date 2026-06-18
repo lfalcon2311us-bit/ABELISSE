@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ProductCardPremium from "@/components/ProductCardPremium";
-import { getProductos } from "@/lib/api";
+import { getProductos } from "@/lib/server/api";
 
 export default function OfertasPage() {
   const [ofertas, setOfertas] = useState<any[]>([]);

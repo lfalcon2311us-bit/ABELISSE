@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import HeroPremium from "@/components/HeroPremium";
 import ProductCardPremium from "@/components/ProductCardPremium";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
-import { getProductos } from "@/lib/api";
+import { getProductos } from "@/lib/server/api";
 
 export default async function Home() {
   const productos = await getProductos();

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
-import { getCategorias } from "@/lib/api";
+import { getCategorias } from "@/lib/server/api";
 
 export default function CategoriasPage() {
   const [categorias, setCategorias] = useState<any[]>([]);

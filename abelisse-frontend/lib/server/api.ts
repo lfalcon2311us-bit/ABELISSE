@@ -1,4 +1,4 @@
-import { reportErrorToBackend } from "./logger";
+import { reportErrorToBackend } from "../logger";
 
 // --------------------------------------------------
 // 🔧 Normalización robusta del backend
@@ -13,18 +13,13 @@ function normalizeBackendUrl() {
 
   raw = raw.trim();
 
-  // Quitar query params o basura accidental
   raw = raw.split("?")[0].split("&")[0];
-
-  // Quitar slashes finales
   raw = raw.replace(/\/+$/, "");
 
-  // Asegurar protocolo
   if (!raw.startsWith("http://") && !raw.startsWith("https://")) {
     raw = `https://${raw}`;
   }
 
-  // Validar formato final
   try {
     new URL(raw);
   } catch {
@@ -37,11 +32,10 @@ function normalizeBackendUrl() {
 
 const safeBackend = normalizeBackendUrl();
 
-// 🔥 API_URL SIEMPRE ABSOLUTA (sin fallback)
 export const API_URL = `${safeBackend}/api`;
 
 // --------------------------------------------------
-// 🔥 safeFetch con fallback y reportes
+// 🔥 safeFetch (NO ES SERVER ACTION)
 // --------------------------------------------------
 export async function safeFetch(
   url: string,
@@ -65,7 +59,6 @@ export async function safeFetch(
 
     console.error("❌ Error de conexión con el backend:", error);
 
-    // Fallback directo
     try {
       const fallback = await fetch(url, { cache: "no-store" });
       if (!fallback.ok) return null;
@@ -113,7 +106,7 @@ export async function safeFetch(
 // --------------------------------------------------
 export async function getProductos() {
   return safeFetch(`${API_URL}/productos/`, {}, {
-    file: "lib/api.ts",
+    file: "lib/server/api.ts",
     functionName: "getProductos",
     route: "/productos",
   });
@@ -121,7 +114,7 @@ export async function getProductos() {
 
 export async function getCategorias() {
   return safeFetch(`${API_URL}/categorias/`, {}, {
-    file: "lib/api.ts",
+    file: "lib/server/api.ts",
     functionName: "getCategorias",
     route: "/categorias",
   });
@@ -129,7 +122,7 @@ export async function getCategorias() {
 
 export async function getProducto(id: string | number) {
   return safeFetch(`${API_URL}/productos/${id}/`, {}, {
-    file: "lib/api.ts",
+    file: "lib/server/api.ts",
     functionName: "getProducto",
     route: `/productos/${id}`,
   });
