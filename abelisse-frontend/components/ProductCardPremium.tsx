@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { useCountryStore, useDetectCountry } from "@/store/countryStore";
+import ProductCardCarousel from "./ProductCardCarousel";
 
 interface Props {
   id: number;
@@ -29,45 +29,24 @@ export default function ProductCardPremium(props: Props) {
     precio_venta_soles,
     precio_mercado_soles,
     descuento_porcentaje,
-
     imagen_principal,
     imagen_secundaria,
     imagen_terciaria,
-
     precio_venta_usd,
     descripcion = "",
     calificacion_promedio = 0,
   } = props;
 
-  // ⭐ Imágenes seguras
   const imagenes = [
     imagen_principal,
     imagen_secundaria,
     imagen_terciaria,
-  ].filter((img) => typeof img === "string" && img.trim().length > 10);
-
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    setIndex(0);
-  }, [imagenes.length]);
-
-  useEffect(() => {
-    if (imagenes.length <= 1 || paused) return;
-
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % imagenes.length);
-    }, 2500);
-
-    return () => clearInterval(interval);
-  }, [imagenes.length, paused]);
+  ].filter((img): img is string => typeof img === "string" && img.trim().length > 10);
 
   const [showFullDesc, setShowFullDesc] = useState(false);
 
   useDetectCountry();
   const { currency } = useCountryStore();
-
   const addToCart = useCartStore((state) => state.addToCart);
 
   const isPeru = currency === "PEN";
@@ -94,46 +73,8 @@ export default function ProductCardPremium(props: Props) {
     <Link href={`/productos/${id}`} className="block">
       <div className="product-card-premium bg-white rounded-xl shadow-sm hover:shadow-xl transition border border-transparent overflow-hidden group">
 
-        {/* 🔥 CARRUSEL */}
-        <div
-          className="relative w-full h-56 overflow-hidden bg-gray-100 flex items-center justify-center"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          <Image
-            key={imagenes[index] ?? "placeholder"}
-            src={imagenes[index] ?? "/placeholder.png"}
-            alt={nombre}
-            width={400}
-            height={400}
-            unoptimized
-            className="w-full h-full object-cover transition-all duration-500"
-          />
-
-          {imagenes.length > 1 && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIndex((index - 1 + imagenes.length) % imagenes.length);
-                }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-2 py-1 rounded-full shadow"
-              >
-                ‹
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIndex((index + 1) % imagenes.length);
-                }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white px-2 py-1 rounded-full shadow"
-              >
-                ›
-              </button>
-            </>
-          )}
-        </div>
+        {/* 🔥 CARRUSEL CLIENTE */}
+        <ProductCardCarousel imagenes={imagenes} nombre={nombre} />
 
         <div className="p-5">
           <h3 className="text-lg font-semibold mb-1">{nombre}</h3>
