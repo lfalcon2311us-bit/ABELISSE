@@ -1,17 +1,20 @@
 import { reportErrorToBackend } from "./logger";
 
-// -----------------------------
-// 🔧 Normalización del backend
-// -----------------------------
+// --------------------------------------------------
+// 🔧 Normalización robusta del backend
+// --------------------------------------------------
 function normalizeBackendUrl() {
   let raw = process.env.NEXT_PUBLIC_BACKEND_URL || "";
 
-  raw = raw.trim();
-
-  if (!raw) {
-    console.error("❌ NEXT_PUBLIC_BACKEND_URL está vacío");
+  if (!raw || typeof raw !== "string") {
+    console.error("❌ NEXT_PUBLIC_BACKEND_URL está vacío o mal definido");
     return null;
   }
+
+  raw = raw.trim();
+
+  // Quitar query params o basura accidental
+  raw = raw.split("?")[0].split("&")[0];
 
   // Quitar slashes finales
   raw = raw.replace(/\/+$/, "");
@@ -21,15 +24,23 @@ function normalizeBackendUrl() {
     raw = `https://${raw}`;
   }
 
+  // Validar formato final
+  try {
+    new URL(raw);
+  } catch {
+    console.error("❌ NEXT_PUBLIC_BACKEND_URL no es una URL válida:", raw);
+    return null;
+  }
+
   return raw;
 }
 
 const safeBackend = normalizeBackendUrl();
-export const API_URL = safeBackend ? `${safeBackend}/api` : "";
+export const API_URL = safeBackend ? `${safeBackend}/api` : null;
 
-// -----------------------------
-// 🔥 safeFetch con fallback
-// -----------------------------
+// --------------------------------------------------
+// 🔥 safeFetch con fallback y reportes
+// --------------------------------------------------
 export async function safeFetch(
   url: string,
   options: RequestInit = {},
@@ -39,8 +50,8 @@ export async function safeFetch(
     route?: string;
   }
 ) {
-  if (!safeBackend) {
-    console.error("❌ Backend no configurado");
+  if (!API_URL) {
+    console.error("❌ API_URL no está configurado correctamente");
     return null;
   }
 
@@ -100,9 +111,9 @@ export async function safeFetch(
   }
 }
 
-// -----------------------------
+// --------------------------------------------------
 // 🔥 Endpoints
-// -----------------------------
+// --------------------------------------------------
 export async function getProductos() {
   return safeFetch(`${API_URL}/productos/`, {}, {
     file: "lib/api.ts",

@@ -4,6 +4,17 @@ import Image from "next/image";
 import { safeFetch, API_URL } from "@/lib/api";
 import CarouselProducto from "./carousel";
 
+// 🔥 Normaliza y limpia el ID (quita query params raros)
+function limpiarId(raw: string): string | null {
+  if (!raw) return null;
+
+  // Quitar cualquier cosa después de "?" o "&"
+  const limpio = raw.split("?")[0].split("&")[0].trim();
+
+  // Asegurar que sea un número
+  return /^\d+$/.test(limpio) ? limpio : null;
+}
+
 async function getProductoSeguro(id: string) {
   const url = `${API_URL}/productos/${id}/`;
 
@@ -20,7 +31,6 @@ async function getProductoSeguro(id: string) {
   } catch (error) {
     console.error("❌ safeFetch falló:", error);
 
-    // Fallback directo SIN safeFetch (por si safeFetch falla por timeout)
     try {
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) return null;
@@ -33,9 +43,7 @@ async function getProductoSeguro(id: string) {
 }
 
 export default async function ProductoPage({ params }: { params: { id: string } }) {
-  // Normalizar ID
-  const rawId = params.id?.toString().trim() ?? "";
-  const id = rawId.match(/^\d+/)?.[0];
+  const id = limpiarId(params.id);
 
   if (!id) {
     return (
