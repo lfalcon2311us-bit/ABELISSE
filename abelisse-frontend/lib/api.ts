@@ -36,7 +36,9 @@ function normalizeBackendUrl() {
 }
 
 const safeBackend = normalizeBackendUrl();
-export const API_URL = safeBackend ? `${safeBackend}/api` : null;
+
+// 🔥 API_URL SIEMPRE ABSOLUTA (sin fallback)
+export const API_URL = `${safeBackend}/api`;
 
 // --------------------------------------------------
 // 🔥 safeFetch con fallback y reportes
@@ -50,11 +52,6 @@ export async function safeFetch(
     route?: string;
   }
 ) {
-  if (!API_URL) {
-    console.error("❌ API_URL no está configurado correctamente");
-    return null;
-  }
-
   let res;
 
   try {

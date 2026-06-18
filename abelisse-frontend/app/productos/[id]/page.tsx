@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 import Image from "next/image";
 import { safeFetch, API_URL } from "@/lib/api";
