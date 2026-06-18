@@ -2,8 +2,8 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
+import Image from "next/image";
 import { safeFetch, API_URL } from "@/lib/server/api";
-import CarouselProducto from "./carousel";
 
 // 🔥 Normaliza y limpia el ID
 function limpiarId(raw: string): string | null {
@@ -78,7 +78,20 @@ export default async function ProductoPage({ params }: { params: { id: string } 
     <main className="max-w-4xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-bold mb-6">{producto.nombre}</h1>
 
-      <CarouselProducto imagenes={imagenes} nombre={producto.nombre} />
+      {/* 🔥 IMÁGENES ESTÁTICAS */}
+      <div className="space-y-4">
+        {imagenes.map((img, i) => (
+          <Image
+            key={i}
+            src={img}
+            alt={producto.nombre}
+            width={800}
+            height={800}
+            unoptimized
+            className="w-full rounded-xl object-cover"
+          />
+        ))}
+      </div>
 
       <div className="mt-8 space-y-4">
         <p className="text-gray-700">{producto.descripcion}</p>
