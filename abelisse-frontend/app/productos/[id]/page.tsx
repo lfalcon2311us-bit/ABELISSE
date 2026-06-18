@@ -1,7 +1,3 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-export const revalidate = 0;
-
 import Image from "next/image";
 import { safeFetch, API_URL } from "@/lib/api";
 
@@ -78,7 +74,6 @@ export default async function ProductoPage({ params }: { params: { id: string } 
     <main className="max-w-4xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-bold mb-6">{producto.nombre}</h1>
 
-      {/* 🔥 IMÁGENES ESTÁTICAS */}
       <div className="space-y-4">
         {imagenes.map((img, i) => (
           <Image
