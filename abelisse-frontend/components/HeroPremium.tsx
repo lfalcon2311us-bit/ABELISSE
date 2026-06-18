@@ -15,7 +15,7 @@ export default function HeroPremium() {
         "
       />
 
-      {/* Overlay suave para contraste */}
+      {/* Overlay suave */}
       <div className="absolute inset-0 bg-white/40 backdrop-blur-[1px]" />
 
       <div className="relative max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">

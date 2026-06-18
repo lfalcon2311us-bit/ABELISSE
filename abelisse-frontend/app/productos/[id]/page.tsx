@@ -3,7 +3,7 @@ export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
 import Image from "next/image";
-import { safeFetch, API_URL } from "@/lib/server/api";
+import { safeFetch, API_URL } from "@/lib/api";
 
 // 🔥 Normaliza y limpia el ID
 function limpiarId(raw: string): string | null {

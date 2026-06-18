@@ -23,9 +23,11 @@ export default function PayPalButton({
   const cart = useCartStore((state) => state.cart);
 
   useEffect(() => {
+    // ⭐ Limpiar contenedor antes de renderizar
     const container = document.getElementById("paypal-button-container");
     if (container) container.innerHTML = "";
 
+    // ⭐ Evitar múltiples SDK cargados
     const oldScript = document.getElementById("paypal-sdk");
     if (oldScript) oldScript.remove();
 
@@ -37,9 +39,9 @@ export default function PayPalButton({
       return;
     }
 
+    // ⭐ Cargar SDK
     const script = document.createElement("script");
     script.id = "paypal-sdk";
-
     script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&components=buttons&enable-funding=paylater`;
     script.async = true;
 
@@ -53,37 +55,60 @@ export default function PayPalButton({
         .Buttons({
           fundingSource: undefined,
 
+          // ⭐ Crear orden en tu backend
           createOrder: async () => {
-            // ⭐ Guardar carrito pagado ANTES de crear la orden
-            sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
+            try {
+              // Guardar carrito pagado ANTES de crear la orden
+              sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
 
-            const res = await fetch(`${backend}/api/paypal/create-order/`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                total,
-                carrito: cart,
-                email,
-                nombre,
-              }),
-            });
+              const res = await fetch(`${backend}/api/paypal/create-order/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  total,
+                  carrito: cart,
+                  email,
+                  nombre,
+                }),
+              });
 
-            const data = await res.json();
-            return data.order_id || data.id;
+              const data = await res.json();
+
+              if (!data.order_id && !data.id) {
+                console.error("❌ Respuesta inválida del backend:", data);
+                return "";
+              }
+
+              return data.order_id || data.id;
+            } catch (error) {
+              console.error("❌ Error creando orden PayPal:", error);
+              return "";
+            }
           },
 
+          // ⭐ Capturar orden
           onApprove: async (data: any) => {
-            const res = await fetch(`${backend}/api/paypal/capture-order/`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ order_id: data.orderID }),
-            });
+            try {
+              const res = await fetch(`${backend}/api/paypal/capture-order/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ order_id: data.orderID }),
+              });
 
-            if (res.ok) window.location.href = "/pago-exitoso";
-            else window.location.href = "/pago-fallido";
+              if (res.ok) {
+                window.location.href = "/pago-exitoso";
+              } else {
+                window.location.href = "/pago-fallido";
+              }
+            } catch (error) {
+              console.error("❌ Error capturando orden:", error);
+              window.location.href = "/pago-fallido";
+            }
           },
 
+          // ⭐ Error general
           onError: () => {
+            console.error("❌ Error en PayPal");
             window.location.href = "/pago-fallido";
           },
         })

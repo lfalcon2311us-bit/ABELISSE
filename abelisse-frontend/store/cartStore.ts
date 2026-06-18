@@ -10,6 +10,7 @@ interface CartItem {
   quantity: number;
   precio_soles: number;
   precio_usd: number;
+  stock: number; // ⭐ NUEVO
 }
 
 interface AddProductPayload {
@@ -18,6 +19,7 @@ interface AddProductPayload {
   imagen_principal: string | null;
   precio_venta_soles: number | string | null;
   precio_venta_usd?: number | string | null;
+  stock?: number; // ⭐ NUEVO
 }
 
 interface CartState {
@@ -30,7 +32,6 @@ interface CartState {
   increaseQuantity: (id: number) => void;
   decreaseQuantity: (id: number) => void;
 
-  // ⭐ NUEVO: eliminar solo productos pagados
   removePaidItems: (paidItems: { id: number }[]) => void;
 }
 
@@ -52,11 +53,21 @@ export const useCartStore = create<CartState>()(
           const safeSoles = Number.isFinite(precioSoles) ? precioSoles : 0;
           const safeUSD = Number.isFinite(precioUSD) ? precioUSD : 0;
 
+          const safeStock = Number.isFinite(Number(product.stock))
+            ? Number(product.stock)
+            : 20; // ⭐ fallback si backend no envía stock
+
           if (exists) {
             return {
               cart: state.cart.map((p) =>
                 p.id === product.id
-                  ? { ...p, quantity: p.quantity + 1 }
+                  ? {
+                      ...p,
+                      quantity:
+                        p.quantity + 1 <= p.stock
+                          ? p.quantity + 1
+                          : p.quantity,
+                    }
                   : p
               ),
             };
@@ -72,6 +83,7 @@ export const useCartStore = create<CartState>()(
                 quantity: 1,
                 precio_soles: safeSoles,
                 precio_usd: safeUSD,
+                stock: safeStock,
               },
             ],
           };
@@ -87,7 +99,9 @@ export const useCartStore = create<CartState>()(
       increaseQuantity: (id) =>
         set((state) => ({
           cart: state.cart.map((p) =>
-            p.id === id ? { ...p, quantity: p.quantity + 1 } : p
+            p.id === id && p.quantity < p.stock
+              ? { ...p, quantity: p.quantity + 1 }
+              : p
           ),
         })),
 
@@ -109,7 +123,6 @@ export const useCartStore = create<CartState>()(
           };
         }),
 
-      // ⭐ ELIMINAR SOLO PRODUCTOS PAGADOS
       removePaidItems: (paidItems) =>
         set((state) => ({
           cart: state.cart.filter(
@@ -119,19 +132,15 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "abelisse-cart",
-      version: 2,
+      version: 3,
 
       migrate: (persistedState: any) => {
         if (!persistedState?.cart) return { cart: [] };
 
-        const cleaned = persistedState.cart.filter((item: any) => {
-          return (
-            item &&
-            Number.isFinite(item.precio_soles) &&
-            Number.isFinite(item.precio_usd) &&
-            item.quantity > 0
-          );
-        });
+        const cleaned = persistedState.cart.map((item: any) => ({
+          ...item,
+          stock: Number.isFinite(item.stock) ? item.stock : 20, // ⭐ asegurar stock
+        }));
 
         return { ...persistedState, cart: cleaned };
       },

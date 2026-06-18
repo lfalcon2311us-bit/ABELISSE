@@ -19,7 +19,7 @@ export default function Footer() {
           <ul className="space-y-2">
             <li>
               <a
-                href="#"
+                href="/politica-de-privacidad"
                 className="hover:text-pink-600 transition-colors duration-200"
               >
                 Política de privacidad
@@ -27,7 +27,7 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="#"
+                href="/terminos-y-condiciones"
                 className="hover:text-pink-600 transition-colors duration-200"
               >
                 Términos y condiciones
@@ -35,7 +35,7 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="#"
+                href="/envios-y-devoluciones"
                 className="hover:text-pink-600 transition-colors duration-200"
               >
                 Envíos y devoluciones
@@ -80,7 +80,7 @@ export default function Footer() {
       </div>
 
       {/* Línea inferior */}
-      <div className="border-t text-xs text-center py-5 text-gray-500 bg-gray-50">
+      <div className="border-t text-xs text-center py-5 text-gray-500">
         © {new Date().getFullYear()} ABELISSE. Todos los derechos reservados.
       </div>
     </footer>

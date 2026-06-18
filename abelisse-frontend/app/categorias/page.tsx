@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
-import { getCategorias } from "@/lib/server/api";
+import { getCategorias } from "@/lib/api";
 
 export default function CategoriasPage() {
   const [categorias, setCategorias] = useState<any[]>([]);
@@ -13,7 +13,14 @@ export default function CategoriasPage() {
     async function load() {
       try {
         const data = await getCategorias();
-        const validas = data.filter((c: any) => c?.nombre && c?.slug);
+
+        // Manejo seguro si el backend devuelve null o undefined
+        const lista = Array.isArray(data) ? data : [];
+
+        const validas = lista.filter(
+          (c: any) => typeof c?.nombre === "string" && typeof c?.slug === "string"
+        );
+
         setCategorias(validas);
       } catch (e) {
         console.error("❌ Error cargando categorías:", e);
@@ -54,11 +61,7 @@ export default function CategoriasPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         {categorias.map((cat: any) => (
-          <CategoryCardPremium
-            key={cat.id}
-            nombre={cat.nombre}
-            slug={cat.slug}
-          />
+          <CategoryCardPremium key={cat.id} nombre={cat.nombre} slug={cat.slug} />
         ))}
       </div>
     </main>

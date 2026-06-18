@@ -1,23 +1,23 @@
 module.exports = {
   plugins: {
-    // Nesting moderno compatible con Tailwind
+    // ⭐ Nesting moderno compatible con Tailwind
     "postcss-nesting": {},
 
-    // Tailwind
+    // ⭐ Tailwind
     tailwindcss: {},
 
-    // Fixes de flexbox para Safari y móviles
+    // ⭐ Fixes de flexbox para Safari y móviles
     "postcss-flexbugs-fixes": {},
 
-    // Compatibilidad con navegadores
+    // ⭐ Compatibilidad con navegadores (sin nesting duplicado)
     "postcss-preset-env": {
       stage: 3,
       features: {
-        "nesting-rules": true,
+        "nesting-rules": false, // ❗ Desactivado para evitar conflicto
       },
     },
 
-    // Minificación solo en producción
+    // ⭐ Minificación solo en producción
     ...(process.env.NODE_ENV === "production"
       ? { cssnano: { preset: "default" } }
       : {}),

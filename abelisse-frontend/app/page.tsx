@@ -3,20 +3,23 @@ export const dynamic = "force-dynamic";
 import HeroPremium from "@/components/HeroPremium";
 import ProductCardPremium from "@/components/ProductCardPremium";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
-import { getProductos } from "@/lib/server/api";
+import { getProductos } from "@/lib/api";
 
 export default async function Home() {
   const productos = await getProductos();
 
-  const masVendidos = [...productos]
+  // 🔥 Manejo seguro si el backend devuelve null o undefined
+  const lista = Array.isArray(productos) ? productos : [];
+
+  const masVendidos = [...lista]
     .sort((a, b) => (b.ventas_totales || 0) - (a.ventas_totales || 0))
     .slice(0, 6);
 
-  const masBuscados = [...productos]
+  const masBuscados = [...lista]
     .sort((a, b) => (b.busquedas_totales || 0) - (a.busquedas_totales || 0))
     .slice(0, 6);
 
-  const nuevos = [...productos]
+  const nuevos = [...lista]
     .sort(
       (a, b) =>
         new Date(b.fecha_creacion || 0).getTime() -
@@ -24,7 +27,7 @@ export default async function Home() {
     )
     .slice(0, 6);
 
-  const mejorCalificados = [...productos]
+  const mejorCalificados = [...lista]
     .sort((a, b) => (b.calificacion_promedio || 0) - (a.calificacion_promedio || 0))
     .slice(0, 6);
 

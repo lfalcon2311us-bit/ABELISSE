@@ -4,13 +4,16 @@ import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { iniciarPago } from "@/lib/stripe";
 import PayPalButton from "@/components/PayPalButton";
+import Toast from "@/components/Toast";
 
 export default function CheckoutPage() {
   const { cart } = useCartStore();
 
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
+  const [toast, setToast] = useState("");
 
+  // ⭐ TOTAL SEGURO (siempre en USD para Stripe/PayPal)
   const total = cart.reduce((acc, item) => {
     const raw = item.precio_usd;
     const price = parseFloat(String(raw).replace(",", "."));
@@ -22,7 +25,12 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     if (!email || !nombre) {
-      alert("Por favor completa tus datos");
+      setToast("Por favor completa tus datos");
+      return;
+    }
+
+    if (cart.length === 0) {
+      setToast("Tu carrito está vacío");
       return;
     }
 
@@ -37,12 +45,17 @@ export default function CheckoutPage() {
         nombre,
       });
     } catch (error) {
-      alert("Hubo un error al iniciar el pago.");
       console.error(error);
+      setToast("Hubo un error al iniciar el pago");
     }
   };
 
   const handlePayPalClick = () => {
+    if (!email || !nombre) {
+      setToast("Completa tu nombre y correo antes de pagar");
+      return;
+    }
+
     sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
   };
 
@@ -50,6 +63,7 @@ export default function CheckoutPage() {
     <div className="max-w-lg mx-auto py-16 px-4 space-y-10">
       <h1 className="text-2xl font-semibold">Datos del comprador</h1>
 
+      {/* FORMULARIO */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -77,6 +91,7 @@ export default function CheckoutPage() {
         </button>
       </form>
 
+      {/* PAYPAL */}
       <div className="pt-6 border-t" onClick={handlePayPalClick}>
         <PayPalButton
           total={total}
@@ -85,6 +100,8 @@ export default function CheckoutPage() {
           nombre={nombre}
         />
       </div>
+
+      {toast && <Toast message={toast} />}
     </div>
   );
 }

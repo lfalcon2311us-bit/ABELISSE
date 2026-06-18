@@ -40,7 +40,7 @@ export default function Navbar() {
         {/* BOTÓN HAMBURGUESA (MÓVIL) */}
         <button
           onClick={() => setOpen(!open)}
-          aria-label="Abrir menú"
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
           className="md:hidden text-gray-700 text-2xl hover:text-pink-600 transition"
         >
           {open ? "✕" : "☰"}

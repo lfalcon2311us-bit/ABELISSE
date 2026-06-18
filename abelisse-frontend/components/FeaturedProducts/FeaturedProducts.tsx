@@ -22,6 +22,7 @@ export default function FeaturedProducts() {
               transition bg-white
             "
           >
+            {/* Imagen placeholder */}
             <div className="h-32 bg-gray-100 rounded-lg mb-3" />
 
             <h3 className="text-sm font-medium text-gray-800">

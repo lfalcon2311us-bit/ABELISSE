@@ -3,14 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
-  // ❌ Eliminado: output: "standalone"
-
-  // 🔥 Seguridad
   poweredByHeader: false,
   compress: true,
 
-  // 🔥 Imágenes optimizadas
   images: {
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: "https",
@@ -31,40 +28,45 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // 🔥 Optimización avanzada
+  // ⭐ ESTA ES LA FORMA CORRECTA EN NEXT 16 PARA SHARP EN RENDER
+  outputFileTracingIncludes: {
+    "/": ["node_modules/sharp/**/*"],
+  },
+
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ["lucide-react"],
   },
 
-  // 🔥 Modularización de imports
   modularizeImports: {
     "lucide-react": {
       transform: "lucide-react/dist/esm/icons/{{member}}",
     },
   },
 
-  // 🔥 Rewrites para backend
   async rewrites() {
     return [
       {
         source: "/backend/:path*",
-        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL ?? "https://abelisse-backend.onrender.com"}/:path*`,
+        destination: `${
+          process.env.NEXT_PUBLIC_BACKEND_URL ??
+          "https://abelisse-backend.onrender.com"
+        }/:path*`,
       },
     ];
   },
 
-  // 🔥 Logging útil para Render
   logging: {
     fetches: {
       fullUrl: true,
     },
   },
 
-  // 🔥 Evitar que un error de TS rompa producción
   typescript: {
     ignoreBuildErrors: false,
   },
+
+  trailingSlash: false,
 };
 
 export default nextConfig;

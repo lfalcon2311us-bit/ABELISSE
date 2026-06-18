@@ -3,9 +3,13 @@
 import React from "react";
 import { reportErrorToBackend } from "@/lib/logger";
 
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
 export class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  { hasError: boolean }
+  ErrorBoundaryState
 > {
   constructor(props: any) {
     super(props);
@@ -13,17 +17,16 @@ export class ErrorBoundary extends React.Component<
   }
 
   async componentDidCatch(error: any, info: any) {
-    this.setState({ hasError: true });
+    // Evita loops infinitos si el fallback también falla
+    if (!this.state.hasError) {
+      this.setState({ hasError: true });
 
-    await reportErrorToBackend(
-      "Error de renderizado en React",
-      error,
-      {
-        file: "app/layout.tsx (ErrorBoundary)",
+      await reportErrorToBackend("Error de renderizado en React", error, {
+        file: "components/ErrorBoundary.tsx",
         functionName: "componentDidCatch",
         extra: { info },
-      }
-    );
+      });
+    }
   }
 
   render() {

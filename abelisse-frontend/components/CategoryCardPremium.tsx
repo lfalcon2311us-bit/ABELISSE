@@ -5,7 +5,7 @@ import Link from "next/link";
 interface Props {
   nombre: string;
   slug: string;
-  icono?: string; // opcional, por si luego quieres íconos
+  icono?: string; // opcional
 }
 
 export default function CategoryCardPremium({ nombre, slug, icono }: Props) {

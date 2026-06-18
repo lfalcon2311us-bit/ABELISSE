@@ -5,27 +5,25 @@ import { useCartStore } from "@/store/cartStore";
 
 interface CarritoItem {
   id: number;
-  cantidad?: number;
 }
 
 export default function PagoExitosoPage() {
   useEffect(() => {
     try {
-      // Productos que el cliente realmente pagó (guardados antes del checkout)
+      // ⭐ Recuperar productos pagados
       const carritoPagado: CarritoItem[] = JSON.parse(
         sessionStorage.getItem("carrito_pagado") || "[]"
       );
 
       console.log("💳 Productos pagados:", carritoPagado);
 
-      if (carritoPagado.length > 0) {
-        // ⭐ ELIMINAR SOLO LOS PRODUCTOS PAGADOS DEL STORE (Zustand)
+      if (Array.isArray(carritoPagado) && carritoPagado.length > 0) {
+        // ⭐ Eliminar SOLO los productos pagados del carrito (Zustand)
         useCartStore.getState().removePaidItems(carritoPagado);
-
         console.log("🧹 Carrito actualizado en Zustand");
       }
 
-      // Limpiar carrito_pagado temporal
+      // ⭐ Limpiar el registro temporal
       sessionStorage.removeItem("carrito_pagado");
     } catch (e) {
       console.log("⚠️ Error limpiando carrito:", e);

@@ -2,15 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { useCountryStore, useDetectCountry } from "@/store/countryStore";
 import PayPalButton from "@/components/PayPalButton";
+import QuantitySelector from "@/components/QuantitySelector";
+import Toast from "@/components/Toast";
 
 export default function CarritoPage() {
   useDetectCountry();
 
   const { currency, loading } = useCountryStore();
-  const { cart, removeFromCart, clearCart } = useCartStore();
+  const {
+    cart,
+    removeFromCart,
+    clearCart,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useCartStore();
+
+  const [toast, setToast] = useState("");
 
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
@@ -43,7 +54,7 @@ export default function CarritoPage() {
         </p>
 
         <Link
-          href="https://abelisse.com/productos"
+          href="/productos"
           className="inline-block px-6 py-2 rounded-full bg-pink-500 text-white hover:bg-pink-600 transition"
         >
           Ver productos
@@ -62,16 +73,20 @@ export default function CarritoPage() {
         </p>
       )}
 
+      {/* LISTA DE PRODUCTOS */}
       <div className="space-y-4 mb-8">
         {cart.map((item) => {
           const raw = isPeru ? item.precio_soles : item.precio_usd;
           const price = parseFloat(String(raw).replace(",", "."));
+
+          const stock = item.stock ?? 20; // ⭐ fallback seguro
 
           return (
             <div
               key={item.id}
               className="flex items-center gap-4 border-b border-gray-200 pb-4"
             >
+              {/* IMAGEN */}
               <div className="w-20 h-20 relative rounded-lg overflow-hidden bg-gray-100">
                 <Image
                   src={item.imagen_principal || "/placeholder.png"}
@@ -81,6 +96,7 @@ export default function CarritoPage() {
                 />
               </div>
 
+              {/* INFO */}
               <div className="flex-1">
                 <h2 className="font-medium !text-black">{item.nombre}</h2>
 
@@ -89,10 +105,25 @@ export default function CarritoPage() {
                 </p>
 
                 <p className="text-sm text-gray-500">
-                  Cantidad: {item.quantity}
+                  Stock disponible: {stock}
                 </p>
+
+                {/* SELECTOR DE CANTIDAD */}
+                <QuantitySelector
+                  quantity={item.quantity}
+                  max={stock}
+                  onIncrease={() => {
+                    if (item.quantity >= stock) {
+                      setToast("No hay más unidades disponibles");
+                      return;
+                    }
+                    increaseQuantity(item.id);
+                  }}
+                  onDecrease={() => decreaseQuantity(item.id)}
+                />
               </div>
 
+              {/* ELIMINAR */}
               <button
                 onClick={() => removeFromCart(item.id)}
                 className="text-sm px-3 py-1 rounded-full border border-gray-300 hover:bg-gray-100 transition"
@@ -104,6 +135,7 @@ export default function CarritoPage() {
         })}
       </div>
 
+      {/* TOTAL */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-sm !text-black">Total</p>
@@ -144,6 +176,8 @@ export default function CarritoPage() {
           <PayPalButton total={total} currency="USD" />
         </div>
       </div>
+
+      {toast && <Toast message={toast} />}
     </div>
   );
 }

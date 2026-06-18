@@ -29,6 +29,7 @@ export async function iniciarPago({
   // ⭐ Guardar carrito pagado ANTES de ir a Stripe
   sessionStorage.setItem("carrito_pagado", JSON.stringify(carrito));
 
+  // ⭐ Cargar Stripe.js
   await loadStripe(STRIPE_PUBLIC_KEY);
 
   let response;
@@ -61,9 +62,11 @@ export async function iniciarPago({
     throw new Error("No se recibió checkout_url de Stripe");
   }
 
+  // ⭐ Asegurar URL válida
   const checkoutUrl = data.checkout_url.startsWith("http")
     ? data.checkout_url
     : `https://${data.checkout_url}`;
 
+  // ⭐ Redirigir al checkout de Stripe
   window.location.href = checkoutUrl;
 }

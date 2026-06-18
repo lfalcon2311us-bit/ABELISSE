@@ -1,4 +1,4 @@
-import { reportErrorToBackend } from "../logger";
+import { reportErrorToBackend } from "./logger";
 
 // --------------------------------------------------
 // 🔧 Normalización robusta del backend
@@ -13,9 +13,11 @@ function normalizeBackendUrl() {
 
   raw = raw.trim();
 
+  // Quitar query params y slashes finales
   raw = raw.split("?")[0].split("&")[0];
   raw = raw.replace(/\/+$/, "");
 
+  // Asegurar protocolo
   if (!raw.startsWith("http://") && !raw.startsWith("https://")) {
     raw = `https://${raw}`;
   }
@@ -32,6 +34,7 @@ function normalizeBackendUrl() {
 
 const safeBackend = normalizeBackendUrl();
 
+// 🔥 URL base final del backend
 export const API_URL = `${safeBackend}/api`;
 
 // --------------------------------------------------
@@ -59,6 +62,7 @@ export async function safeFetch(
 
     console.error("❌ Error de conexión con el backend:", error);
 
+    // Intento de fallback
     try {
       const fallback = await fetch(url, { cache: "no-store" });
       if (!fallback.ok) return null;
@@ -106,7 +110,7 @@ export async function safeFetch(
 // --------------------------------------------------
 export async function getProductos() {
   return safeFetch(`${API_URL}/productos/`, {}, {
-    file: "lib/server/api.ts",
+    file: "lib/api.ts",
     functionName: "getProductos",
     route: "/productos",
   });
@@ -114,7 +118,7 @@ export async function getProductos() {
 
 export async function getCategorias() {
   return safeFetch(`${API_URL}/categorias/`, {}, {
-    file: "lib/server/api.ts",
+    file: "lib/api.ts",
     functionName: "getCategorias",
     route: "/categorias",
   });
@@ -122,7 +126,7 @@ export async function getCategorias() {
 
 export async function getProducto(id: string | number) {
   return safeFetch(`${API_URL}/productos/${id}/`, {}, {
-    file: "lib/server/api.ts",
+    file: "lib/api.ts",
     functionName: "getProducto",
     route: `/productos/${id}`,
   });

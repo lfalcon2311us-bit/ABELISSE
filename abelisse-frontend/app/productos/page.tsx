@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function RedirectProductos() {
+export default function ProductosRedirect() {
   redirect("/productos/listado");
 }

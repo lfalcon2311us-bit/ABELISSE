@@ -1,15 +1,17 @@
 export const dynamic = "force-dynamic";
 
 import ProductCardPremium from "@/components/ProductCardPremium";
-import { getProductos } from "@/lib/server/api";
+import { getProductos } from "@/lib/api";
 
 export default async function ProductosPage() {
   const productos = await getProductos();
 
-  const productosValidos = productos.filter((p: any) => {
-    const id = Number(p.id ?? p.pk);
-    return id && !isNaN(id) && id > 0;
-  });
+  const productosValidos = Array.isArray(productos)
+    ? productos.filter((p: any) => {
+        const id = Number(p.id ?? p.pk);
+        return id && !isNaN(id) && id > 0;
+      })
+    : [];
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-16">
