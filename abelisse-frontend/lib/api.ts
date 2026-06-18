@@ -1,3 +1,5 @@
+"use server"; // 🔥 Evita que Next.js marque funciones como Server Actions implícitas
+
 import { reportErrorToBackend } from "./logger";
 
 // --------------------------------------------------
@@ -37,13 +39,13 @@ function normalizeBackendUrl() {
 
 const safeBackend = normalizeBackendUrl();
 
-// 🔥 API_URL SIEMPRE ABSOLUTA (sin fallback)
+// 🔥 API_URL SIEMPRE ABSOLUTA
 export const API_URL = `${safeBackend}/api`;
 
 // --------------------------------------------------
-// 🔥 safeFetch con fallback y reportes
+// 🔥 safeFetch (NO ES SERVER ACTION)
 // --------------------------------------------------
-export async function safeFetch(
+export const safeFetch = async function (
   url: string,
   options: RequestInit = {},
   context: {
@@ -106,7 +108,7 @@ export async function safeFetch(
     console.error("❌ Respuesta no es JSON válido:", error);
     return null;
   }
-}
+};
 
 // --------------------------------------------------
 // 🔥 Endpoints
