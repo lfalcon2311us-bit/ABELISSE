@@ -4,6 +4,8 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Orden
+from inventario.models import Producto
+from gmail.gmail_service import send_email
 
 
 # ---------------------------------------------------------
@@ -39,13 +41,7 @@ def paypal_create_order(request):
         email = body.get("email")
         nombre = body.get("nombre")
 
-        try:
-            total_float = float(total)
-        except:
-            return JsonResponse({"error": "Total inválido"}, status=400)
-
-        if total_float <= 0:
-            return JsonResponse({"error": "Total inválido"}, status=400)
+        total_float = float(total)
 
         token = get_paypal_token()
         if not token:
@@ -95,7 +91,6 @@ def paypal_create_order(request):
             nombre=nombre,
         )
 
-        # URL de aprobación (para flujos que la necesiten)
         approve_url = next(
             (link["href"] for link in order["links"] if link["rel"] == "approve"),
             None,
@@ -109,7 +104,7 @@ def paypal_create_order(request):
 
 
 # ---------------------------------------------------------
-# 🔥 3) CAPTURAR ORDEN PAYPAL
+# 🔥 3) CAPTURAR ORDEN PAYPAL + STOCK + CARRITO + EMAIL
 # ---------------------------------------------------------
 @csrf_exempt
 def paypal_capture_order(request):
@@ -137,13 +132,70 @@ def paypal_capture_order(request):
             print("❌ Error capturando orden PayPal:", response.text)
             return JsonResponse({"error": "Error capturando orden PayPal"}, status=500)
 
-        # Actualizar orden
+        # Buscar orden
         try:
             orden = Orden.objects.get(paypal_order_id=order_id)
-            orden.estado = "COMPLETADA"
-            orden.save()
         except Orden.DoesNotExist:
             print("⚠️ Orden PayPal no encontrada:", order_id)
+            return JsonResponse({"error": "Orden no encontrada"}, status=404)
+
+        # ---------------------------------------------------------
+        # 🔥 MARCAR COMO COMPLETADA
+        # ---------------------------------------------------------
+        orden.estado = "COMPLETADA"
+        orden.save()
+        print("💰 PayPal pago confirmado:", order_id)
+
+        # ---------------------------------------------------------
+        # 🔥 DESCONTAR STOCK
+        # ---------------------------------------------------------
+        carrito = orden.carrito or []
+
+        for item in carrito:
+            producto_id = item.get("id")
+            cantidad = item.get("cantidad", 1)
+
+            try:
+                producto = Producto.objects.get(id=producto_id)
+                producto.stock = max(producto.stock - cantidad, 0)
+                producto.save()
+                print(f"📦 Stock actualizado: {producto.nombre} - {producto.stock}")
+            except Producto.DoesNotExist:
+                print("⚠️ Producto no encontrado:", producto_id)
+
+        # ---------------------------------------------------------
+        # 🔥 LIMPIAR CARRITO
+        # ---------------------------------------------------------
+        orden.carrito = []
+        orden.save()
+        print("🛒 Carrito limpiado")
+
+        # ---------------------------------------------------------
+        # 📧 ENVIAR CORREO
+        # ---------------------------------------------------------
+        if orden.email:
+            mensaje = f"""
+Hola {orden.nombre},
+
+Tu pago con PayPal en ABELISSE fue procesado con éxito.
+
+Monto: ${orden.monto}
+Estado: COMPLETADA
+ID de orden: {orden.id}
+
+Gracias por tu compra.
+Pronto recibirás más detalles sobre tu pedido.
+
+Equipo ABELISSE
+"""
+
+            send_email(
+                to=orden.email,
+                subject="Tu pago con PayPal en ABELISSE fue exitoso",
+                message=mensaje
+            )
+
+            print("📧 Email enviado a:", orden.email)
 
         return JsonResponse({"status": "COMPLETADA"})
 
