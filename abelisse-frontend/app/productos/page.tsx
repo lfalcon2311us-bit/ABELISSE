@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import ProductCardPremium from "@/components/ProductCardPremium";
 import { getProductos } from "@/lib/api";
 
