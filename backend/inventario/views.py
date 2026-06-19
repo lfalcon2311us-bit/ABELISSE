@@ -12,10 +12,19 @@ class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Producto.objects.filter(activo=True).order_by("sku")
     serializer_class = ProductoSerializer
     lookup_field = "pk"
     lookup_url_kwarg = "pk"
+
+    def get_queryset(self):
+        queryset = Producto.objects.filter(activo=True).order_by("sku")
+
+        # 🔥 FILTRO POR CATEGORÍA (para /productos/?categoria=maquillaje)
+        categoria_slug = self.request.query_params.get("categoria")
+        if categoria_slug:
+            queryset = queryset.filter(categoria__slug=categoria_slug)
+
+        return queryset
 
     def get_object(self):
         pk = self.kwargs.get(self.lookup_url_kwarg)
@@ -24,9 +33,9 @@ class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
         try:
             pk_int = int(pk)
         except (TypeError, ValueError):
-            raise get_object_or_404(self.queryset, pk=-1)  # fuerza 404
+            raise get_object_or_404(self.get_queryset(), pk=-1)  # fuerza 404
 
-        return get_object_or_404(self.queryset, pk=pk_int)
+        return get_object_or_404(self.get_queryset(), pk=pk_int)
 
 
 class ProductosDestacados(generics.ListAPIView):
