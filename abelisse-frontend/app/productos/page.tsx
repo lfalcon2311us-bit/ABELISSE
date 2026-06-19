@@ -1,3 +1,5 @@
+"use client";
+
 export const dynamic = "force-dynamic";
 
 import ProductCardPremium from "@/components/ProductCardPremium";

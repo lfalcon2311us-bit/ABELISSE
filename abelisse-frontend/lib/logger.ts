@@ -12,6 +12,15 @@ export async function reportErrorToBackend(
   error: any,
   context: ErrorContext
 ) {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  // Evita errores silenciosos si la variable no existe
+  if (!backendUrl) {
+    console.error("❌ NEXT_PUBLIC_BACKEND_URL no está definido");
+    console.error("Error original:", message, error, context);
+    return;
+  }
+
   const payload = {
     message,
     error: error?.stack || String(error),
@@ -20,12 +29,12 @@ export async function reportErrorToBackend(
   };
 
   try {
-    await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/error-report/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    await fetch(`${backendUrl}/api/error-report/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
   } catch (e) {
-    console.error('Error enviando reporte de error:', e);
+    console.error("❌ Error enviando reporte de error:", e);
   }
 }

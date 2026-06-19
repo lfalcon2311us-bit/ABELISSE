@@ -5,6 +5,7 @@ import { reportErrorToBackend } from "@/lib/logger";
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  errorReported: boolean;
 }
 
 export class ErrorBoundary extends React.Component<
@@ -13,19 +14,23 @@ export class ErrorBoundary extends React.Component<
 > {
   constructor(props: any) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorReported: false };
   }
 
   async componentDidCatch(error: any, info: any) {
-    // Evita loops infinitos si el fallback también falla
-    if (!this.state.hasError) {
-      this.setState({ hasError: true });
+    // Evita loops infinitos y reportes duplicados
+    if (!this.state.errorReported) {
+      this.setState({ hasError: true, errorReported: true });
 
-      await reportErrorToBackend("Error de renderizado en React", error, {
-        file: "components/ErrorBoundary.tsx",
-        functionName: "componentDidCatch",
-        extra: { info },
-      });
+      try {
+        await reportErrorToBackend("Error de renderizado en React", error, {
+          file: "components/ErrorBoundary.tsx",
+          functionName: "componentDidCatch",
+          extra: { info },
+        });
+      } catch (e) {
+        console.error("Error report no enviado:", e);
+      }
     }
   }
 
