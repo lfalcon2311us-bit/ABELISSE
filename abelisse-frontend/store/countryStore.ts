@@ -29,11 +29,15 @@ export function useDetectCountry() {
   const setCountry = useCountryStore((s) => s.setCountry);
 
   useEffect(() => {
-    // 1. Revisar si ya está en localStorage
-    const cached = localStorage.getItem("abelisse-country");
-    if (cached) {
-      setCountry(cached);
-      return;
+    try {
+      // 1. Revisar localStorage
+      const cached = localStorage.getItem("abelisse-country");
+      if (cached && typeof cached === "string") {
+        setCountry(cached);
+        return;
+      }
+    } catch {
+      // Si localStorage falla, seguimos sin romper nada
     }
 
     async function detect() {
@@ -48,6 +52,12 @@ export function useDetectCountry() {
         const res = await fetch(`${backend}/api/geo/`, {
           cache: "no-store",
         });
+
+        if (!res.ok) {
+          console.error("❌ Error en respuesta GEO:", res.status);
+          setCountry(null);
+          return;
+        }
 
         const data = await res.json();
 

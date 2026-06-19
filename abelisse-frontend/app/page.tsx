@@ -1,3 +1,7 @@
+"use client";
+
+import { useState, useEffect } from "react";
+
 export const dynamic = "force-dynamic";
 
 import HeroPremium from "@/components/HeroPremium";
@@ -5,30 +9,86 @@ import ProductCardPremium from "@/components/ProductCardPremium";
 import CategoryCardPremium from "@/components/CategoryCardPremium";
 import { getProductos } from "@/lib/api";
 
-export default async function Home() {
-  const productos = await getProductos();
+// 🔥 Tipo EXACTO según tu backend
+type Producto = {
+  id: number;
+  sku: string;
+  marca: string | null;
+  nombre: string;
+  slug: string;
+  descripcion: string | null;
+  tamano: string | null;
 
-  // 🔥 Manejo seguro si el backend devuelve null o undefined
-  const lista = Array.isArray(productos) ? productos : [];
+  categoria: any;
+  subcategoria: any;
 
+  stock: number;
+
+  costo_compra: number;
+  taxes: number;
+  precio_importacion: number;
+
+  valor_total_unidad: number;
+  valor_general: number;
+
+  precio_venta_usd: number;
+  precio_venta_soles: number;
+  precio_mercado_soles: number | null;
+
+  descuento_soles: number;
+  descuento_porcentaje: number;
+
+  ganancia_unidad: number;
+  ganancia_total: number;
+
+  imagen_principal: string | null;
+  imagen_secundaria: string | null;
+  imagen_terciaria: string | null;
+
+  destacado: boolean;
+  activo: boolean;
+
+  ventas_totales: number;
+  busquedas_totales: number;
+  calificacion_promedio: number;
+  total_calificaciones: number;
+
+  fecha_creacion: string;
+  fecha_actualizacion: string;
+
+  [key: string]: any;
+};
+
+export default function Home() {
+  const [lista, setLista] = useState<Producto[]>([]);
+
+  useEffect(() => {
+    getProductos().then((productos) => {
+      if (Array.isArray(productos)) {
+        setLista(productos);
+      }
+    });
+  }, []);
+
+  // 🔥 El frontend SOLO organiza, NO calcula nada
   const masVendidos = [...lista]
-    .sort((a, b) => (b.ventas_totales || 0) - (a.ventas_totales || 0))
+    .sort((a, b) => b.ventas_totales - a.ventas_totales)
     .slice(0, 6);
 
   const masBuscados = [...lista]
-    .sort((a, b) => (b.busquedas_totales || 0) - (a.busquedas_totales || 0))
+    .sort((a, b) => b.busquedas_totales - a.busquedas_totales)
     .slice(0, 6);
 
   const nuevos = [...lista]
     .sort(
       (a, b) =>
-        new Date(b.fecha_creacion || 0).getTime() -
-        new Date(a.fecha_creacion || 0).getTime()
+        new Date(b.fecha_creacion).getTime() -
+        new Date(a.fecha_creacion).getTime()
     )
     .slice(0, 6);
 
   const mejorCalificados = [...lista]
-    .sort((a, b) => (b.calificacion_promedio || 0) - (a.calificacion_promedio || 0))
+    .sort((a, b) => b.calificacion_promedio - a.calificacion_promedio)
     .slice(0, 6);
 
   const categorias = [
@@ -76,7 +136,7 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {masVendidos.map((p: any) => (
+            {masVendidos.map((p) => (
               <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
@@ -89,7 +149,7 @@ export default async function Home() {
           <h2 className="text-2xl font-semibold mb-6">Más buscados</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {masBuscados.map((p: any) => (
+            {masBuscados.map((p) => (
               <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
@@ -102,7 +162,7 @@ export default async function Home() {
           <h2 className="text-2xl font-semibold mb-6">Nuevos</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {nuevos.map((p: any) => (
+            {nuevos.map((p) => (
               <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>
@@ -115,7 +175,7 @@ export default async function Home() {
           <h2 className="text-2xl font-semibold mb-6">Mejor calificados</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {mejorCalificados.map((p: any) => (
+            {mejorCalificados.map((p) => (
               <ProductCardPremium key={p.id} {...p} />
             ))}
           </div>

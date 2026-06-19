@@ -10,16 +10,18 @@ interface CartItem {
   quantity: number;
   precio_soles: number;
   precio_usd: number;
-  stock: number; // ⭐ NUEVO
+  stock: number;
 }
 
 interface AddProductPayload {
   id: number;
   nombre: string;
   imagen_principal: string | null;
+
   precio_venta_soles: number | string | null;
   precio_venta_usd?: number | string | null;
-  stock?: number; // ⭐ NUEVO
+
+  stock?: number | null;
 }
 
 interface CartState {
@@ -44,18 +46,16 @@ export const useCartStore = create<CartState>()(
         set((state) => {
           const exists = state.cart.find((p) => p.id === product.id);
 
+          // ⭐ Conversión segura sin inventar valores
           const precioSoles = Number(product.precio_venta_soles ?? 0);
-          const precioUSD = Number(
-            product.precio_venta_usd ??
-              (precioSoles > 0 ? precioSoles / 3.5 : 0)
-          );
+          const precioUSD = Number(product.precio_venta_usd ?? 0);
 
           const safeSoles = Number.isFinite(precioSoles) ? precioSoles : 0;
           const safeUSD = Number.isFinite(precioUSD) ? precioUSD : 0;
 
           const safeStock = Number.isFinite(Number(product.stock))
             ? Number(product.stock)
-            : 20; // ⭐ fallback si backend no envía stock
+            : 0;
 
           if (exists) {
             return {
@@ -132,14 +132,14 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "abelisse-cart",
-      version: 3,
+      version: 4,
 
       migrate: (persistedState: any) => {
         if (!persistedState?.cart) return { cart: [] };
 
         const cleaned = persistedState.cart.map((item: any) => ({
           ...item,
-          stock: Number.isFinite(item.stock) ? item.stock : 20, // ⭐ asegurar stock
+          stock: Number.isFinite(item.stock) ? item.stock : 0,
         }));
 
         return { ...persistedState, cart: cleaned };

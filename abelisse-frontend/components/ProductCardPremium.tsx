@@ -10,19 +10,22 @@ import Toast from "@/components/Toast";
 interface Props {
   id: number;
   nombre: string;
+
+  // 🔥 PRECIOS (backend puede mandar null)
   precio_venta_soles: number | string | null;
   precio_mercado_soles: number | string | null;
   descuento_porcentaje: number | string | null;
 
+  // 🔥 IMÁGENES (backend puede mandar null)
   imagen_principal: string | null;
   imagen_secundaria?: string | null;
   imagen_terciaria?: string | null;
 
+  // 🔥 OTROS CAMPOS (backend puede mandar null)
   precio_venta_usd?: number | string | null;
-  descripcion?: string;
+  descripcion?: string | null;
   calificacion_promedio?: number | null;
-
-  stock?: number; // ⭐ IMPORTANTE
+  stock?: number | null;
 }
 
 export default function ProductCardPremium(props: Props) {
@@ -34,12 +37,12 @@ export default function ProductCardPremium(props: Props) {
     descuento_porcentaje,
     imagen_principal,
     precio_venta_usd,
-    descripcion = "",
-    calificacion_promedio = 0,
-    stock = 20, // ⭐ fallback si backend no envía stock
+    descripcion,
+    calificacion_promedio,
+    stock,
   } = props;
 
-  // ⭐ Imagen principal segura
+  // ⭐ Imagen segura
   const imagen =
     typeof imagen_principal === "string" && imagen_principal.length > 10
       ? imagen_principal
@@ -56,23 +59,24 @@ export default function ProductCardPremium(props: Props) {
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
-  // Conversión segura
+  // ⭐ Conversión segura (sin cálculos inventados)
   const precioSoles = Number(precio_venta_soles ?? 0);
   const precioMercado = Number(precio_mercado_soles ?? 0);
-  const precioUSD = Number(precio_venta_usd ?? precioSoles / 3.5);
+  const precioUSD = Number(precio_venta_usd ?? 0);
   const descuento = Number(descuento_porcentaje ?? 0);
 
   const priceDisplay = isPeru ? precioSoles : precioUSD;
   const marketPriceDisplay =
     precioMercado > 0 ? (isPeru ? precioMercado : precioMercado / 3.5) : 0;
 
+  const desc = descripcion ?? "";
   const shortDescription =
-    descripcion.length > 120
-      ? descripcion.slice(0, 120) + "..."
-      : descripcion;
+    desc.length > 120 ? desc.slice(0, 120) + "..." : desc;
 
   const rating = Number(calificacion_promedio ?? 0);
   const roundedRating = Math.round(rating);
+
+  const safeStock = Number(stock ?? 0);
 
   return (
     <>
@@ -114,7 +118,7 @@ export default function ProductCardPremium(props: Props) {
                 setShowFullDesc(!showFullDesc);
               }}
             >
-              {showFullDesc ? descripcion : shortDescription}
+              {showFullDesc ? desc : shortDescription}
             </p>
 
             {/* ⭐ PRECIOS */}
@@ -146,7 +150,7 @@ export default function ProductCardPremium(props: Props) {
                   precio_venta_soles: precioSoles,
                   precio_venta_usd: precioUSD,
                   imagen_principal: imagen,
-                  stock, // ⭐ AHORA SE ENVÍA AL CARRITO
+                  stock: safeStock,
                 });
                 setToast("Producto agregado al carrito");
               }}

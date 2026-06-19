@@ -64,38 +64,59 @@ export default async function ProductoPage({ params }: { params: { id: string } 
     );
   }
 
+  // 🔥 Imágenes seguras
   const imagenes = [
     producto.imagen_principal,
     producto.imagen_secundaria,
     producto.imagen_terciaria,
   ].filter((img) => typeof img === "string" && img.length > 20);
 
+  const descripcion = producto.descripcion ?? "Sin descripción disponible.";
+  const marca = producto.marca ?? "Sin marca";
+  const tamano = producto.tamano ?? "No especificado";
+  const precio = producto.precio_venta_soles ?? 0;
+
+  const categoria = producto.categoria?.nombre ?? "Sin categoría";
+  const subcategoria = producto.subcategoria?.nombre ?? "Sin subcategoría";
+
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-bold mb-6">{producto.nombre}</h1>
 
+      {/* 🔥 Galería de imágenes */}
       <div className="space-y-4">
-        {imagenes.map((img, i) => (
+        {imagenes.length > 0 ? (
+          imagenes.map((img, i) => (
+            <Image
+              key={i}
+              src={img}
+              alt={producto.nombre}
+              width={800}
+              height={800}
+              unoptimized
+              className="w-full rounded-xl object-cover"
+            />
+          ))
+        ) : (
           <Image
-            key={i}
-            src={img}
-            alt={producto.nombre}
+            src="/placeholder.png"
+            alt="Sin imagen"
             width={800}
             height={800}
-            unoptimized
             className="w-full rounded-xl object-cover"
           />
-        ))}
+        )}
       </div>
 
+      {/* 🔥 Información del producto */}
       <div className="mt-8 space-y-4">
-        <p className="text-gray-700">{producto.descripcion}</p>
+        <p className="text-gray-700">{descripcion}</p>
 
-        <p><strong>Marca:</strong> {producto.marca}</p>
-        <p><strong>Tamaño:</strong> {producto.tamano}</p>
-        <p><strong>Precio:</strong> S/ {producto.precio_venta_soles}</p>
-        <p><strong>Categoría:</strong> {producto.categoria?.nombre}</p>
-        <p><strong>Subcategoría:</strong> {producto.subcategoria?.nombre}</p>
+        <p><strong>Marca:</strong> {marca}</p>
+        <p><strong>Tamaño:</strong> {tamano}</p>
+        <p><strong>Precio:</strong> S/ {precio}</p>
+        <p><strong>Categoría:</strong> {categoria}</p>
+        <p><strong>Subcategoría:</strong> {subcategoria}</p>
       </div>
     </main>
   );

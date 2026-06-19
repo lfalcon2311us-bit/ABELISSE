@@ -4,19 +4,15 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ResponsiveWrapper from "@/components/ResponsiveWrapper";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.abelisse.com"),
-
   title: {
     default: "ABELISSE – Cosmética y Belleza Premium",
     template: "%s | ABELISSE",
   },
-
   description:
-    "ABELISSE es tu tienda online de cosmética, belleza y cuidado personal. Productos premium, envíos rápidos y una experiencia de compra impecable.",
-
+    "ABELISSE es tu tienda online de cosmética, belleza y cuidado personal.",
   keywords: [
     "cosmética",
     "belleza",
@@ -27,7 +23,6 @@ export const metadata: Metadata = {
     "cuidado personal",
     "ABELISSE",
   ],
-
   openGraph: {
     type: "website",
     locale: "es_ES",
@@ -45,15 +40,12 @@ export const metadata: Metadata = {
       },
     ],
   },
-
   twitter: {
     card: "summary_large_image",
     title: "ABELISSE – Cosmética y Belleza Premium",
-    description:
-      "Tienda online de belleza, cosmética y cuidado personal.",
+    description: "Tienda online de belleza, cosmética y cuidado personal.",
     images: ["/og-image.jpg"],
   },
-
   robots: {
     index: true,
     follow: true,
@@ -65,35 +57,22 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-
   alternates: {
     canonical: "https://www.abelisse.com",
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" dir="ltr">
-      <body
-        className="
-          bg-white text-gray-900 antialiased 
-          min-h-screen flex flex-col 
-          scroll-smooth
-        "
-      >
-        <ErrorBoundary>
-          <Navbar />
+      <body className="bg-white text-gray-900 antialiased min-h-screen flex flex-col scroll-smooth">
+        <Navbar />
 
-          <ResponsiveWrapper>
-            <main className="flex-1 bg-white">{children}</main>
-          </ResponsiveWrapper>
+        <ResponsiveWrapper>
+          <main className="flex-1 bg-white">{children}</main>
+        </ResponsiveWrapper>
 
-          <Footer />
-        </ErrorBoundary>
+        <Footer />
       </body>
     </html>
   );

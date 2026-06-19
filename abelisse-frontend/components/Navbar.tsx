@@ -14,8 +14,9 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const cart = useCartStore((state) => state.cart);
-  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  const cart = useCartStore((state) => state.cart ?? []);
+  const cartCount = cart.reduce((acc, item) => acc + (item.quantity ?? 0), 0);
 
   const [open, setOpen] = useState(false);
 

@@ -1,5 +1,3 @@
-"use client";
-
 export const dynamic = "force-dynamic";
 
 import ProductCardPremium from "@/components/ProductCardPremium";
@@ -21,7 +19,7 @@ export default async function ProductosPage({ searchParams }: any) {
 
   const url = `${API_URL}/productos/?${query.toString()}`;
 
-  // 🔥 Fetch de productos filtrados
+  // 🔥 Fetch de productos filtrados (SERVER SIDE)
   const productos = await safeFetch(url, {}, {
     file: "app/productos/page.tsx",
     functionName: "getProductosFiltrados",
@@ -30,10 +28,10 @@ export default async function ProductosPage({ searchParams }: any) {
 
   let lista = Array.isArray(productos) ? productos : [];
 
-  // 🔥 Ordenar por precio
+  // 🔥 Ordenar por precio (solo frontend)
   lista = lista.sort((a: any, b: any) => {
-    const pa = Number(a.precio_venta_soles);
-    const pb = Number(b.precio_venta_soles);
+    const pa = Number(a.precio_venta_soles ?? 0);
+    const pb = Number(b.precio_venta_soles ?? 0);
 
     return orden === "asc" ? pa - pb : pb - pa;
   });

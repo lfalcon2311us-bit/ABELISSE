@@ -28,10 +28,21 @@ export default function CarritoPage() {
 
   // ⭐ TOTAL SEGURO
   const total = cart.reduce((acc, item) => {
-    const raw = isPeru ? item.precio_soles : item.precio_usd;
-    const price = parseFloat(String(raw).replace(",", "."));
+    let raw = isPeru ? item.precio_soles : item.precio_usd;
+
+    // Convertir a string seguro
+    const rawString =
+      raw === null || raw === undefined ? "0" : String(raw);
+
+    // Normalizar coma → punto
+    const normalized = rawString.replace(",", ".");
+
+    // Convertir a número seguro
+    const price = Number(normalized);
+
     if (!Number.isFinite(price)) return acc;
-    return acc + price * item.quantity;
+
+    return acc + price * (item.quantity ?? 1);
   }, 0);
 
   // ⭐ GUARDAR CARRITO PAGADO ANTES DE IR AL CHECKOUT
@@ -44,7 +55,7 @@ export default function CarritoPage() {
     sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
   };
 
-  if (cart.length === 0) {
+  if (!cart || cart.length === 0) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-16">
         <h1 className="text-2xl font-semibold mb-4">Tu carrito está vacío</h1>
@@ -76,10 +87,19 @@ export default function CarritoPage() {
       {/* LISTA DE PRODUCTOS */}
       <div className="space-y-4 mb-8">
         {cart.map((item) => {
-          const raw = isPeru ? item.precio_soles : item.precio_usd;
-          const price = parseFloat(String(raw).replace(",", "."));
+          // ⭐ PRECIO SEGURO
+          let raw = isPeru ? item.precio_soles : item.precio_usd;
 
-          const stock = item.stock ?? 20; // ⭐ fallback seguro
+          const rawString =
+            raw === null || raw === undefined ? "0" : String(raw);
+
+          const normalized = rawString.replace(",", ".");
+
+          const price = Number(normalized);
+          const safePrice = Number.isFinite(price) ? price : 0;
+
+          // ⭐ STOCK SEGURO
+          const stock = Number.isFinite(item.stock) ? item.stock : 0;
 
           return (
             <div
@@ -101,7 +121,7 @@ export default function CarritoPage() {
                 <h2 className="font-medium !text-black">{item.nombre}</h2>
 
                 <p className="text-pink-600 font-semibold">
-                  {symbol} {price.toFixed(2)}
+                  {symbol} {safePrice.toFixed(2)}
                 </p>
 
                 <p className="text-sm text-gray-500">

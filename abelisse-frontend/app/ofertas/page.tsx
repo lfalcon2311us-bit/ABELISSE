@@ -13,16 +13,24 @@ export default function OfertasPage() {
       try {
         const productos = await getProductos();
 
+        if (!Array.isArray(productos)) {
+          setOfertas([]);
+          return;
+        }
+
+        // 🔥 Filtrar productos con descuento válido
         const filtrados = productos
-          .filter((p: any) => Number(p.descuento_porcentaje) > 0)
+          .filter((p: any) => Number(p?.descuento_porcentaje ?? 0) > 0)
           .sort(
             (a: any, b: any) =>
-              Number(b.descuento_porcentaje) - Number(a.descuento_porcentaje)
+              Number(b?.descuento_porcentaje ?? 0) -
+              Number(a?.descuento_porcentaje ?? 0)
           );
 
         setOfertas(filtrados);
       } catch (error) {
         console.error("❌ Error cargando ofertas:", error);
+        setOfertas([]);
       } finally {
         setLoading(false);
       }

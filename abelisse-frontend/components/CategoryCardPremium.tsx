@@ -3,16 +3,20 @@
 import Link from "next/link";
 
 interface Props {
-  nombre: string;
-  slug: string;
-  icono?: string; // opcional
+  nombre: string | null;
+  slug: string | null;
+  icono?: string | null;
 }
 
 export default function CategoryCardPremium({ nombre, slug, icono }: Props) {
+  // Valores seguros
+  const safeNombre = nombre ?? "Categoría";
+  const safeSlug = slug ?? "";
+
   return (
     <Link
-      href={`/productos?categoria=${slug}&orden=desc`}
-      aria-label={`Ver productos de ${nombre}`}
+      href={`/productos?categoria=${safeSlug}&orden=desc`}
+      aria-label={`Ver productos de ${safeNombre}`}
       className="
         group
         p-6 bg-white rounded-xl shadow-sm 
@@ -47,7 +51,7 @@ export default function CategoryCardPremium({ nombre, slug, icono }: Props) {
           capitalize
         "
       >
-        {nombre}
+        {safeNombre}
       </p>
     </Link>
   );
