@@ -3,13 +3,26 @@ from django.utils.html import format_html, mark_safe
 import json
 from .models import ErrorReport
 
+# ---------------------------------------------------------
+# 🔥 ACCIÓN PERSONALIZADA: BORRAR TODOS LOS REPORTES
+# ---------------------------------------------------------
+@admin.action(description="Borrar TODOS los reportes de error")
+def borrar_todos_los_reportes(modeladmin, request, queryset):
+    ErrorReport.objects.all().delete()
 
+
+# ---------------------------------------------------------
+# 🔥 ADMIN PERSONALIZADO PARA ERRORREPORT
+# ---------------------------------------------------------
 @admin.register(ErrorReport)
 class ErrorReportAdmin(admin.ModelAdmin):
     list_display = ("short_message", "timestamp", "view_context")
     list_filter = ("timestamp",)
     search_fields = ("message", "error", "context")
     ordering = ("-timestamp",)
+
+    # Agregar acción personalizada
+    actions = [borrar_todos_los_reportes]
 
     # Mostrar mensaje corto en la lista
     def short_message(self, obj):
