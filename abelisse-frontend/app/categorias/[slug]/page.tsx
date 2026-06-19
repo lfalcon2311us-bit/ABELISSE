@@ -16,7 +16,6 @@ export default function CategoriaSlugPage({ params }: { params: { slug: string }
       try {
         const all = await getProductos();
 
-        // Manejo seguro si el backend devuelve null
         const lista = Array.isArray(all) ? all : [];
 
         const filtrados = lista.filter(
@@ -55,7 +54,9 @@ export default function CategoriaSlugPage({ params }: { params: { slug: string }
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-semibold mb-6 capitalize">{slug.replace("-", " ")}</h1>
+      <h1 className="text-3xl font-semibold mb-6 capitalize">
+        {slug.replace(/-/g, " ")}
+      </h1>
 
       {productos.length === 0 && (
         <p className="text-gray-600 mb-10">No hay productos en esta categoría.</p>
