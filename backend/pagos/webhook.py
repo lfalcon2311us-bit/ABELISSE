@@ -15,7 +15,7 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 # ---------------------------------------------------------
-# 🔥 WEBHOOK STRIPE — COMPLETO + STOCK + CARRITO + EMAIL
+# 🔥 WEBHOOK STRIPE — COMPLETO + STOCK + VENTAS + CARRITO + EMAIL
 # ---------------------------------------------------------
 @csrf_exempt
 def stripe_webhook(request):
@@ -45,7 +45,7 @@ def stripe_webhook(request):
             print("💰 Stripe pago confirmado:", stripe_id)
 
             # ---------------------------------------------------------
-            # 🔥 DESCONTAR STOCK
+            # 🔥 DESCONTAR STOCK + SUMAR VENTAS
             # ---------------------------------------------------------
             carrito = orden.carrito or []
 
@@ -55,9 +55,18 @@ def stripe_webhook(request):
 
                 try:
                     producto = Producto.objects.get(id=producto_id)
+
+                    # Descontar stock
                     producto.stock = max(producto.stock - cantidad, 0)
+
+                    # 🔥 SUMAR VENTAS
+                    producto.ventas_totales = (producto.ventas_totales or 0) + cantidad
+
                     producto.save()
+
                     print(f"📦 Stock actualizado: {producto.nombre} - {producto.stock}")
+                    print(f"🔥 Ventas totales: {producto.ventas_totales}")
+
                 except Producto.DoesNotExist:
                     print("⚠️ Producto no encontrado:", producto_id)
 
@@ -103,7 +112,7 @@ Equipo ABELISSE
 
 
 # ---------------------------------------------------------
-# 🔵 WEBHOOK PAYPAL — COMPLETO + STOCK + CARRITO + EMAIL
+# 🔵 WEBHOOK PAYPAL — COMPLETO + STOCK + VENTAS + CARRITO + EMAIL
 # ---------------------------------------------------------
 @csrf_exempt
 def paypal_webhook(request):
@@ -137,7 +146,7 @@ def paypal_webhook(request):
         orden.save()
         print("💰 PayPal pago confirmado:", paypal_order_id)
 
-        # 4️⃣ DESCONTAR STOCK
+        # 4️⃣ DESCONTAR STOCK + SUMAR VENTAS
         carrito = orden.carrito or []
 
         for item in carrito:
@@ -146,9 +155,18 @@ def paypal_webhook(request):
 
             try:
                 producto = Producto.objects.get(id=producto_id)
+
+                # Descontar stock
                 producto.stock = max(producto.stock - cantidad, 0)
+
+                # 🔥 SUMAR VENTAS
+                producto.ventas_totales = (producto.ventas_totales or 0) + cantidad
+
                 producto.save()
+
                 print(f"📦 Stock actualizado: {producto.nombre} - {producto.stock}")
+                print(f"🔥 Ventas totales: {producto.ventas_totales}")
+
             except Producto.DoesNotExist:
                 print("⚠️ Producto no encontrado:", producto_id)
 
