@@ -52,11 +52,15 @@ export default function CategoriaSlugPage({ params }: { params: { slug: string }
     );
   }
 
+  // 🔥 Título seguro (evita el error de .replace)
+  const titulo =
+    typeof slug === "string" && slug.length > 0
+      ? slug.replace(/-/g, " ")
+      : "Categoría";
+
   return (
     <main className="max-w-6xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-semibold mb-6 capitalize">
-        {slug.replace(/-/g, " ")}
-      </h1>
+      <h1 className="text-3xl font-semibold mb-6 capitalize">{titulo}</h1>
 
       {productos.length === 0 && (
         <p className="text-gray-600 mb-10">No hay productos en esta categoría.</p>
