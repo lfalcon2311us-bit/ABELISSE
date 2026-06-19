@@ -1,7 +1,3 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-export const revalidate = 0;
-
 import ProductCardPremium from "@/components/ProductCardPremium";
 import { getProductos } from "@/lib/api";
 
