@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ProductCardPremium from "@/components/ProductCardPremium";
-import { getProductos } from "@/lib/api";
+import { safeFetch, API_URL } from "@/lib/api";
 
 export default function CategoriaSlugPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
@@ -14,17 +14,21 @@ export default function CategoriaSlugPage({ params }: { params: { slug: string }
   useEffect(() => {
     async function load() {
       try {
-        const all = await getProductos();
-
-        const lista = Array.isArray(all) ? all : [];
-
-        const filtrados = lista.filter(
-          (p: any) => p?.categoria?.slug === slug
+        // 🔥 Ahora pedimos SOLO los productos de esta categoría
+        const data = await safeFetch(
+          `${API_URL}/productos/?categoria=${slug}`,
+          {},
+          {
+            file: "app/categorias/[slug]/page.tsx",
+            functionName: "getProductosPorCategoria",
+            route: `/categorias/${slug}`,
+          }
         );
 
-        setProductos(filtrados);
+        const lista = Array.isArray(data) ? data : [];
+        setProductos(lista);
       } catch (e) {
-        console.error("❌ Error cargando productos:", e);
+        console.error("❌ Error cargando productos por categoría:", e);
         setError(true);
       } finally {
         setLoading(false);
@@ -52,7 +56,7 @@ export default function CategoriaSlugPage({ params }: { params: { slug: string }
     );
   }
 
-  // 🔥 Título seguro (evita el error de .replace)
+  // 🔥 Título seguro
   const titulo =
     typeof slug === "string" && slug.length > 0
       ? slug.replace(/-/g, " ")
