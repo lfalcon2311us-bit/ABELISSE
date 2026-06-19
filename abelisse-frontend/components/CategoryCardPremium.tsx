@@ -11,7 +11,7 @@ interface Props {
 export default function CategoryCardPremium({ nombre, slug, icono }: Props) {
   return (
     <Link
-      href={`/categorias/${slug}`}
+      href={`/productos?categoria=${slug}&orden=desc`}
       aria-label={`Ver productos de ${nombre}`}
       className="
         group
