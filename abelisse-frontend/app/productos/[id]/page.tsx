@@ -27,7 +27,7 @@ async function getProductoSeguro(id: string) {
     console.error("❌ safeFetch falló:", error);
 
     try {
-      const res = await fetch(url, { cache: "no-store" });
+      const res = await fetch(url, { cache: "force-cache" });
       if (!res.ok) return null;
       return await res.json();
     } catch (e) {

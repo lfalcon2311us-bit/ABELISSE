@@ -38,7 +38,7 @@ const safeBackend = normalizeBackendUrl();
 export const API_URL = `${safeBackend}/api`;
 
 // --------------------------------------------------
-// 🔥 safeFetch (NO ES SERVER ACTION)
+// 🔥 safeFetch (CORREGIDO PARA NEXT 16)
 // --------------------------------------------------
 export async function safeFetch(
   url: string,
@@ -52,7 +52,7 @@ export async function safeFetch(
   let res;
 
   try {
-    res = await fetch(url, { cache: "no-store", ...options });
+    res = await fetch(url, { cache: "force-cache", ...options });
   } catch (error) {
     await reportErrorToBackend("Error de conexión con el backend", error, {
       ...context,
@@ -64,7 +64,7 @@ export async function safeFetch(
 
     // Intento de fallback
     try {
-      const fallback = await fetch(url, { cache: "no-store" });
+      const fallback = await fetch(url, { cache: "force-cache" });
       if (!fallback.ok) return null;
       return await fallback.json();
     } catch (e) {
