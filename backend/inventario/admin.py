@@ -24,7 +24,7 @@ class ProductoForm(forms.ModelForm):
         # Imagen principal
         file = self.cleaned_data.get("imagen_principal_file")
         if file:
-            producto.imagen_principal = file.read()
+            producto.imagen_principal = file.read()  # binario crudo
             producto.imagen_principal_mime = file.content_type
 
         # Imagen secundaria
@@ -40,7 +40,7 @@ class ProductoForm(forms.ModelForm):
             producto.imagen_terciaria_mime = file.content_type
 
         if commit:
-            producto.save()
+            producto.save()  # aquí se activa la compresión automática del modelo
         return producto
 
 
@@ -130,29 +130,34 @@ class ProductoAdmin(admin.ModelAdmin):
     )
 
     # ---------------------------------------------------------
-    #  PREVIEWS DE IMÁGENES (BASE64)
+    #  PREVIEWS DE IMÁGENES (BASE64 YA COMPRIMIDO)
     # ---------------------------------------------------------
-    def _preview(self, binary_data, mime):
-        if not binary_data or not mime:
+    def _preview(self, data):
+        """
+        Ahora las imágenes YA están en base64 desde el modelo.
+        Solo devolvemos la cadena si es válida.
+        """
+        if not data:
             return "Sin imagen"
 
-        base64_data = base64.b64encode(binary_data).decode("utf-8")
-        return format_html(
-            '<img src="data:{};base64,{}" width="150" style="border-radius:8px;" />',
-            mime,
-            base64_data
-        )
+        if isinstance(data, str) and data.startswith("data:image"):
+            return format_html(
+                '<img src="{}" width="150" style="border-radius:8px;" />',
+                data
+            )
+
+        return "Sin imagen"
 
     def preview_principal(self, obj):
-        return self._preview(obj.imagen_principal, obj.imagen_principal_mime)
+        return self._preview(obj.imagen_principal)
     preview_principal.short_description = "Vista previa principal"
 
     def preview_secundaria(self, obj):
-        return self._preview(obj.imagen_secundaria, obj.imagen_secundaria_mime)
+        return self._preview(obj.imagen_secundaria)
     preview_secundaria.short_description = "Vista previa secundaria"
 
     def preview_terciaria(self, obj):
-        return self._preview(obj.imagen_terciaria, obj.imagen_terciaria_mime)
+        return self._preview(obj.imagen_terciaria)
     preview_terciaria.short_description = "Vista previa terciaria"
 
 

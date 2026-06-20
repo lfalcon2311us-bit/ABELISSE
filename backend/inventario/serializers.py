@@ -1,4 +1,3 @@
-import base64
 from rest_framework import serializers
 from .models import Categoria, Subcategoria, Producto
 
@@ -21,7 +20,7 @@ class ProductoSerializer(serializers.ModelSerializer):
     categoria = CategoriaSerializer(read_only=True)
     subcategoria = SubcategoriaSerializer(read_only=True)
 
-    # 🔥 Convertimos las imágenes binario → base64
+    # 🔥 Las imágenes ya vienen como base64 desde el modelo
     imagen_principal = serializers.SerializerMethodField()
     imagen_secundaria = serializers.SerializerMethodField()
     imagen_terciaria = serializers.SerializerMethodField()
@@ -52,7 +51,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             "ganancia_unidad",
             "ganancia_total",
 
-            # 🔥 Imágenes convertidas a base64
+            # 🔥 Imágenes ya comprimidas y en base64
             "imagen_principal",
             "imagen_secundaria",
             "imagen_terciaria",
@@ -68,20 +67,27 @@ class ProductoSerializer(serializers.ModelSerializer):
         ]
 
     # ---------------------------------------------------------
-    # 🔥 MÉTODOS PARA CONVERTIR BINARIO → BASE64
+    # 🔥 MÉTODOS PARA DEVOLVER BASE64 YA LISTO
     # ---------------------------------------------------------
-    def _convert_image(self, binary_data, mime_type):
-        if not binary_data or not mime_type:
+    def _return_image(self, data):
+        """
+        Las imágenes YA están en base64 desde el modelo.
+        Solo devolvemos la cadena si existe y es válida.
+        """
+        if not data:
             return None
 
-        base64_data = base64.b64encode(binary_data).decode("utf-8")
-        return f"data:{mime_type};base64,{base64_data}"
+        # Validación mínima para evitar errores
+        if isinstance(data, str) and data.startswith("data:image"):
+            return data
+
+        return None
 
     def get_imagen_principal(self, obj):
-        return self._convert_image(obj.imagen_principal, obj.imagen_principal_mime)
+        return self._return_image(obj.imagen_principal)
 
     def get_imagen_secundaria(self, obj):
-        return self._convert_image(obj.imagen_secundaria, obj.imagen_secundaria_mime)
+        return self._return_image(obj.imagen_secundaria)
 
     def get_imagen_terciaria(self, obj):
-        return self._convert_image(obj.imagen_terciaria, obj.imagen_terciaria_mime)
+        return self._return_image(obj.imagen_terciaria)

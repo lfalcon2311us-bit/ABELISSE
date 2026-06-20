@@ -5,7 +5,6 @@ from rest_framework import routers, permissions
 
 # Inventario
 from inventario.views import (
-    CategoriaViewSet,
     ProductoViewSet,
     ProductosDestacados,
 )
@@ -55,21 +54,24 @@ schema_view = get_schema_view(
 )
 
 # ---------------------------------------------------------
-# 🔥 ROUTER — FIX CRÍTICO PARA lookup_field="id"
+# 🔥 ROUTER GLOBAL (SOLO PRODUCTOS)
 # ---------------------------------------------------------
 router = routers.DefaultRouter()
-router.register(r"categorias", CategoriaViewSet, basename="categorias")
 router.register(r"productos", ProductoViewSet, basename="productos")
-
 
 urlpatterns = [
     path("", home),
 
+    # Admin
     path("admin/", admin.site.urls),
-    path('api/', include('reportes.urls')),
 
-    # API REST
+    # Reportes
+    path("api/", include("reportes.urls")),
+
+    # API REST (solo productos)
     path("api/", include(router.urls)),
+
+    # Endpoints adicionales
     path("api/productos-destacados/", ProductosDestacados.as_view()),
     path("api/suscribirse/", suscribirse),
 
