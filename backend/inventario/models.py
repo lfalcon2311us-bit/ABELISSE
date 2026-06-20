@@ -89,6 +89,21 @@ class Subcategoria(models.Model):
 
 
 class Producto(models.Model):
+    # -----------------------------
+    # CAMPOS NUEVOS QUE FALTABAN
+    # -----------------------------
+    verificacion_katy = models.BooleanField(default=False)
+    cantidad_recibida = models.IntegerField(default=0)
+    tamano = models.CharField(max_length=50, blank=True, null=True)
+
+    ventas_totales = models.IntegerField(default=0)
+    busquedas_totales = models.IntegerField(default=0)
+    calificacion_promedio = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    total_calificaciones = models.IntegerField(default=0)
+
+    # -----------------------------
+    # CAMPOS ORIGINALES
+    # -----------------------------
     sku = models.CharField(max_length=50, unique=True)
     nombre = models.CharField(max_length=200)
     marca = models.CharField(max_length=100, blank=True, null=True)
