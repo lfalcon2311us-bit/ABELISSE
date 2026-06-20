@@ -1,10 +1,8 @@
 class Producto(models.Model):
-    # Identificación básica
     sku = models.CharField(max_length=50, unique=True)
     nombre = models.CharField(max_length=200)
     marca = models.CharField(max_length=100, blank=True, null=True)
 
-    # Categorías
     categoria = models.ForeignKey(
         Categoria,
         on_delete=models.SET_NULL,
@@ -12,6 +10,7 @@ class Producto(models.Model):
         blank=True,
         related_name="productos",
     )
+
     subcategoria = models.ForeignKey(
         Subcategoria,
         on_delete=models.SET_NULL,
@@ -20,11 +19,9 @@ class Producto(models.Model):
         related_name="productos",
     )
 
-    # Texto
     descripcion = models.TextField(blank=True, null=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
 
-    # Precios y stock
     costo_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     taxes = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     precio_importacion = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -34,11 +31,9 @@ class Producto(models.Model):
 
     stock = models.IntegerField(default=0)
 
-    # Flags
     activo = models.BooleanField(default=True)
     destacado = models.BooleanField(default=False)
 
-    # Cálculos
     valor_total_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     valor_general = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
@@ -49,7 +44,6 @@ class Producto(models.Model):
     descuento_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     descuento_porcentaje = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
-    # Imágenes (las que ya tenías)
     imagen_principal = models.BinaryField(null=True, blank=True)
     imagen_principal_mime = models.CharField(max_length=50, null=True, blank=True)
 
@@ -60,7 +54,6 @@ class Producto(models.Model):
     imagen_terciaria_mime = models.CharField(max_length=50, null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        # SLUG
         if not self.slug:
             base_slug = slugify(self.nombre)
             slug = base_slug
@@ -70,7 +63,6 @@ class Producto(models.Model):
                 contador += 1
             self.slug = slug
 
-        # COMPRESIÓN AUTOMÁTICA DE IMÁGENES
         if self.imagen_principal:
             data, mime = compress_image(self.imagen_principal, self.imagen_principal_mime)
             self.imagen_principal = data
@@ -86,7 +78,6 @@ class Producto(models.Model):
             self.imagen_terciaria = data
             self.imagen_terciaria_mime = mime
 
-        # CÁLCULOS
         costo = to_decimal(self.costo_compra)
         taxes = to_decimal(self.taxes)
         imp = to_decimal(self.precio_importacion)
