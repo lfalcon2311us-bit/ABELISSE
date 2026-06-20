@@ -3,7 +3,7 @@ from django import forms
 from django.utils.html import format_html
 import base64
 
-from .models import Categoria, Subcategoria, Producto
+from .models import Producto
 
 
 # ---------------------------------------------------------
@@ -24,7 +24,7 @@ class ProductoForm(forms.ModelForm):
         # Imagen principal
         file = self.cleaned_data.get("imagen_principal_file")
         if file:
-            producto.imagen_principal = file.read()  # binario crudo
+            producto.imagen_principal = file.read()
             producto.imagen_principal_mime = file.content_type
 
         # Imagen secundaria
@@ -40,12 +40,12 @@ class ProductoForm(forms.ModelForm):
             producto.imagen_terciaria_mime = file.content_type
 
         if commit:
-            producto.save()  # aquí se activa la compresión automática del modelo
+            producto.save()
         return producto
 
 
 # ---------------------------------------------------------
-#  ADMIN PERSONALIZADO PARA MOSTRAR PREVIEW DE IMÁGENES
+#  ADMIN PERSONALIZADO
 # ---------------------------------------------------------
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
@@ -55,15 +55,13 @@ class ProductoAdmin(admin.ModelAdmin):
         "sku",
         "nombre",
         "marca",
-        "categoria",
-        "subcategoria",
         "precio_venta_soles",
         "activo",
         "destacado",
         "preview_principal",
     )
 
-    list_filter = ("categoria", "subcategoria", "activo", "destacado")
+    list_filter = ("activo", "destacado")
     search_fields = ("sku", "nombre", "marca")
 
     fieldsets = (
@@ -77,8 +75,6 @@ class ProductoAdmin(admin.ModelAdmin):
                 "slug",
                 "descripcion",
                 "tamano",
-                "categoria",
-                "subcategoria",
                 "stock",
             )
         }),
@@ -133,10 +129,6 @@ class ProductoAdmin(admin.ModelAdmin):
     #  PREVIEWS DE IMÁGENES (BASE64 YA COMPRIMIDO)
     # ---------------------------------------------------------
     def _preview(self, data):
-        """
-        Ahora las imágenes YA están en base64 desde el modelo.
-        Solo devolvemos la cadena si es válida.
-        """
         if not data:
             return "Sin imagen"
 
@@ -150,28 +142,9 @@ class ProductoAdmin(admin.ModelAdmin):
 
     def preview_principal(self, obj):
         return self._preview(obj.imagen_principal)
-    preview_principal.short_description = "Vista previa principal"
 
     def preview_secundaria(self, obj):
         return self._preview(obj.imagen_secundaria)
-    preview_secundaria.short_description = "Vista previa secundaria"
 
     def preview_terciaria(self, obj):
         return self._preview(obj.imagen_terciaria)
-    preview_terciaria.short_description = "Vista previa terciaria"
-
-
-# ---------------------------------------------------------
-#  ADMIN DE CATEGORÍA Y SUBCATEGORÍA
-# ---------------------------------------------------------
-@admin.register(Categoria)
-class CategoriaAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "slug")
-    prepopulated_fields = {"slug": ("nombre",)}
-
-
-@admin.register(Subcategoria)
-class SubcategoriaAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "categoria", "slug")
-    list_filter = ("categoria",)
-    prepopulated_fields = {"slug": ("nombre",)}
