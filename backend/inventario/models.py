@@ -1,120 +1,55 @@
-from django.db import models
-from django.utils.text import slugify
-from decimal import Decimal
-from PIL import Image
-import io
-import base64
+class Producto(models.Model):
+    # Identificación básica
+    sku = models.CharField(max_length=50, unique=True)
+    nombre = models.CharField(max_length=200)
+    marca = models.CharField(max_length=100, blank=True, null=True)
 
-TASA_USD_PEN = Decimal("3.5")
-
-
-def to_decimal(value):
-    try:
-        if value is None:
-            return Decimal("0.00")
-        value = str(value).strip()
-        if value == "":
-            return Decimal("0.00")
-        return Decimal(value)
-    except:
-        return Decimal("0.00")
-
-
-# ---------------------------------------------------------
-#  FUNCIÓN PARA COMPRIMIR IMÁGENES
-# ---------------------------------------------------------
-def compress_image(binary_data, mime_type):
-    """
-    Recibe una imagen binaria + mime type.
-    La convierte a JPG comprimido (70% calidad, máx 800px).
-    Devuelve base64 comprimido listo para guardar.
-    """
-
-    if not binary_data:
-        return None, None
-
-    try:
-        # Convertir binario → imagen PIL
-        image = Image.open(io.BytesIO(binary_data))
-
-        # Convertir a RGB si es PNG o tiene transparencia
-        if image.mode in ("RGBA", "P"):
-            image = image.convert("RGB")
-
-        # Redimensionar si es muy grande
-        max_size = 800
-        image.thumbnail((max_size, max_size))
-
-        # Guardar en buffer comprimido
-        buffer = io.BytesIO()
-        image.save(buffer, format="JPEG", quality=70, optimize=True)
-        compressed_bytes = buffer.getvalue()
-
-        # Convertir a base64
-        base64_str = base64.b64encode(compressed_bytes).decode("utf-8")
-        final_data = f"data:image/jpeg;base64,{base64_str}"
-
-        return final_data, "image/jpeg"
-
-    except Exception as e:
-        print("❌ Error comprimiendo imagen:", e)
-        return None, None
-
-
-# ---------------------------------------------------------
-#  CATEGORÍA
-# ---------------------------------------------------------
-class Categoria(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=120, unique=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.nombre)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.nombre
-
-
-# ---------------------------------------------------------
-#  SUBCATEGORÍA
-# ---------------------------------------------------------
-class Subcategoria(models.Model):
+    # Categorías
     categoria = models.ForeignKey(
         Categoria,
-        on_delete=models.CASCADE,
-        related_name="subcategorias",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="productos",
     )
-    nombre = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    subcategoria = models.ForeignKey(
+        Subcategoria,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="productos",
+    )
 
-    class Meta:
-        unique_together = ("categoria", "nombre")
+    # Texto
+    descripcion = models.TextField(blank=True, null=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.nombre)
-            slug = base_slug
-            contador = 1
-            while Subcategoria.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f"{base_slug}-{contador}"
-                contador += 1
-            self.slug = slug
+    # Precios y stock
+    costo_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    taxes = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    precio_importacion = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-        super().save(*args, **kwargs)
+    precio_venta_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    precio_mercado_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    def __str__(self):
-        return f"{self.categoria.nombre} → {self.nombre}"
+    stock = models.IntegerField(default=0)
 
+    # Flags
+    activo = models.BooleanField(default=True)
+    destacado = models.BooleanField(default=False)
 
-# ---------------------------------------------------------
-#  PRODUCTO
-# ---------------------------------------------------------
-class Producto(models.Model):
+    # Cálculos
+    valor_total_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    valor_general = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-    # (todo lo tuyo igual...)
+    precio_venta_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    ganancia_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    ganancia_total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
+    descuento_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    descuento_porcentaje = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
+    # Imágenes (las que ya tenías)
     imagen_principal = models.BinaryField(null=True, blank=True)
     imagen_principal_mime = models.CharField(max_length=50, null=True, blank=True)
 
@@ -124,10 +59,7 @@ class Producto(models.Model):
     imagen_terciaria = models.BinaryField(null=True, blank=True)
     imagen_terciaria_mime = models.CharField(max_length=50, null=True, blank=True)
 
-    # (resto igual...)
-
     def save(self, *args, **kwargs):
-
         # SLUG
         if not self.slug:
             base_slug = slugify(self.nombre)
@@ -138,9 +70,7 @@ class Producto(models.Model):
                 contador += 1
             self.slug = slug
 
-        # ---------------------------------------------------------
-        #  COMPRESIÓN AUTOMÁTICA DE IMÁGENES
-        # ---------------------------------------------------------
+        # COMPRESIÓN AUTOMÁTICA DE IMÁGENES
         if self.imagen_principal:
             data, mime = compress_image(self.imagen_principal, self.imagen_principal_mime)
             self.imagen_principal = data
@@ -156,9 +86,7 @@ class Producto(models.Model):
             self.imagen_terciaria = data
             self.imagen_terciaria_mime = mime
 
-        # ---------------------------------------------------------
-        #  TUS CÁLCULOS (NO LOS TOQUÉ)
-        # ---------------------------------------------------------
+        # CÁLCULOS
         costo = to_decimal(self.costo_compra)
         taxes = to_decimal(self.taxes)
         imp = to_decimal(self.precio_importacion)
