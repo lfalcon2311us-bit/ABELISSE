@@ -25,6 +25,7 @@ ALLOWED_HOSTS = [
     "abelisse.com",
     "www.abelisse.com",
     "abelisse-backend.onrender.com",
+    "abelisse.onrender.com",   # ← NUEVO DOMINIO DE RENDER
     "localhost",
     "127.0.0.1",
 ]
@@ -57,7 +58,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',   # ← DEBE IR ANTES DE CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 
     'django.middleware.csrf.CsrfViewMiddleware',
