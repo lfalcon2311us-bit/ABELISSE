@@ -1,3 +1,93 @@
+from django.db import models
+from django.utils.text import slugify
+from decimal import Decimal
+from PIL import Image
+import io
+import base64
+
+TASA_USD_PEN = Decimal("3.5")
+
+
+def to_decimal(value):
+    try:
+        if value is None:
+            return Decimal("0.00")
+        value = str(value).strip()
+        if value == "":
+            return Decimal("0.00")
+        return Decimal(value)
+    except:
+        return Decimal("0.00")
+
+
+def compress_image(binary_data, mime_type):
+    if not binary_data:
+        return None, None
+
+    try:
+        image = Image.open(io.BytesIO(binary_data))
+
+        if image.mode in ("RGBA", "P"):
+            image = image.convert("RGB")
+
+        max_size = 800
+        image.thumbnail((max_size, max_size))
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="JPEG", quality=70, optimize=True)
+        compressed_bytes = buffer.getvalue()
+
+        base64_str = base64.b64encode(compressed_bytes).decode("utf-8")
+        final_data = f"data:image/jpeg;base64,{base64_str}"
+
+        return final_data, "image/jpeg"
+
+    except Exception as e:
+        print("❌ Error comprimiendo imagen:", e)
+        return None, None
+
+
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nombre)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.nombre
+
+
+class Subcategoria(models.Model):
+    categoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.CASCADE,
+        related_name="subcategorias",
+    )
+    nombre = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+
+    class Meta:
+        unique_together = ("categoria", "nombre")
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.nombre)
+            slug = base_slug
+            contador = 1
+            while Subcategoria.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{contador}"
+                contador += 1
+            self.slug = slug
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.categoria.nombre} → {self.nombre}"
+
+
 class Producto(models.Model):
     sku = models.CharField(max_length=50, unique=True)
     nombre = models.CharField(max_length=200)
