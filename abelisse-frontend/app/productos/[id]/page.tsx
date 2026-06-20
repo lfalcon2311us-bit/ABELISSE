@@ -37,8 +37,15 @@ async function getProductoSeguro(id: string) {
   }
 }
 
-export default async function ProductoPage({ params }: { params: { id: string } }) {
-  const id = limpiarId(params.id);
+interface ProductoPageProps {
+  params: Promise<{ id: string }> | { id: string };
+}
+
+export default async function ProductoPage({ params }: ProductoPageProps) {
+  const resolvedParams =
+    params instanceof Promise ? await params : params;
+
+  const id = limpiarId(resolvedParams.id);
 
   if (!id) {
     return (
@@ -64,13 +71,19 @@ export default async function ProductoPage({ params }: { params: { id: string } 
     );
   }
 
-  // 🔥 Imágenes seguras
+  // 🔥 Imágenes seguras con validación de tamaño y formato
   const imagenes = [
     producto.imagen_principal,
     producto.imagen_secundaria,
     producto.imagen_terciaria,
-  ].filter((img) => typeof img === "string" && img.length > 20);
+  ].filter(
+    (img) =>
+      typeof img === "string" &&
+      img.startsWith("data:image") &&
+      img.length < 500000 // máximo 500 KB
+  );
 
+  const nombre = producto.nombre ?? "Producto sin nombre";
   const descripcion = producto.descripcion ?? "Sin descripción disponible.";
   const marca = producto.marca ?? "Sin marca";
   const tamano = producto.tamano ?? "No especificado";
@@ -81,7 +94,7 @@ export default async function ProductoPage({ params }: { params: { id: string } 
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-bold mb-6">{producto.nombre}</h1>
+      <h1 className="text-3xl font-bold mb-6">{nombre}</h1>
 
       {/* 🔥 Galería de imágenes */}
       <div className="space-y-4">
@@ -90,11 +103,14 @@ export default async function ProductoPage({ params }: { params: { id: string } 
             <Image
               key={i}
               src={img}
-              alt={producto.nombre}
+              alt={nombre}
               width={800}
               height={800}
               unoptimized
               className="w-full rounded-xl object-cover"
+              onError={(e) => {
+                e.currentTarget.src = "/placeholder.png";
+              }}
             />
           ))
         ) : (

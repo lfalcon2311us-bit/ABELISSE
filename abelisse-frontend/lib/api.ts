@@ -10,9 +10,11 @@ function shouldReport(key: string) {
 
 function normalizeBackendUrl() {
   let raw = process.env.NEXT_PUBLIC_BACKEND_URL || "";
+
   if (!raw) return null;
 
   raw = raw.trim().replace(/\/+$/, "");
+
   if (!raw.startsWith("http")) raw = `https://${raw}`;
 
   try {
@@ -25,7 +27,7 @@ function normalizeBackendUrl() {
 }
 
 const safeBackend = normalizeBackendUrl();
-export const API_URL = `${safeBackend}/api`;
+export const API_URL = safeBackend ? `${safeBackend}/api` : "";
 
 export async function safeFetch(url: string, options: RequestInit = {}, context: any) {
   const key = `${context.file}-${context.functionName}-${url}`;

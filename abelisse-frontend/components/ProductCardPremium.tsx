@@ -9,19 +9,16 @@ import Toast from "@/components/Toast";
 
 interface Props {
   id: number;
-  nombre: string;
+  nombre: string | null;
 
-  // 🔥 PRECIOS (backend puede mandar null)
   precio_venta_soles: number | string | null;
   precio_mercado_soles: number | string | null;
   descuento_porcentaje: number | string | null;
 
-  // 🔥 IMÁGENES (backend puede mandar null)
   imagen_principal: string | null;
   imagen_secundaria?: string | null;
   imagen_terciaria?: string | null;
 
-  // 🔥 OTROS CAMPOS (backend puede mandar null)
   precio_venta_usd?: number | string | null;
   descripcion?: string | null;
   calificacion_promedio?: number | null;
@@ -42,7 +39,8 @@ export default function ProductCardPremium(props: Props) {
     stock,
   } = props;
 
-  // ⭐ Imagen segura
+  const safeName = nombre ?? "Producto sin nombre";
+
   const imagen =
     typeof imagen_principal === "string" && imagen_principal.length > 10
       ? imagen_principal
@@ -51,7 +49,6 @@ export default function ProductCardPremium(props: Props) {
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [toast, setToast] = useState("");
 
-  // Detectar país automáticamente
   useDetectCountry();
   const { currency } = useCountryStore();
   const addToCart = useCartStore((state) => state.addToCart);
@@ -59,7 +56,6 @@ export default function ProductCardPremium(props: Props) {
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
-  // ⭐ Conversión segura (sin cálculos inventados)
   const precioSoles = Number(precio_venta_soles ?? 0);
   const precioMercado = Number(precio_mercado_soles ?? 0);
   const precioUSD = Number(precio_venta_usd ?? 0);
@@ -83,11 +79,10 @@ export default function ProductCardPremium(props: Props) {
       <Link href={`/productos/${id}`} className="block">
         <div className="product-card-premium bg-white rounded-xl shadow-sm hover:shadow-xl transition border border-transparent overflow-hidden group">
 
-          {/* 🔥 IMAGEN */}
           <div className="relative w-full h-56 bg-gray-100 overflow-hidden">
             <Image
               src={imagen}
-              alt={nombre}
+              alt={safeName}
               width={400}
               height={400}
               unoptimized
@@ -96,9 +91,8 @@ export default function ProductCardPremium(props: Props) {
           </div>
 
           <div className="p-5">
-            <h3 className="text-lg font-semibold mb-1">{nombre}</h3>
+            <h3 className="text-lg font-semibold mb-1">{safeName}</h3>
 
-            {/* ⭐ RATING */}
             <div className="flex items-center gap-1 mb-2">
               {Array.from({ length: 5 }).map((_, i) => (
                 <span key={i} className="text-yellow-400 text-sm">
@@ -110,7 +104,6 @@ export default function ProductCardPremium(props: Props) {
               </span>
             </div>
 
-            {/* ⭐ DESCRIPCIÓN */}
             <p
               className="text-sm text-gray-600 mb-3 cursor-pointer"
               onClick={(e) => {
@@ -121,7 +114,6 @@ export default function ProductCardPremium(props: Props) {
               {showFullDesc ? desc : shortDescription}
             </p>
 
-            {/* ⭐ PRECIOS */}
             <div className="mb-4">
               <p className="text-pink-600 font-semibold text-lg">
                 {symbol} {priceDisplay.toFixed(2)}
@@ -140,13 +132,12 @@ export default function ProductCardPremium(props: Props) {
               )}
             </div>
 
-            {/* ⭐ BOTÓN */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 addToCart({
                   id,
-                  nombre,
+                  nombre: safeName,
                   precio_venta_soles: precioSoles,
                   precio_venta_usd: precioUSD,
                   imagen_principal: imagen,
