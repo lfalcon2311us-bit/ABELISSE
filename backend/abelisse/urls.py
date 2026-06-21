@@ -6,6 +6,8 @@ from rest_framework import routers, permissions
 # Inventario
 from inventario.views import (
     ProductoViewSet,
+    CategoriaViewSet,
+    SubcategoriaViewSet,
     ProductosDestacados,
 )
 
@@ -54,10 +56,12 @@ schema_view = get_schema_view(
 )
 
 # ---------------------------------------------------------
-# 🔥 ROUTER GLOBAL (PRODUCTOS)
+# 🔥 ROUTER GLOBAL (PRODUCTOS + CATEGORÍAS + SUBCATEGORÍAS)
 # ---------------------------------------------------------
 router = routers.DefaultRouter()
 router.register(r"productos", ProductoViewSet, basename="productos")
+router.register(r"categorias", CategoriaViewSet, basename="categorias")
+router.register(r"subcategorias", SubcategoriaViewSet, basename="subcategorias")
 
 urlpatterns = [
     path("", home),
@@ -65,10 +69,7 @@ urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
 
-    # Reportes
-    path("api/", include("reportes.urls")),
-
-    # API REST (productos)
+    # API REST (productos, categorías, subcategorías)
     path("api/", include(router.urls)),
 
     # Endpoints adicionales
