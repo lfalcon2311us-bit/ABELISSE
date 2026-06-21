@@ -17,16 +17,19 @@ class ProductoForm(forms.ModelForm):
     def save(self, commit=True):
         producto = super().save(commit=False)
 
+        # Imagen principal
         file = self.cleaned_data.get("imagen_principal_file")
         if file:
             producto.imagen_principal = file.read()
             producto.imagen_principal_mime = file.content_type
 
+        # Imagen secundaria
         file = self.cleaned_data.get("imagen_secundaria_file")
         if file:
             producto.imagen_secundaria = file.read()
             producto.imagen_secundaria_mime = file.content_type
 
+        # Imagen terciaria
         file = self.cleaned_data.get("imagen_terciaria_file")
         if file:
             producto.imagen_terciaria = file.read()
@@ -62,23 +65,28 @@ class ProductoAdmin(admin.ModelAdmin):
                 "sku",
                 "marca",
                 "nombre",
-                "slug",
+                "slug",          # solo lectura
                 "descripcion",
                 "tamano",
                 "stock",
             )
         }),
 
-        ("Precios y costos", {
+        ("Precios y costos (editables)", {
             "fields": (
-                "costo_compra",
-                "taxes",
-                "precio_importacion",
+                "costo_compra",          # USD
+                "taxes",                 # USD
+                "precio_importacion",    # USD
+                "precio_venta_usd",      # USD
+                "precio_venta_soles",    # PEN
+                "precio_mercado_soles",  # PEN
+            )
+        }),
+
+        ("Contabilidad (calculado por el backend, solo lectura)", {
+            "fields": (
                 "valor_total_unidad",
                 "valor_general",
-                "precio_venta_usd",
-                "precio_venta_soles",
-                "precio_mercado_soles",
                 "descuento_soles",
                 "descuento_porcentaje",
                 "ganancia_unidad",
@@ -97,7 +105,7 @@ class ProductoAdmin(admin.ModelAdmin):
             )
         }),
 
-        ("Estado y analítica", {
+        ("Estado y analítica (solo lectura)", {
             "fields": (
                 "destacado",
                 "activo",
@@ -110,16 +118,40 @@ class ProductoAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = (
+        # imágenes
         "preview_principal",
         "preview_secundaria",
         "preview_terciaria",
+
+        # slug auto
+        "slug",
+
+        # contabilidad calculada
+        "valor_total_unidad",
+        "valor_general",
+        "descuento_soles",
+        "descuento_porcentaje",
+        "ganancia_unidad",
+        "ganancia_total",
+
+        # analítica calculada
+        "ventas_totales",
+        "busquedas_totales",
+        "calificacion_promedio",
+        "total_calificaciones",
     )
 
+    # ---------------------------------------------------------
+    # PREVIEWS DE IMÁGENES
+    # ---------------------------------------------------------
     def _preview(self, data):
         if not data:
             return "Sin imagen"
         if isinstance(data, str) and data.startswith("data:image"):
-            return format_html('<img src="{}" width="150" style="border-radius:8px;" />', data)
+            return format_html(
+                '<img src="{}" width="150" style="border-radius:8px;" />',
+                data
+            )
         return "Sin imagen"
 
     def preview_principal(self, obj):

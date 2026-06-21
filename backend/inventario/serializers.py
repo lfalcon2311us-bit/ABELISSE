@@ -20,12 +20,32 @@ class ProductoSerializer(serializers.ModelSerializer):
     categoria = CategoriaSerializer(read_only=True)
     subcategoria = SubcategoriaSerializer(read_only=True)
 
+    # Imágenes en base64
     imagen_principal = serializers.SerializerMethodField()
     imagen_secundaria = serializers.SerializerMethodField()
     imagen_terciaria = serializers.SerializerMethodField()
 
     class Meta:
         model = Producto
+        read_only_fields = [
+            # Slug auto
+            "slug",
+
+            # Contabilidad calculada
+            "valor_total_unidad",
+            "valor_general",
+            "descuento_soles",
+            "descuento_porcentaje",
+            "ganancia_unidad",
+            "ganancia_total",
+
+            # Analítica calculada
+            "ventas_totales",
+            "busquedas_totales",
+            "calificacion_promedio",
+            "total_calificaciones",
+        ]
+
         fields = [
             "id",
             "sku",
@@ -38,15 +58,17 @@ class ProductoSerializer(serializers.ModelSerializer):
             "subcategoria",
             "stock",
 
-            # Contabilidad
+            # Precios editables
             "costo_compra",
             "taxes",
             "precio_importacion",
-            "valor_total_unidad",
-            "valor_general",
             "precio_venta_usd",
             "precio_venta_soles",
             "precio_mercado_soles",
+
+            # Contabilidad calculada
+            "valor_total_unidad",
+            "valor_general",
             "descuento_soles",
             "descuento_porcentaje",
             "ganancia_unidad",
@@ -61,7 +83,7 @@ class ProductoSerializer(serializers.ModelSerializer):
             "destacado",
             "activo",
 
-            # Analítica
+            # Analítica calculada
             "ventas_totales",
             "busquedas_totales",
             "calificacion_promedio",
@@ -72,6 +94,9 @@ class ProductoSerializer(serializers.ModelSerializer):
             "cantidad_recibida",
         ]
 
+    # ---------------------------------------------------------
+    # IMÁGENES BASE64
+    # ---------------------------------------------------------
     def _return_image(self, data):
         if not data:
             return None

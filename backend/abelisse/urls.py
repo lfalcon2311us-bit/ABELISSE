@@ -54,7 +54,7 @@ schema_view = get_schema_view(
 )
 
 # ---------------------------------------------------------
-# 🔥 ROUTER GLOBAL (SOLO PRODUCTOS)
+# 🔥 ROUTER GLOBAL (PRODUCTOS)
 # ---------------------------------------------------------
 router = routers.DefaultRouter()
 router.register(r"productos", ProductoViewSet, basename="productos")
@@ -68,7 +68,7 @@ urlpatterns = [
     # Reportes
     path("api/", include("reportes.urls")),
 
-    # API REST (solo productos)
+    # API REST (productos)
     path("api/", include(router.urls)),
 
     # Endpoints adicionales

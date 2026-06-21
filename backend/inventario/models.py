@@ -90,20 +90,12 @@ class Subcategoria(models.Model):
 
 class Producto(models.Model):
     # -----------------------------
-    # CAMPOS NUEVOS QUE FALTABAN
+    # CAMPOS EDITABLES POR ADMIN
     # -----------------------------
     verificacion_katy = models.BooleanField(default=False)
     cantidad_recibida = models.IntegerField(default=0)
     tamano = models.CharField(max_length=50, blank=True, null=True)
 
-    ventas_totales = models.IntegerField(default=0)
-    busquedas_totales = models.IntegerField(default=0)
-    calificacion_promedio = models.DecimalField(max_digits=3, decimal_places=2, default=0)
-    total_calificaciones = models.IntegerField(default=0)
-
-    # -----------------------------
-    # CAMPOS ORIGINALES
-    # -----------------------------
     sku = models.CharField(max_length=50, unique=True)
     nombre = models.CharField(max_length=200)
     marca = models.CharField(max_length=100, blank=True, null=True)
@@ -125,30 +117,47 @@ class Producto(models.Model):
     )
 
     descripcion = models.TextField(blank=True, null=True)
+
+    # Slug generado automáticamente
     slug = models.SlugField(max_length=200, unique=True, blank=True)
 
-    costo_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    taxes = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    precio_importacion = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Precios ingresados por admin
+    costo_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)        # USD
+    taxes = models.DecimalField(max_digits=10, decimal_places=2, default=0)               # USD
+    precio_importacion = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # USD
 
-    precio_venta_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    precio_mercado_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    precio_venta_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)    # USD
+    precio_venta_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # PEN
+    precio_mercado_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)# PEN
 
     stock = models.IntegerField(default=0)
 
     activo = models.BooleanField(default=True)
     destacado = models.BooleanField(default=False)
 
+    # -----------------------------
+    # CAMPOS CALCULADOS (NO EDITABLES)
+    # -----------------------------
     valor_total_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     valor_general = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-    precio_venta_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ganancia_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ganancia_total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     descuento_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     descuento_porcentaje = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
+    # -----------------------------
+    # ANALÍTICA (SOLO BACKEND)
+    # -----------------------------
+    ventas_totales = models.IntegerField(default=0)
+    busquedas_totales = models.IntegerField(default=0)
+    calificacion_promedio = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    total_calificaciones = models.IntegerField(default=0)
+
+    # -----------------------------
+    # IMÁGENES
+    # -----------------------------
     imagen_principal = models.BinaryField(null=True, blank=True)
     imagen_principal_mime = models.CharField(max_length=50, null=True, blank=True)
 
@@ -158,7 +167,11 @@ class Producto(models.Model):
     imagen_terciaria = models.BinaryField(null=True, blank=True)
     imagen_terciaria_mime = models.CharField(max_length=50, null=True, blank=True)
 
+    # -----------------------------
+    # SAVE: CALCULOS AUTOMÁTICOS
+    # -----------------------------
     def save(self, *args, **kwargs):
+        # Slug automático
         if not self.slug:
             base_slug = slugify(self.nombre)
             slug = base_slug
@@ -168,6 +181,7 @@ class Producto(models.Model):
                 contador += 1
             self.slug = slug
 
+        # Compresión de imágenes
         if self.imagen_principal:
             data, mime = compress_image(self.imagen_principal, self.imagen_principal_mime)
             self.imagen_principal = data
@@ -183,6 +197,7 @@ class Producto(models.Model):
             self.imagen_terciaria = data
             self.imagen_terciaria_mime = mime
 
+        # Cálculos contables
         costo = to_decimal(self.costo_compra)
         taxes = to_decimal(self.taxes)
         imp = to_decimal(self.precio_importacion)
@@ -191,8 +206,8 @@ class Producto(models.Model):
 
         self.valor_total_unidad = (costo + taxes + imp).quantize(Decimal("0.01"))
         self.valor_general = (self.valor_total_unidad * Decimal(self.stock)).quantize(Decimal("0.01"))
-        self.precio_venta_usd = (venta_soles / TASA_USD_PEN).quantize(Decimal("0.01"))
-        self.ganancia_unidad = (self.precio_venta_usd - self.valor_total_unidad).quantize(Decimal("0.01"))
+
+        self.ganancia_unidad = (to_decimal(self.precio_venta_usd) - self.valor_total_unidad).quantize(Decimal("0.01"))
         self.ganancia_total = (self.ganancia_unidad * Decimal(self.stock)).quantize(Decimal("0.01"))
 
         if mercado_soles > 0:
