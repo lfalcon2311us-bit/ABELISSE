@@ -2,9 +2,33 @@ from django.contrib import admin
 from django import forms
 from django.utils.html import format_html
 
-from .models import Producto
+from .models import Categoria, Subcategoria, Producto
 
 
+# ---------------------------------------------------------
+# ADMIN DE CATEGORÍAS
+# ---------------------------------------------------------
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "slug")
+    search_fields = ("nombre",)
+    prepopulated_fields = {"slug": ("nombre",)}
+
+
+# ---------------------------------------------------------
+# ADMIN DE SUBCATEGORÍAS
+# ---------------------------------------------------------
+@admin.register(Subcategoria)
+class SubcategoriaAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "categoria", "slug")
+    list_filter = ("categoria",)
+    search_fields = ("nombre",)
+    prepopulated_fields = {"slug": ("nombre",)}
+
+
+# ---------------------------------------------------------
+# FORMULARIO PERSONALIZADO PARA PRODUCTOS
+# ---------------------------------------------------------
 class ProductoForm(forms.ModelForm):
     imagen_principal_file = forms.FileField(required=False, label="Imagen principal")
     imagen_secundaria_file = forms.FileField(required=False, label="Imagen secundaria")
@@ -40,6 +64,9 @@ class ProductoForm(forms.ModelForm):
         return producto
 
 
+# ---------------------------------------------------------
+# ADMIN DE PRODUCTOS
+# ---------------------------------------------------------
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
     form = ProductoForm
@@ -54,7 +81,7 @@ class ProductoAdmin(admin.ModelAdmin):
         "preview_principal",
     )
 
-    list_filter = ("activo", "destacado")
+    list_filter = ("activo", "destacado", "categoria", "subcategoria", "marca")
     search_fields = ("sku", "nombre", "marca")
 
     fieldsets = (
@@ -65,25 +92,27 @@ class ProductoAdmin(admin.ModelAdmin):
                 "sku",
                 "marca",
                 "nombre",
-                "slug",          # solo lectura
+                "slug",
                 "descripcion",
                 "tamano",
+                "categoria",
+                "subcategoria",
                 "stock",
             )
         }),
 
         ("Precios y costos (editables)", {
             "fields": (
-                "costo_compra",          # USD
-                "taxes",                 # USD
-                "precio_importacion",    # USD
-                "precio_venta_usd",      # USD
-                "precio_venta_soles",    # PEN
-                "precio_mercado_soles",  # PEN
+                "costo_compra",
+                "taxes",
+                "precio_importacion",
+                "precio_venta_usd",
+                "precio_venta_soles",
+                "precio_mercado_soles",
             )
         }),
 
-        ("Contabilidad (calculado por el backend, solo lectura)", {
+        ("Contabilidad (calculado por el backend)", {
             "fields": (
                 "valor_total_unidad",
                 "valor_general",
@@ -105,7 +134,7 @@ class ProductoAdmin(admin.ModelAdmin):
             )
         }),
 
-        ("Estado y analítica (solo lectura)", {
+        ("Estado y analítica", {
             "fields": (
                 "destacado",
                 "activo",
@@ -118,23 +147,16 @@ class ProductoAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = (
-        # imágenes
         "preview_principal",
         "preview_secundaria",
         "preview_terciaria",
-
-        # slug auto
         "slug",
-
-        # contabilidad calculada
         "valor_total_unidad",
         "valor_general",
         "descuento_soles",
         "descuento_porcentaje",
         "ganancia_unidad",
         "ganancia_total",
-
-        # analítica calculada
         "ventas_totales",
         "busquedas_totales",
         "calificacion_promedio",

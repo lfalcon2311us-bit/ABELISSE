@@ -1,8 +1,8 @@
 from rest_framework import viewsets, generics
 from django.shortcuts import get_object_or_404
 
-from .models import Categoria, Producto
-from .serializers import CategoriaSerializer, ProductoSerializer
+from .models import Categoria, Subcategoria, Producto
+from .serializers import CategoriaSerializer, SubcategoriaSerializer, ProductoSerializer
 
 
 # ---------------------------------------------------------
@@ -11,6 +11,15 @@ from .serializers import CategoriaSerializer, ProductoSerializer
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Categoria.objects.all().order_by("nombre")
     serializer_class = CategoriaSerializer
+    lookup_field = "slug"
+
+
+# ---------------------------------------------------------
+# SUBCATEGORÍAS (NUEVO)
+# ---------------------------------------------------------
+class SubcategoriaViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Subcategoria.objects.select_related("categoria").all().order_by("nombre")
+    serializer_class = SubcategoriaSerializer
     lookup_field = "slug"
 
 

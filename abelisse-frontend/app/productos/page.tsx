@@ -6,17 +6,40 @@ import { API_URL, safeFetch } from "@/lib/api";
 
 export default function ProductosPage({ searchParams }: any) {
   const [lista, setLista] = useState<any[]>([]);
+  const [categorias, setCategorias] = useState<any[]>([]);
+  const [subcategorias, setSubcategorias] = useState<any[]>([]);
+  const [marcas, setMarcas] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filtros existentes
+  // Filtros desde URL
   const categoria = searchParams?.categoria || "";
   const subcategoria = searchParams?.subcategoria || "";
   const marca = searchParams?.marca || "";
   const orden = searchParams?.orden || "desc";
-
-  // NUEVO: búsqueda desde el navbar
   const q = searchParams?.q?.toLowerCase() || "";
 
+  // ---------------------------------------------------------
+  // CARGAR CATEGORÍAS Y SUBCATEGORÍAS
+  // ---------------------------------------------------------
+  useEffect(() => {
+    async function fetchFiltros() {
+      try {
+        const cats = await safeFetch(`${API_URL}/categorias/`, {}, {});
+        const subs = await safeFetch(`${API_URL}/subcategorias/`, {}, {});
+
+        setCategorias(Array.isArray(cats) ? cats : []);
+        setSubcategorias(Array.isArray(subs) ? subs : []);
+      } catch (e) {
+        console.error("❌ Error cargando categorías/subcategorías:", e);
+      }
+    }
+
+    fetchFiltros();
+  }, []);
+
+  // ---------------------------------------------------------
+  // CARGAR PRODUCTOS
+  // ---------------------------------------------------------
   useEffect(() => {
     async function fetchProductos() {
       try {
@@ -28,15 +51,15 @@ export default function ProductosPage({ searchParams }: any) {
 
         const url = `${API_URL}/productos/?${query.toString()}`;
 
-        const productos = await safeFetch(url, {}, {
-          file: "app/productos/page.tsx",
-          functionName: "getProductosFiltrados",
-          route: `/productos?${query.toString()}`,
-        });
+        const productos = await safeFetch(url, {}, {});
 
         let arr = Array.isArray(productos) ? productos : [];
 
-        // 🔍 FILTRO DE BÚSQUEDA (q)
+        // Extraer marcas dinámicamente
+        const marcasUnicas = [...new Set(arr.map((p: any) => p.marca).filter(Boolean))];
+        setMarcas(marcasUnicas);
+
+        // Filtro de búsqueda
         if (q) {
           arr = arr.filter((p: any) =>
             p.nombre?.toLowerCase().includes(q) ||
@@ -64,6 +87,9 @@ export default function ProductosPage({ searchParams }: any) {
     fetchProductos();
   }, [categoria, subcategoria, marca, orden, q]);
 
+  // ---------------------------------------------------------
+  // LOADING
+  // ---------------------------------------------------------
   if (loading) {
     return (
       <main className="max-w-7xl mx-auto px-4 py-16">
@@ -72,11 +98,13 @@ export default function ProductosPage({ searchParams }: any) {
     );
   }
 
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
   return (
     <main className="max-w-7xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-semibold mb-10">Productos</h1>
 
-      {/* Mostrar texto de búsqueda */}
       {q && (
         <p className="text-gray-600 mb-6">
           Resultados para: <strong>{q}</strong>
@@ -86,7 +114,7 @@ export default function ProductosPage({ searchParams }: any) {
       {/* FILTROS */}
       <div className="mb-10 grid grid-cols-2 md:grid-cols-4 gap-4">
 
-        {/* Categorías */}
+        {/* Categorías dinámicas */}
         <select
           className="border p-2 rounded"
           onChange={(e) =>
@@ -95,13 +123,12 @@ export default function ProductosPage({ searchParams }: any) {
           defaultValue={categoria}
         >
           <option value="">Todas las categorías</option>
-          <option value="maquillaje">Maquillaje</option>
-          <option value="cabello">Cabello</option>
-          <option value="cuidado-corporal">Cuidado Corporal</option>
-          <option value="cuidado-facial">Cuidado Facial</option>
+          {categorias.map((c: any) => (
+            <option key={c.id} value={c.slug}>{c.nombre}</option>
+          ))}
         </select>
 
-        {/* Subcategorías */}
+        {/* Subcategorías dinámicas */}
         <select
           className="border p-2 rounded"
           onChange={(e) =>
@@ -110,12 +137,14 @@ export default function ProductosPage({ searchParams }: any) {
           defaultValue={subcategoria}
         >
           <option value="">Todas las subcategorías</option>
-          <option value="mejillas">Mejillas</option>
-          <option value="ojos">Ojos</option>
-          <option value="labios">Labios</option>
+          {subcategorias
+            .filter((s: any) => !categoria || s.categoria?.slug === categoria)
+            .map((s: any) => (
+              <option key={s.id} value={s.slug}>{s.nombre}</option>
+            ))}
         </select>
 
-        {/* Marca */}
+        {/* Marcas dinámicas */}
         <select
           className="border p-2 rounded"
           onChange={(e) =>
@@ -124,9 +153,9 @@ export default function ProductosPage({ searchParams }: any) {
           defaultValue={marca}
         >
           <option value="">Todas las marcas</option>
-          <option value="one size">One Size</option>
-          <option value="maybelline">Maybelline</option>
-          <option value="fenty">Fenty Beauty</option>
+          {marcas.map((m: string) => (
+            <option key={m} value={m.toLowerCase()}>{m}</option>
+          ))}
         </select>
 
         {/* Precio */}

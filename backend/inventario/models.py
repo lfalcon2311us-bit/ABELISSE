@@ -47,6 +47,9 @@ def compress_image(binary_data, mime_type):
         return None, None
 
 
+# ---------------------------------------------------------
+# CATEGORÍA
+# ---------------------------------------------------------
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
@@ -60,6 +63,9 @@ class Categoria(models.Model):
         return self.nombre
 
 
+# ---------------------------------------------------------
+# SUBCATEGORÍA
+# ---------------------------------------------------------
 class Subcategoria(models.Model):
     categoria = models.ForeignKey(
         Categoria,
@@ -88,10 +94,11 @@ class Subcategoria(models.Model):
         return f"{self.categoria.nombre} → {self.nombre}"
 
 
+# ---------------------------------------------------------
+# PRODUCTO
+# ---------------------------------------------------------
 class Producto(models.Model):
-    # -----------------------------
-    # CAMPOS EDITABLES POR ADMIN
-    # -----------------------------
+    # Campos editables
     verificacion_katy = models.BooleanField(default=False)
     cantidad_recibida = models.IntegerField(default=0)
     tamano = models.CharField(max_length=50, blank=True, null=True)
@@ -118,26 +125,23 @@ class Producto(models.Model):
 
     descripcion = models.TextField(blank=True, null=True)
 
-    # Slug generado automáticamente
     slug = models.SlugField(max_length=200, unique=True, blank=True)
 
-    # Precios ingresados por admin
-    costo_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)        # USD
-    taxes = models.DecimalField(max_digits=10, decimal_places=2, default=0)               # USD
-    precio_importacion = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # USD
+    # Precios
+    costo_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    taxes = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    precio_importacion = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    precio_venta_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)    # USD
-    precio_venta_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # PEN
-    precio_mercado_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)# PEN
+    precio_venta_usd = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    precio_venta_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    precio_mercado_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     stock = models.IntegerField(default=0)
 
     activo = models.BooleanField(default=True)
     destacado = models.BooleanField(default=False)
 
-    # -----------------------------
-    # CAMPOS CALCULADOS (NO EDITABLES)
-    # -----------------------------
+    # Calculados
     valor_total_unidad = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     valor_general = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
@@ -147,17 +151,13 @@ class Producto(models.Model):
     descuento_soles = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     descuento_porcentaje = models.DecimalField(max_digits=5, decimal_places=2, default=0)
 
-    # -----------------------------
-    # ANALÍTICA (SOLO BACKEND)
-    # -----------------------------
+    # Analítica
     ventas_totales = models.IntegerField(default=0)
     busquedas_totales = models.IntegerField(default=0)
     calificacion_promedio = models.DecimalField(max_digits=3, decimal_places=2, default=0)
     total_calificaciones = models.IntegerField(default=0)
 
-    # -----------------------------
-    # IMÁGENES
-    # -----------------------------
+    # Imágenes
     imagen_principal = models.BinaryField(null=True, blank=True)
     imagen_principal_mime = models.CharField(max_length=50, null=True, blank=True)
 
@@ -167,9 +167,7 @@ class Producto(models.Model):
     imagen_terciaria = models.BinaryField(null=True, blank=True)
     imagen_terciaria_mime = models.CharField(max_length=50, null=True, blank=True)
 
-    # -----------------------------
-    # SAVE: CALCULOS AUTOMÁTICOS
-    # -----------------------------
+    # SAVE
     def save(self, *args, **kwargs):
         # Slug automático
         if not self.slug:
