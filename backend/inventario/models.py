@@ -179,21 +179,26 @@ class Producto(models.Model):
                 contador += 1
             self.slug = slug
 
-        # Compresión de imágenes
-        if self.imagen_principal:
+        # ---------------------------------------------------------
+        # COMPRESIÓN SEGURA DE IMÁGENES (solo si son bytes)
+        # ---------------------------------------------------------
+        if self.imagen_principal and isinstance(self.imagen_principal, (bytes, bytearray)):
             data, mime = compress_image(self.imagen_principal, self.imagen_principal_mime)
-            self.imagen_principal = data
-            self.imagen_principal_mime = mime
+            if data:
+                self.imagen_principal = data
+                self.imagen_principal_mime = mime
 
-        if self.imagen_secundaria:
+        if self.imagen_secundaria and isinstance(self.imagen_secundaria, (bytes, bytearray)):
             data, mime = compress_image(self.imagen_secundaria, self.imagen_secundaria_mime)
-            self.imagen_secundaria = data
-            self.imagen_secundaria_mime = mime
+            if data:
+                self.imagen_secundaria = data
+                self.imagen_secundaria_mime = mime
 
-        if self.imagen_terciaria:
+        if self.imagen_terciaria and isinstance(self.imagen_terciaria, (bytes, bytearray)):
             data, mime = compress_image(self.imagen_terciaria, self.imagen_terciaria_mime)
-            self.imagen_terciaria = data
-            self.imagen_terciaria_mime = mime
+            if data:
+                self.imagen_terciaria = data
+                self.imagen_terciaria_mime = mime
 
         # Cálculos contables
         costo = to_decimal(self.costo_compra)
