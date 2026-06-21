@@ -1,14 +1,10 @@
 from django.contrib import admin
 from django import forms
 from django.utils.html import format_html
-import base64
 
 from .models import Producto
 
 
-# ---------------------------------------------------------
-#  FORMULARIO PERSONALIZADO PARA SUBIR IMÁGENES
-# ---------------------------------------------------------
 class ProductoForm(forms.ModelForm):
     imagen_principal_file = forms.FileField(required=False, label="Imagen principal")
     imagen_secundaria_file = forms.FileField(required=False, label="Imagen secundaria")
@@ -44,9 +40,6 @@ class ProductoForm(forms.ModelForm):
         return producto
 
 
-# ---------------------------------------------------------
-#  ADMIN PERSONALIZADO
-# ---------------------------------------------------------
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
     form = ProductoForm
@@ -72,23 +65,28 @@ class ProductoAdmin(admin.ModelAdmin):
                 "sku",
                 "marca",
                 "nombre",
-                "slug",
+                "slug",          # solo lectura
                 "descripcion",
                 "tamano",
                 "stock",
             )
         }),
 
-        ("Precios y costos", {
+        ("Precios y costos (editables)", {
             "fields": (
-                "costo_compra",
-                "taxes",
-                "precio_importacion",
+                "costo_compra",          # USD
+                "taxes",                 # USD
+                "precio_importacion",    # USD
+                "precio_venta_usd",      # USD
+                "precio_venta_soles",    # PEN
+                "precio_mercado_soles",  # PEN
+            )
+        }),
+
+        ("Contabilidad (calculado por el backend, solo lectura)", {
+            "fields": (
                 "valor_total_unidad",
                 "valor_general",
-                "precio_venta_usd",
-                "precio_venta_soles",
-                "precio_mercado_soles",
                 "descuento_soles",
                 "descuento_porcentaje",
                 "ganancia_unidad",
@@ -107,7 +105,7 @@ class ProductoAdmin(admin.ModelAdmin):
             )
         }),
 
-        ("Estado y analítica", {
+        ("Estado y analítica (solo lectura)", {
             "fields": (
                 "destacado",
                 "activo",
@@ -120,24 +118,40 @@ class ProductoAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = (
+        # imágenes
         "preview_principal",
         "preview_secundaria",
         "preview_terciaria",
+
+        # slug auto
+        "slug",
+
+        # contabilidad calculada
+        "valor_total_unidad",
+        "valor_general",
+        "descuento_soles",
+        "descuento_porcentaje",
+        "ganancia_unidad",
+        "ganancia_total",
+
+        # analítica calculada
+        "ventas_totales",
+        "busquedas_totales",
+        "calificacion_promedio",
+        "total_calificaciones",
     )
 
     # ---------------------------------------------------------
-    #  PREVIEWS DE IMÁGENES (BASE64 YA COMPRIMIDO)
+    # PREVIEWS DE IMÁGENES
     # ---------------------------------------------------------
     def _preview(self, data):
         if not data:
             return "Sin imagen"
-
         if isinstance(data, str) and data.startswith("data:image"):
             return format_html(
                 '<img src="{}" width="150" style="border-radius:8px;" />',
                 data
             )
-
         return "Sin imagen"
 
     def preview_principal(self, obj):

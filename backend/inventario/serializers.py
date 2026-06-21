@@ -20,13 +20,32 @@ class ProductoSerializer(serializers.ModelSerializer):
     categoria = CategoriaSerializer(read_only=True)
     subcategoria = SubcategoriaSerializer(read_only=True)
 
-    # 🔥 Las imágenes ya vienen como base64 desde el modelo
+    # Imágenes en base64
     imagen_principal = serializers.SerializerMethodField()
     imagen_secundaria = serializers.SerializerMethodField()
     imagen_terciaria = serializers.SerializerMethodField()
 
     class Meta:
         model = Producto
+        read_only_fields = [
+            # Slug auto
+            "slug",
+
+            # Contabilidad calculada
+            "valor_total_unidad",
+            "valor_general",
+            "descuento_soles",
+            "descuento_porcentaje",
+            "ganancia_unidad",
+            "ganancia_total",
+
+            # Analítica calculada
+            "ventas_totales",
+            "busquedas_totales",
+            "calificacion_promedio",
+            "total_calificaciones",
+        ]
+
         fields = [
             "id",
             "sku",
@@ -38,49 +57,51 @@ class ProductoSerializer(serializers.ModelSerializer):
             "categoria",
             "subcategoria",
             "stock",
+
+            # Precios editables
             "costo_compra",
             "taxes",
             "precio_importacion",
-            "valor_total_unidad",
-            "valor_general",
             "precio_venta_usd",
             "precio_venta_soles",
             "precio_mercado_soles",
+
+            # Contabilidad calculada
+            "valor_total_unidad",
+            "valor_general",
             "descuento_soles",
             "descuento_porcentaje",
             "ganancia_unidad",
             "ganancia_total",
 
-            # 🔥 Imágenes ya comprimidas y en base64
+            # Imágenes
             "imagen_principal",
             "imagen_secundaria",
             "imagen_terciaria",
 
+            # Estado
             "destacado",
             "activo",
+
+            # Analítica calculada
             "ventas_totales",
             "busquedas_totales",
             "calificacion_promedio",
             "total_calificaciones",
-            "fecha_creacion",
-            "fecha_actualizacion",
+
+            # Nuevos campos
+            "verificacion_katy",
+            "cantidad_recibida",
         ]
 
     # ---------------------------------------------------------
-    # 🔥 MÉTODOS PARA DEVOLVER BASE64 YA LISTO
+    # IMÁGENES BASE64
     # ---------------------------------------------------------
     def _return_image(self, data):
-        """
-        Las imágenes YA están en base64 desde el modelo.
-        Solo devolvemos la cadena si existe y es válida.
-        """
         if not data:
             return None
-
-        # Validación mínima para evitar errores
         if isinstance(data, str) and data.startswith("data:image"):
             return data
-
         return None
 
     def get_imagen_principal(self, obj):

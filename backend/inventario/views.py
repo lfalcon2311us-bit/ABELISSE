@@ -6,7 +6,7 @@ from .serializers import CategoriaSerializer, ProductoSerializer
 
 
 # ---------------------------------------------------------
-#  CATEGORÍAS
+# CATEGORÍAS
 # ---------------------------------------------------------
 class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Categoria.objects.all().order_by("nombre")
@@ -15,7 +15,7 @@ class CategoriaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 # ---------------------------------------------------------
-#  PRODUCTOS
+# PRODUCTOS (LISTA + DETALLE POR ID)
 # ---------------------------------------------------------
 class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProductoSerializer
@@ -25,17 +25,17 @@ class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = Producto.objects.filter(activo=True).order_by("sku")
 
-        # 🔥 FILTRO POR CATEGORÍA
+        # Filtro por categoría
         categoria_slug = self.request.query_params.get("categoria")
         if categoria_slug:
             queryset = queryset.filter(categoria__slug__iexact=categoria_slug)
 
-        # 🔥 FILTRO POR SUBCATEGORÍA
+        # Filtro por subcategoría
         subcategoria_slug = self.request.query_params.get("subcategoria")
         if subcategoria_slug:
             queryset = queryset.filter(subcategoria__slug__iexact=subcategoria_slug)
 
-        # 🔥 FILTRO POR MARCA
+        # Filtro por marca
         marca = self.request.query_params.get("marca")
         if marca:
             queryset = queryset.filter(marca__iexact=marca)
@@ -45,7 +45,7 @@ class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
     def get_object(self):
         pk = self.kwargs.get(self.lookup_url_kwarg)
 
-        # 🔥 Validación segura del ID
+        # Validación segura del ID
         try:
             pk_int = int(pk)
         except (TypeError, ValueError):
@@ -55,7 +55,7 @@ class ProductoViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 # ---------------------------------------------------------
-#  PRODUCTOS DESTACADOS
+# PRODUCTOS DESTACADOS
 # ---------------------------------------------------------
 class ProductosDestacados(generics.ListAPIView):
     serializer_class = ProductoSerializer
