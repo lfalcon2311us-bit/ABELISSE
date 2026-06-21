@@ -63,7 +63,7 @@ export default function HeroPremium() {
 
         {/* Imagen */}
         <div className="flex justify-center md:justify-end animate-[float_4s_ease-in-out_infinite]">
-          <div className="w-[260px] h-[260px] rounded-full flex items-center justify-center overflow-hidden bg-transparent shadow-xl shadow-pink-200/40">
+          <div className="w-[260px] h-[260px] rounded-full flex items-center justify-center overflow-hidden bg-transparent">
             <Image
               src="/logo.png"
               alt="Logo ABELISSE"

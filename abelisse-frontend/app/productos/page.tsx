@@ -8,10 +8,14 @@ export default function ProductosPage({ searchParams }: any) {
   const [lista, setLista] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Filtros existentes
   const categoria = searchParams?.categoria || "";
   const subcategoria = searchParams?.subcategoria || "";
   const marca = searchParams?.marca || "";
   const orden = searchParams?.orden || "desc";
+
+  // NUEVO: búsqueda desde el navbar
+  const q = searchParams?.q?.toLowerCase() || "";
 
   useEffect(() => {
     async function fetchProductos() {
@@ -32,6 +36,16 @@ export default function ProductosPage({ searchParams }: any) {
 
         let arr = Array.isArray(productos) ? productos : [];
 
+        // 🔍 FILTRO DE BÚSQUEDA (q)
+        if (q) {
+          arr = arr.filter((p: any) =>
+            p.nombre?.toLowerCase().includes(q) ||
+            p.marca?.toLowerCase().includes(q) ||
+            p.descripcion?.toLowerCase().includes(q)
+          );
+        }
+
+        // Ordenar por precio
         arr = arr.sort((a: any, b: any) => {
           const pa = Number(a.precio_venta_soles ?? 0);
           const pb = Number(b.precio_venta_soles ?? 0);
@@ -48,7 +62,7 @@ export default function ProductosPage({ searchParams }: any) {
     }
 
     fetchProductos();
-  }, [categoria, subcategoria, marca, orden]);
+  }, [categoria, subcategoria, marca, orden, q]);
 
   if (loading) {
     return (
@@ -61,6 +75,13 @@ export default function ProductosPage({ searchParams }: any) {
   return (
     <main className="max-w-7xl mx-auto px-4 py-16">
       <h1 className="text-3xl font-semibold mb-10">Productos</h1>
+
+      {/* Mostrar texto de búsqueda */}
+      {q && (
+        <p className="text-gray-600 mb-6">
+          Resultados para: <strong>{q}</strong>
+        </p>
+      )}
 
       {/* FILTROS */}
       <div className="mb-10 grid grid-cols-2 md:grid-cols-4 gap-4">
