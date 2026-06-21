@@ -1,14 +1,10 @@
 from django.contrib import admin
 from django import forms
 from django.utils.html import format_html
-import base64
 
 from .models import Producto
 
 
-# ---------------------------------------------------------
-#  FORMULARIO PERSONALIZADO PARA SUBIR IMÁGENES
-# ---------------------------------------------------------
 class ProductoForm(forms.ModelForm):
     imagen_principal_file = forms.FileField(required=False, label="Imagen principal")
     imagen_secundaria_file = forms.FileField(required=False, label="Imagen secundaria")
@@ -21,19 +17,16 @@ class ProductoForm(forms.ModelForm):
     def save(self, commit=True):
         producto = super().save(commit=False)
 
-        # Imagen principal
         file = self.cleaned_data.get("imagen_principal_file")
         if file:
             producto.imagen_principal = file.read()
             producto.imagen_principal_mime = file.content_type
 
-        # Imagen secundaria
         file = self.cleaned_data.get("imagen_secundaria_file")
         if file:
             producto.imagen_secundaria = file.read()
             producto.imagen_secundaria_mime = file.content_type
 
-        # Imagen terciaria
         file = self.cleaned_data.get("imagen_terciaria_file")
         if file:
             producto.imagen_terciaria = file.read()
@@ -44,9 +37,6 @@ class ProductoForm(forms.ModelForm):
         return producto
 
 
-# ---------------------------------------------------------
-#  ADMIN PERSONALIZADO
-# ---------------------------------------------------------
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
     form = ProductoForm
@@ -125,19 +115,11 @@ class ProductoAdmin(admin.ModelAdmin):
         "preview_terciaria",
     )
 
-    # ---------------------------------------------------------
-    #  PREVIEWS DE IMÁGENES (BASE64 YA COMPRIMIDO)
-    # ---------------------------------------------------------
     def _preview(self, data):
         if not data:
             return "Sin imagen"
-
         if isinstance(data, str) and data.startswith("data:image"):
-            return format_html(
-                '<img src="{}" width="150" style="border-radius:8px;" />',
-                data
-            )
-
+            return format_html('<img src="{}" width="150" style="border-radius:8px;" />', data)
         return "Sin imagen"
 
     def preview_principal(self, obj):
