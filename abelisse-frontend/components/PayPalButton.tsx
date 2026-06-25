@@ -23,23 +23,22 @@ export default function PayPalButton({
   const cart = useCartStore((state) => state.cart);
 
   useEffect(() => {
-    // ⭐ Limpiar contenedor antes de renderizar
     const container = document.getElementById("paypal-button-container");
     if (container) container.innerHTML = "";
 
-    // ⭐ Evitar múltiples SDK cargados
     const oldScript = document.getElementById("paypal-sdk");
     if (oldScript) oldScript.remove();
 
     const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-    const backend = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-    if (!clientId || !backend) {
-      console.error("❌ Falta configuración de PayPal o BACKEND_URL");
+    // ⭐ URL FIJA DEL BACKEND
+    const backend = "https://abelisse.onrender.com";
+
+    if (!clientId) {
+      console.error("❌ Falta configuración de PayPal");
       return;
     }
 
-    // ⭐ Cargar SDK
     const script = document.createElement("script");
     script.id = "paypal-sdk";
     script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}&components=buttons&enable-funding=paylater`;
@@ -55,10 +54,8 @@ export default function PayPalButton({
         .Buttons({
           fundingSource: undefined,
 
-          // ⭐ Crear orden en tu backend
           createOrder: async () => {
             try {
-              // Guardar carrito pagado ANTES de crear la orden
               sessionStorage.setItem("carrito_pagado", JSON.stringify(cart));
 
               const res = await fetch(`${backend}/api/paypal/create-order/`, {
@@ -74,19 +71,13 @@ export default function PayPalButton({
 
               const data = await res.json();
 
-              if (!data.order_id && !data.id) {
-                console.error("❌ Respuesta inválida del backend:", data);
-                return "";
-              }
-
-              return data.order_id || data.id;
+              return data.order_id || data.id || "";
             } catch (error) {
               console.error("❌ Error creando orden PayPal:", error);
               return "";
             }
           },
 
-          // ⭐ Capturar orden
           onApprove: async (data: any) => {
             try {
               const res = await fetch(`${backend}/api/paypal/capture-order/`, {
@@ -101,12 +92,11 @@ export default function PayPalButton({
                 window.location.href = "/pago-fallido";
               }
             } catch (error) {
-              console.error("❌ Error capturando orden:", error);
+              console.error("❌ Error capturando orden PayPal:", error);
               window.location.href = "/pago-fallido";
             }
           },
 
-          // ⭐ Error general
           onError: () => {
             console.error("❌ Error en PayPal");
             window.location.href = "/pago-fallido";

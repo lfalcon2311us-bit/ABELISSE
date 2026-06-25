@@ -8,6 +8,9 @@ from pagos.models import Orden
 from inventario.models import Producto
 
 
+# ---------------------------------------------------------
+# ⭐ ESTADÍSTICAS GENERALES
+# ---------------------------------------------------------
 class EstadisticasView(APIView):
     def get(self, request):
         hoy = timezone.now().date()
@@ -50,7 +53,7 @@ class EstadisticasView(APIView):
         # PRODUCTOS
         # -----------------------------
         productos_mas_vendidos = Producto.objects.order_by("-ventas_totales")[:5].values(
-            "id", "nombre", "ventas_totales", "precio"
+            "id", "nombre", "ventas_totales"
         )
 
         inventario_bajo = Producto.objects.filter(stock__lt=5).values(
@@ -101,3 +104,87 @@ class EstadisticasView(APIView):
                 "tasa_conversion": tasa_conversion,
             }
         })
+
+
+# ---------------------------------------------------------
+# ⭐ TOP 5 MÁS VENDIDOS
+# ---------------------------------------------------------
+class TopMasVendidosView(APIView):
+    def get(self, request):
+        productos = (
+            Producto.objects.filter(activo=True)
+            .order_by("-ventas_totales")[:5]
+            .values(
+                "id",
+                "nombre",
+                "ventas_totales",
+                "precio_venta_usd",
+                "precio_venta_soles",
+                "imagen_principal",
+                "slug",
+            )
+        )
+        return Response(list(productos))
+
+
+# ---------------------------------------------------------
+# ⭐ TOP 5 MÁS BUSCADOS
+# ---------------------------------------------------------
+class TopMasBuscadosView(APIView):
+    def get(self, request):
+        productos = (
+            Producto.objects.filter(activo=True)
+            .order_by("-busquedas_totales")[:5]
+            .values(
+                "id",
+                "nombre",
+                "busquedas_totales",
+                "precio_venta_usd",
+                "precio_venta_soles",
+                "imagen_principal",
+                "slug",
+            )
+        )
+        return Response(list(productos))
+
+
+# ---------------------------------------------------------
+# ⭐ TOP 5 MEJOR CALIFICADOS
+# ---------------------------------------------------------
+class TopMejorCalificadosView(APIView):
+    def get(self, request):
+        productos = (
+            Producto.objects.filter(activo=True)
+            .order_by("-calificacion_promedio", "-total_calificaciones")[:5]
+            .values(
+                "id",
+                "nombre",
+                "calificacion_promedio",
+                "total_calificaciones",
+                "precio_venta_usd",
+                "precio_venta_soles",
+                "imagen_principal",
+                "slug",
+            )
+        )
+        return Response(list(productos))
+
+
+# ---------------------------------------------------------
+# ⭐ TOP 5 PRODUCTOS NUEVOS
+# ---------------------------------------------------------
+class TopNuevosView(APIView):
+    def get(self, request):
+        productos = (
+            Producto.objects.filter(activo=True)
+            .order_by("-id")[:5]
+            .values(
+                "id",
+                "nombre",
+                "precio_venta_usd",
+                "precio_venta_soles",
+                "imagen_principal",
+                "slug",
+            )
+        )
+        return Response(list(productos))
