@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import ProductCardPremium from "@/components/ProductCardPremium";
-import { API_URL, safeFetch } from "@/lib/api";
+
+// ⭐ URL FIJA DEL BACKEND (Squarespace NO soporta env vars)
+const API_URL = "https://abelisse.onrender.com/api";
 
 export default function ProductosPage({ searchParams }: any) {
   const [lista, setLista] = useState<any[]>([]);
@@ -24,8 +26,8 @@ export default function ProductosPage({ searchParams }: any) {
   useEffect(() => {
     async function fetchFiltros() {
       try {
-        const cats = await safeFetch(`${API_URL}/categorias/`, {}, {});
-        const subs = await safeFetch(`${API_URL}/subcategorias/`, {}, {});
+        const cats = await fetch(`${API_URL}/categorias/`).then((r) => r.json());
+        const subs = await fetch(`${API_URL}/subcategorias/`).then((r) => r.json());
 
         setCategorias(Array.isArray(cats) ? cats : []);
         setSubcategorias(Array.isArray(subs) ? subs : []);
@@ -51,7 +53,7 @@ export default function ProductosPage({ searchParams }: any) {
 
         const url = `${API_URL}/productos/?${query.toString()}`;
 
-        const productos = await safeFetch(url, {}, {});
+        const productos = await fetch(url).then((r) => r.json());
 
         let arr = Array.isArray(productos) ? productos : [];
 

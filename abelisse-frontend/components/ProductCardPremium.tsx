@@ -9,19 +9,22 @@ import Toast from "@/components/Toast";
 
 interface Props {
   id: number;
-  nombre: string | null;
+  nombre?: string | null;
 
-  precio_venta_soles: number | string | null;
-  precio_mercado_soles: number | string | null;
-  descuento_porcentaje: number | string | null;
+  precio_venta_soles?: number | string | null;
+  precio_mercado_soles?: number | string | null;
+  descuento_porcentaje?: number | string | null;
 
-  imagen_principal: string | null;
+  imagen_principal?: string | null;
   imagen_secundaria?: string | null;
   imagen_terciaria?: string | null;
 
   precio_venta_usd?: number | string | null;
   descripcion?: string | null;
+
   calificacion_promedio?: number | null;
+  total_calificaciones?: number | null;
+
   stock?: number | null;
 }
 
@@ -39,7 +42,9 @@ export default function ProductCardPremium(props: Props) {
     stock,
   } = props;
 
+  // ⭐ Defaults seguros
   const safeName = nombre ?? "Producto sin nombre";
+  const safeStock = Number(stock ?? 0);
 
   const imagen =
     typeof imagen_principal === "string" && imagen_principal.length > 10
@@ -56,6 +61,7 @@ export default function ProductCardPremium(props: Props) {
   const isPeru = currency === "PEN";
   const symbol = isPeru ? "S/" : "$";
 
+  // ⭐ Precios seguros
   const precioSoles = Number(precio_venta_soles ?? 0);
   const precioMercado = Number(precio_mercado_soles ?? 0);
   const precioUSD = Number(precio_venta_usd ?? 0);
@@ -65,14 +71,14 @@ export default function ProductCardPremium(props: Props) {
   const marketPriceDisplay =
     precioMercado > 0 ? (isPeru ? precioMercado : precioMercado / 3.5) : 0;
 
+  // ⭐ Descripción segura
   const desc = descripcion ?? "";
   const shortDescription =
     desc.length > 120 ? desc.slice(0, 120) + "..." : desc;
 
+  // ⭐ Rating seguro
   const rating = Number(calificacion_promedio ?? 0);
   const roundedRating = Math.round(rating);
-
-  const safeStock = Number(stock ?? 0);
 
   return (
     <>
@@ -93,6 +99,7 @@ export default function ProductCardPremium(props: Props) {
           <div className="p-5">
             <h3 className="text-lg font-semibold mb-1">{safeName}</h3>
 
+            {/* ⭐ Rating seguro */}
             <div className="flex items-center gap-1 mb-2">
               {Array.from({ length: 5 }).map((_, i) => (
                 <span key={i} className="text-yellow-400 text-sm">
@@ -104,6 +111,7 @@ export default function ProductCardPremium(props: Props) {
               </span>
             </div>
 
+            {/* ⭐ Descripción segura */}
             <p
               className="text-sm text-gray-600 mb-3 cursor-pointer"
               onClick={(e) => {
@@ -114,6 +122,7 @@ export default function ProductCardPremium(props: Props) {
               {showFullDesc ? desc : shortDescription}
             </p>
 
+            {/* ⭐ Precios seguros */}
             <div className="mb-4">
               <p className="text-pink-600 font-semibold text-lg">
                 {symbol} {priceDisplay.toFixed(2)}
@@ -132,6 +141,7 @@ export default function ProductCardPremium(props: Props) {
               )}
             </div>
 
+            {/* ⭐ Botón seguro */}
             <button
               onClick={(e) => {
                 e.preventDefault();

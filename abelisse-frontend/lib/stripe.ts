@@ -1,7 +1,9 @@
 import { loadStripe } from "@stripe/stripe-js";
 
 const STRIPE_PUBLIC_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+// ⭐ URL FIJA DEL BACKEND (Squarespace NO soporta variables de entorno)
+const BACKEND_URL = "https://abelisse.onrender.com";
 
 export async function iniciarPago({
   total,
@@ -15,11 +17,7 @@ export async function iniciarPago({
   nombre: string;
 }) {
   if (!STRIPE_PUBLIC_KEY) {
-    throw new Error("Falta NEXT_PUBLIC_STRIPE_PUBLIC_KEY en variables de entorno");
-  }
-
-  if (!BACKEND_URL) {
-    throw new Error("Falta NEXT_PUBLIC_BACKEND_URL en variables de entorno");
+    throw new Error("Falta NEXT_PUBLIC_STRIPE_PUBLIC_KEY");
   }
 
   if (!Number.isFinite(total) || total <= 0) {
@@ -62,11 +60,9 @@ export async function iniciarPago({
     throw new Error("No se recibió checkout_url de Stripe");
   }
 
-  // ⭐ Asegurar URL válida
   const checkoutUrl = data.checkout_url.startsWith("http")
     ? data.checkout_url
     : `https://${data.checkout_url}`;
 
-  // ⭐ Redirigir al checkout de Stripe
   window.location.href = checkoutUrl;
 }
