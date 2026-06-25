@@ -22,7 +22,13 @@ from pagos.webhook import stripe_webhook, paypal_webhook, yape_webhook
 from pagos.views_paypal import paypal_create_order, paypal_capture_order
 
 # Estadísticas
-from pagos.views_estadisticas import EstadisticasView
+from pagos.views_estadisticas import (
+    EstadisticasView,
+    TopMasVendidosView,
+    TopMasBuscadosView,
+    TopMejorCalificadosView,
+    TopNuevosView,
+)
 
 # GEO
 from pagos.views_geo import detectar_pais
@@ -91,8 +97,16 @@ urlpatterns = [
     # Yape
     path("api/yape/webhook/", yape_webhook),
 
-    # Estadísticas
+    # Estadísticas generales
     path("api/estadisticas/", EstadisticasView.as_view()),
+
+    # ---------------------------------------------------------
+    # ⭐ TOP 5 ENDPOINTS
+    # ---------------------------------------------------------
+    path("api/estadisticas/top-vendidos/", TopMasVendidosView.as_view()),
+    path("api/estadisticas/top-buscados/", TopMasBuscadosView.as_view()),
+    path("api/estadisticas/top-calificados/", TopMejorCalificadosView.as_view()),
+    path("api/estadisticas/nuevos/", TopNuevosView.as_view()),
 
     # Swagger
     re_path(r"^docs/$", schema_view.with_ui("swagger", cache_timeout=0)),
