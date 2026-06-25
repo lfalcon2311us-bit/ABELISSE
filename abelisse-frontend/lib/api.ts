@@ -1,60 +1,33 @@
 import { reportErrorToBackend } from "./logger";
 
-let reportedErrors = new Set();
+const BACKEND_URL = "https://abelisse.onrender.com/api";
 
-function shouldReport(key: string) {
-  if (reportedErrors.has(key)) return false;
-  reportedErrors.add(key);
-  return true;
-}
+export const API_URL = BACKEND_URL;
 
-function normalizeBackendUrl() {
-  let raw = process.env.NEXT_PUBLIC_BACKEND_URL || "";
-
-  if (!raw) return null;
-
-  raw = raw.trim().replace(/\/+$/, "");
-
-  if (!raw.startsWith("http")) raw = `https://${raw}`;
-
+export async function safeFetch(
+  url: string,
+  options: RequestInit = {},
+  context: any
+) {
   try {
-    new URL(raw);
-  } catch {
-    return null;
-  }
-
-  return raw;
-}
-
-const safeBackend = normalizeBackendUrl();
-export const API_URL = safeBackend ? `${safeBackend}/api` : "";
-
-export async function safeFetch(url: string, options: RequestInit = {}, context: any) {
-  const key = `${context.file}-${context.functionName}-${url}`;
-
-  try {
-    const res = await fetch(url, { cache: "force-cache", ...options });
+    const res = await fetch(url, { cache: "no-store", ...options });
 
     if (!res.ok) {
-      if (shouldReport(key)) {
-        await reportErrorToBackend(`Respuesta no OK (${res.status})`, null, {
-          ...context,
-          requestUrl: url,
-          requestMethod: options.method || "GET",
-        });
-      }
+      await reportErrorToBackend(`Respuesta no OK (${res.status})`, null, {
+        ...context,
+        requestUrl: url,
+        requestMethod: options.method || "GET",
+      });
       return null;
     }
 
     return await res.json();
   } catch (error) {
-    if (shouldReport(key)) {
-      await reportErrorToBackend("Error de conexión con el backend", error, {
-        ...context,
-        requestUrl: url,
-        requestMethod: options.method || "GET",
-      });
-    }
+    await reportErrorToBackend("Error de conexión con el backend", error, {
+      ...context,
+      requestUrl: url,
+      requestMethod: options.method || "GET",
+    });
     return null;
   }
 }
