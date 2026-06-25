@@ -1,15 +1,6 @@
 import { safeFetch, API_URL } from "@/lib/api";
 import ProductoClient from "./ProductoClient";
 
-// Normaliza y limpia el ID
-function limpiarId(raw: string): string | null {
-  if (!raw) return null;
-
-  const limpio = raw.split("?")[0].split("&")[0].trim();
-
-  return /^\d+$/.test(limpio) ? limpio : null;
-}
-
 async function getProductoSeguro(id: string) {
   const url = `${API_URL}/productos/${id}/`;
 
@@ -42,7 +33,8 @@ interface ProductoPageProps {
 }
 
 export default async function ProductoPage({ params }: ProductoPageProps) {
-  const id = limpiarId(params.id);
+  // 🔥 Usa el id tal cual viene de la URL, sin limpiar ni nada raro
+  const id = params.id;
 
   if (!id) {
     return (
