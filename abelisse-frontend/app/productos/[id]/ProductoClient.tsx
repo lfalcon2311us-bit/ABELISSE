@@ -5,17 +5,13 @@ import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import Toast from "@/components/Toast";
 
-interface ProductoClientProps {
-  producto: any;
-}
-
-export default function ProductoClient({ producto }: ProductoClientProps) {
+export default function ProductoClient({ producto }: any) {
   const addToCart = useCartStore((state) => state.addToCart);
 
   const [cantidad, setCantidad] = useState(1);
   const [toast, setToast] = useState("");
 
-  // Mostrar todas las imágenes válidas
+  // Mostrar todas las imágenes válidas (aunque ahora estén en null)
   const imagenes = [
     producto.imagen_principal,
     producto.imagen_secundaria,
@@ -95,16 +91,12 @@ export default function ProductoClient({ producto }: ProductoClientProps) {
         <p><strong>Subcategoría:</strong> {subcategoria}</p>
       </div>
 
-      {/* Selector de cantidad + botón */}
+      {/* Cantidad + botón */}
       <div className="mt-10 flex items-center gap-6">
         <div className="flex items-center gap-3 border rounded-full px-4 py-2">
-          <button onClick={disminuir} className="text-xl font-bold px-2">
-            -
-          </button>
+          <button onClick={disminuir} className="text-xl font-bold px-2">-</button>
           <span className="text-lg font-semibold">{cantidad}</span>
-          <button onClick={aumentar} className="text-xl font-bold px-2">
-            +
-          </button>
+          <button onClick={aumentar} className="text-xl font-bold px-2">+</button>
         </div>
 
         <button
