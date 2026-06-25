@@ -22,6 +22,9 @@ interface AddProductPayload {
   precio_venta_usd?: number | string | null;
 
   stock?: number | null;
+
+  // ⭐ AHORA SÍ: cantidad personalizada
+  quantity?: number;
 }
 
 interface CartState {
@@ -42,31 +45,29 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       cart: [],
 
+      // ⭐ AHORA addToCart soporta quantity personalizada
       addToCart: (product) =>
         set((state) => {
           const exists = state.cart.find((p) => p.id === product.id);
 
-          // ⭐ Conversión segura sin inventar valores
           const precioSoles = Number(product.precio_venta_soles ?? 0);
           const precioUSD = Number(product.precio_venta_usd ?? 0);
-
           const safeSoles = Number.isFinite(precioSoles) ? precioSoles : 0;
           const safeUSD = Number.isFinite(precioUSD) ? precioUSD : 0;
 
-          const safeStock = Number.isFinite(Number(product.stock))
-            ? Number(product.stock)
-            : 0;
+          const safeStock = Number(product.stock ?? 0);
+          const qty = Number(product.quantity ?? 1); // ⭐ cantidad enviada
 
           if (exists) {
+            const nuevaCantidad = exists.quantity + qty;
+
             return {
               cart: state.cart.map((p) =>
                 p.id === product.id
                   ? {
                       ...p,
                       quantity:
-                        p.quantity + 1 <= p.stock
-                          ? p.quantity + 1
-                          : p.quantity,
+                        nuevaCantidad <= p.stock ? nuevaCantidad : p.stock,
                     }
                   : p
               ),
@@ -80,7 +81,7 @@ export const useCartStore = create<CartState>()(
                 id: product.id,
                 nombre: product.nombre,
                 imagen_principal: product.imagen_principal,
-                quantity: 1,
+                quantity: qty, // ⭐ cantidad inicial
                 precio_soles: safeSoles,
                 precio_usd: safeUSD,
                 stock: safeStock,
@@ -132,7 +133,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "abelisse-cart",
-      version: 4,
+      version: 5,
 
       migrate: (persistedState: any) => {
         if (!persistedState?.cart) return { cart: [] };
