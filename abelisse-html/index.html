@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABELISSE – Cosmética y Belleza Premium</title>
+<meta name="description" content="ABELISSE es tu tienda online de cosmética, belleza y cuidado personal.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Sprite de iconos reutilizados en todo el sitio -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="icon-star" viewBox="0 0 24 24">
+      <path d="M12 .587l3.668 7.568L24 9.748l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.595 0 9.748l8.332-1.593z"/>
+    </symbol>
+    <symbol id="icon-bottle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 3h6M10 3v3.2c0 .4-.15.78-.42 1.07L8 9v10a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V9l-1.58-1.73A1.6 1.6 0 0 1 14 6.2V3"/>
+      <path d="M8.5 13h7"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="header">
+
+  <!-- Notificación premium -->
+  <div class="header-toast" id="toast">Producto no encontrado</div>
+
+  <nav class="header-inner container">
+
+    <!-- LOGO + BUSCADOR -->
+    <div class="header-left">
+      <a href="/" class="header-logo">ABELISSE</a>
+
+      <div class="header-search">
+        <input type="text" id="searchInput" placeholder="Buscar productos..." />
+        <button id="searchBtn">IR</button>
+      </div>
+    </div>
+
+    <!-- BOTÓN HAMBURGUESA -->
+    <button class="header-toggle" id="menuToggle">☰</button>
+
+    <!-- LINKS -->
+    <div class="header-nav" id="navMenu">
+      <a href="/" class="nav-link">Inicio</a>
+      <a href="/productos" class="nav-link">Productos</a>
+      <a href="/ofertas" class="nav-link">Ofertas</a>
+      <a href="/contacto" class="nav-link">Contacto</a>
+
+      <a href="/carrito" class="nav-cart">
+        Carrito
+        <span class="cart-count">2</span>
+      </a>
+    </div>
+
+  </nav>
+</header>
+
+
+<section class="hero">
+  
+  <!-- Fondo decorativo -->
+  <div class="hero-bg"></div>
+
+  <!-- Overlay suave -->
+  <div class="hero-overlay"></div>
+
+  <div class="hero-inner container">
+
+    <!-- Texto -->
+    <div class="hero-text">
+      <p class="hero-eyebrow">COSMÉTICA & BELLEZA</p>
+
+      <h1 class="hero-title">
+        Belleza que realza tu esencia
+      </h1>
+
+      <p class="hero-desc">
+        Productos seleccionados para iluminar tu mejor versión.
+      </p>
+
+      <div class="hero-actions">
+        <a href="/productos" class="btn btn-primary">Explorar productos</a>
+        <a href="/ofertas" class="btn btn-outline">Ver ofertas</a>
+      </div>
+    </div>
+
+    <!-- Imagen -->
+    <div class="hero-art">
+      <div class="hero-logo">
+        <img src="img/logo.png" alt="Logo ABELISSE">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===================== CATEGORÍAS ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Categorías principales</h2>
+      <p>Encuentra lo que necesitas según tu rutina de belleza.</p>
+    </div>
+
+    <div class="categories-grid">
+      <a class="category-card" href="productos.html?categoria=maquillaje">
+        <span class="category-card__icon"><svg width="22" height="22"><use href="#icon-star"/></svg></span>
+        <span>Maquillaje</span>
+      </a>
+
+      <a class="category-card" href="productos.html?categoria=cuidado-facial">
+        <span class="category-card__icon"><svg width="22" height="22"><use href="#icon-star"/></svg></span>
+        <span>Cuidado Facial</span>
+      </a>
+
+      <a class="category-card" href="productos.html?categoria=cabello">
+        <span class="category-card__icon"><svg width="22" height="22"><use href="#icon-star"/></svg></span>
+        <span>Cabello</span>
+      </a>
+
+      <a class="category-card" href="productos.html?categoria=cuidado-corporal">
+        <span class="category-card__icon"><svg width="22" height="22"><use href="#icon-star"/></svg></span>
+        <span>Cuidado Corporal</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- =========Tarjetas de productos ========= -->
+ <div id="product-list"></div>
+
+<script src="js/product-card.js"></script>
+<script>
+  loadProducts("product-list", "https://abelisse.onrender.com/api/productos/");
+</script>
+
+
+<!-- ===================== MÁS VENDIDOS ===================== -->
+<section class="section section--tight">
+  <div class="container">
+    <div class="section-head-row">
+      <h2>Más vendidos</h2>
+      <a class="see-all" href="productos.html?orden=mas-vendidos">Ver todos</a>
+    </div>
+
+    <div id="top-vendidos" class="product-grid"></div>
+  </div>
+</section>
+
+
+<!-- ===================== MÁS BUSCADOS ===================== -->
+<section class="section section--tight">
+  <div class="container">
+    <div class="section-head-row">
+      <h2>Más buscados</h2>
+      <a class="see-all" href="productos.html?orden=mas-buscados">Ver todos</a>
+    </div>
+
+    <div id="top-buscados" class="product-grid"></div>
+  </div>
+</section>
+
+
+<!-- ===================== NUEVOS ===================== -->
+<section class="section section--tight">
+  <div class="container">
+    <div class="section-head-row">
+      <h2>Nuevos</h2>
+      <a class="see-all" href="productos.html?orden=nuevos">Ver todos</a>
+    </div>
+
+    <div id="top-nuevos" class="product-grid"></div>
+  </div>
+</section>
+
+
+<!-- ===================== MEJOR CALIFICADOS ===================== -->
+<section class="section section--tight">
+  <div class="container">
+    <div class="section-head-row">
+      <h2>Mejor calificados</h2>
+      <a class="see-all" href="productos.html?orden=mejor-calificados">Ver todos</a>
+    </div>
+
+    <div id="top-calificados" class="product-grid"></div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="footer-grid container">
+
+    <!-- Marca -->
+    <div class="footer-brand">
+      <p class="footer-logo">ABELISSE</p>
+      <p class="footer-desc">
+        Cosmética y belleza para realzar tu esencia cada día.
+      </p>
+    </div>
+
+    <!-- Información -->
+    <div class="footer-info">
+      <p class="footer-title">Información</p>
+      <ul>
+        <li><a href="/politica-de-privacidad">Política de privacidad</a></li>
+        <li><a href="/terminos-y-condiciones">Términos y condiciones</a></li>
+        <li><a href="/envios-y-devoluciones">Envíos y devoluciones</a></li>
+      </ul>
+    </div>
+
+    <!-- Contacto -->
+    <div class="footer-contact">
+      <p class="footer-title">Contacto</p>
+      <ul>
+        <li>contacto@abelisse.com</li>
+
+        <li class="footer-social">
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/abelisse_usa/" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+            Instagram
+          </a>
+
+          <span class="footer-dot">·</span>
+
+          <!-- TikTok -->
+          <a href="https://www.tiktok.com/@abelisse_usa" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor">
+              <path d="M12.5 2c.3 0 .6.2.6.5.2 2.2 1.8 3.9 4 4 .3 0 .5.3.5.6v2.1c0 .3-.3.6-.6.6-1.7 0-3.3-.6-4.5-1.7v6.9c0 2.6-2.1 4.8-4.8 4.8S3 17.6 3 15s2.1-4.8 4.8-4.8c.3 0 .6.3.6.6v2.2c0 .3-.3.6-.6.6-1.2 0-2.2 1-2.2 2.2S6.6 18 7.8 18s2.2-1 2.2-2.2V2.5c0-.3.3-.5.5-.5h2z" />
+            </svg>
+            TikTok
+          </a>
+        </li>
+
+        <li>Atención al cliente 24/7</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Línea inferior -->
+  <div class="footer-bottom">
+    © 2026 ABELISSE. Todos los derechos reservados.
+  </div>
+</footer>
+
+<script src="js/product-card.js"></script>
+
+<script>
+  loadTopHome("top-vendidos", "https://abelisse.onrender.com/api/estadisticas/top-vendidos/");
+  loadTopHome("top-buscados", "https://abelisse.onrender.com/api/estadisticas/top-buscados/");
+  loadTopHome("top-nuevos", "https://abelisse.onrender.com/api/estadisticas/nuevos/");
+  loadTopHome("top-calificados", "https://abelisse.onrender.com/api/estadisticas/top-calificados/");
+</script>
+
+
+<script src="js/main.js"></script>
+</body>
+</html>

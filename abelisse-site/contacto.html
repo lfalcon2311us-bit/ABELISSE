@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contáctanos – ABELISSE</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__bar container">
+    <a href="index.html" class="logo">ABELISSE</a>
+    <form class="search-form" action="productos.html" method="get">
+      <input type="search" name="q" placeholder="Buscar productos...">
+      <button type="submit">IR</button>
+    </form>
+    <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+    <nav class="main-nav">
+      <a href="index.html">Inicio</a>
+      <a href="productos.html">Productos</a>
+      <a href="ofertas.html">Ofertas</a>
+      <a href="contacto.html" class="is-active">Contacto</a>
+      <a href="carrito.html" class="nav-cart">Carrito <span class="cart-count">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<div class="container page-head">
+  <p class="breadcrumb"><a href="index.html">Home</a><span class="sep">›</span><span class="current">Contacto</span></p>
+  <h1>Contáctanos</h1>
+  <p>¿Tienes dudas, sugerencias o necesitas ayuda? Estamos aquí para ti.</p>
+</div>
+
+<div class="container" style="padding-bottom:80px;">
+  <!-- Conecta este formulario a tu backend / servicio de correo (Formspree, EmailJS, tu propia API, etc.) -->
+  <form class="contact-card" id="contact-form">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Correo electrónico</label>
+      <input type="email" id="email" name="email" placeholder="tuemail@ejemplo.com" required>
+    </div>
+    <div class="form-group">
+      <label for="mensaje">Mensaje</label>
+      <textarea id="mensaje" name="mensaje" placeholder="Escribe tu mensaje aquí..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Enviar mensaje</button>
+    <p class="form-note">Te responderemos a la brevedad posible.</p>
+  </form>
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer__grid container">
+    <div>
+      <h4>ABELISSE</h4>
+      <p>Cosmética y belleza para realzar tu esencia cada día.</p>
+    </div>
+    <div>
+      <h5>Información</h5>
+      <ul>
+        <li><a href="politica-de-privacidad.html">Política de privacidad</a></li>
+        <li><a href="terminos-y-condiciones.html">Términos y condiciones</a></li>
+        <li><a href="envios-y-devoluciones.html">Envíos y devoluciones</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Contacto</h5>
+      <ul>
+        <li><a href="mailto:contacto@abelisse.com">contacto@abelisse.com</a></li>
+        <li class="footer-social">
+          <a href="https://www.instagram.com/abelisse_usa/" target="_blank" rel="noopener">Instagram</a>
+          <span>·</span>
+          <a href="https://www.tiktok.com/@abelisse_usa" target="_blank" rel="noopener">TikTok</a>
+        </li>
+        <li>Atención al cliente 24/7</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 ABELISSE. Todos los derechos reservados.</div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+  // Demo: evita el envío real y muestra una confirmación.
+  // Sustituye este bloque por tu integración real (fetch a tu API, EmailJS, etc.)
+  document.getElementById('contact-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    showToast('Mensaje enviado. ¡Gracias por escribirnos!');
+    this.reset();
+  });
+</script>
+</body>
+</html>
