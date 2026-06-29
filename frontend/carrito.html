@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carrito – ABELISSE</title>
   <meta name="description" content="Tu carrito de compras en ABELISSE.">
-  <link rel="stylesheet" href="css/style.css"><!-- Favicon ABELISSE -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Favicon ABELISSE -->
   <link rel="icon" type="image/png" href="img/logo.png">
   <link rel="apple-touch-icon" href="img/logo.png">
   <link rel="shortcut icon" href="img/logo.png">
@@ -64,7 +66,6 @@
 
   </div>
 </main>
-
 <footer class="footer">
   <div class="footer-grid container">
 
@@ -109,7 +110,6 @@
 <!-- SCRIPTS -->
 <script src="js/geo.js"></script>
 <script src="js/main.js"></script>
-
 <script>
   async function sendCheckout(method, total, carrito) {
     let endpoint = "";
@@ -235,11 +235,11 @@
           <button class="btn-yape">Pagar con Yape</button>
         ` : `
           <button class="btn-stripe" onclick="sendCheckout('stripe', ${total}, getCart())">
-            <img src="img/stripe-btn.svg" alt="Stripe">
+            <img src="img/stripe.png" alt="Stripe">
           </button>
 
           <button class="btn-paypal" onclick="sendCheckout('paypal', ${total}, getCart())">
-            <img src="img/paypal-btn.svg" alt="PayPal">
+            <img src="img/paypal.png" alt="PayPal">
           </button>
         `}
       </div>
@@ -280,6 +280,5 @@
 
   document.addEventListener("DOMContentLoaded", renderCarrito);
 </script>
-
 </body>
 </html>
