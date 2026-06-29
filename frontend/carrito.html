@@ -279,6 +279,13 @@
   }
 
   document.addEventListener("DOMContentLoaded", renderCarrito);
+
+  function clearCart() {
+    localStorage.removeItem("ABELISSE_CART");
+    renderCarrito();
+   showToast("Carrito vaciado");
+  }
+
 </script>
 </body>
 </html>
