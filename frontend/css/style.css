@@ -1367,14 +1367,6 @@ body.productos-page .footer {
 }
 
 /* Total */
-.carrito-total-box {
-  background: #fff;
-  padding: 25px;
-  border-radius: 14px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-  margin-top: 30px;
-}
-
 .carrito-total-inner {
   display: flex;
   justify-content: space-between;
