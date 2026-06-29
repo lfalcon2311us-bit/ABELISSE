@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito – ABELISSE</title>
+  <meta name="description" content="Tu carrito de compras en ABELISSE.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="carrito-page">
+
+<header class="header">
+
+  <div class="header-toast" id="toast">Producto actualizado</div>
+
+  <nav class="header-inner container">
+
+    <div class="header-left">
+      <a href="index.html" class="header-logo">ABELISSE</a>
+
+      <div class="header-search">
+        <input type="text" id="searchInput" placeholder="Buscar productos..." />
+        <button id="searchBtn">IR</button>
+      </div>
+    </div>
+
+    <button class="header-toggle" id="menuToggle">☰</button>
+
+    <div class="header-nav" id="navMenu">
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="productos.html" class="nav-link">Productos</a>
+      <a href="ofertas.html" class="nav-link">Ofertas</a>
+      <a href="contacto.html" class="nav-link">Contacto</a>
+
+      <a href="carrito.html" class="nav-cart active">
+        Carrito
+        <span class="cart-count">0</span>
+      </a>
+    </div>
+
+  </nav>
+</header>
+
+<!-- ===================== CUERPO ===================== -->
+<main class="section">
+  <div class="container" id="carrito-container">
+
+    <h1 class="mb-4">Tu carrito</h1>
+
+    <p id="carrito-moneda" class="text-sm text-gray-500 mb-4"></p>
+
+    <!-- Aquí se renderiza el carrito -->
+    <div id="carrito-lista"></div>
+
+    <!-- TOTAL -->
+    <div id="carrito-total" class="carrito-total"></div>
+
+    <!-- BOTONES -->
+    <div id="carrito-botones" class="carrito-botones"></div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-grid container">
+
+    <div class="footer-brand">
+      <p class="footer-logo">ABELISSE</p>
+      <p class="footer-desc">
+        Cosmética y belleza para realzar tu esencia cada día.
+      </p>
+    </div>
+
+    <div class="footer-info">
+      <p class="footer-title">Información</p>
+      <ul>
+        <li><a href="politica-de-privacidad.html">Política de privacidad</a></li>
+        <li><a href="terminos-y-condiciones.html">Términos y condiciones</a></li>
+        <li><a href="envios-y-devoluciones.html">Envíos y devoluciones</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-contact">
+      <p class="footer-title">Contacto</p>
+      <ul>
+        <li>contacto@abelisse.com</li>
+
+        <li class="footer-social">
+
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/abelisse_usa/" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <circle cx="12" cy="12" r="4"></circle>
+              <circle cx="17.5" cy="6.5" r="1.5"></circle>
+            </svg>
+            Instagram
+          </a>
+
+          <span class="footer-dot">·</span>
+
+          <!-- TikTok -->
+          <a href="https://www.tiktok.com/@abelisse_usa" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor">
+              <path d="M12.5 2c.3 0 .6.2.6.5.2 2.2 1.8 3.9 4 4 .3 0 .5.3.5.6v2.1c0 .3-.3.6-.6.6-1.7 0-3.3-.6-4.5-1.7v6.9c0 2.6-2.1 4.8-4.8 4.8S3 17.6 3 15s2.1-4.8 4.8-4.8c.3 0 .6.3.6.6v2.2c0 .3-.3.6-.6.6-1.2 0-2.2 1-2.2 2.2S6.6 18 7.8 18s2.2-1 2.2-2.2V2.5c0-.3.3-.5.5-.5h2z" />
+            </svg>
+            TikTok
+          </a>
+
+        </li>
+
+        <li>Atención al cliente 24/7</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 ABELISSE. Todos los derechos reservados.
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="js/geo.js"></script>
+<script src="js/main.js"></script>
+
+<script>
+  async function sendCheckout(method, total, carrito) {
+    let endpoint = "";
+
+    if (method === "stripe") {
+      endpoint = "https://abelisse.onrender.com/api/checkout/create-session/";
+    } else if (method === "paypal") {
+      endpoint = "https://abelisse.onrender.com/api/paypal/create-order/";
+    } else if (method === "yape") {
+      alert("Yape estará disponible pronto.");
+      return;
+    }
+
+    const body = {
+      total: total,
+      carrito: carrito.map(i => ({
+        id: i.id,
+        cantidad: i.qty
+      })),
+      email: null,
+      nombre: null
+    };
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else if (data.approve_url) {
+        window.location.href = data.approve_url;
+      } else {
+        alert("Error iniciando pago.");
+      }
+
+    } catch (err) {
+      alert("Error conectando con el servidor.");
+    }
+  }
+
+  function renderCarrito() {
+    const carrito = getCart();
+    const lista = document.getElementById("carrito-lista");
+    const totalBox = document.getElementById("carrito-total");
+    const botonesBox = document.getElementById("carrito-botones");
+    const monedaBox = document.getElementById("carrito-moneda");
+
+    const geo = window.ABELISSE_GEO || { country: "US" };
+    const isPeru = geo.country === "PE";
+
+    monedaBox.textContent = isPeru
+      ? "Precios en Soles (PEN)"
+      : "Precios en Dólares (USD)";
+
+    if (!carrito || carrito.length === 0) {
+      lista.innerHTML = `
+        <h2 class="mb-4">Tu carrito está vacío</h2>
+        <p class="mb-6">Explora nuestros productos y añade tus favoritos al carrito.</p>
+        <a href="productos.html" class="btn btn-primary">Ver productos</a>
+      `;
+      totalBox.innerHTML = "";
+      botonesBox.innerHTML = "";
+      return;
+    }
+
+    let total = 0;
+
+    lista.innerHTML = carrito.map(item => {
+      const price = Number(item.price ?? 0);
+      const stock = Number(item.stock ?? 0);
+      const qty = Number(item.qty ?? 1);
+
+      total += price * qty;
+
+      const img = item.media ? item.media : "img/placeholder.png";
+
+      return `
+        <div class="carrito-item">
+          <div class="carrito-img">
+            <img src="${img}" alt="${item.name}">
+          </div>
+
+          <div class="carrito-info">
+            <h3>${item.name}</h3>
+            <p class="carrito-price">$ ${price.toFixed(2)}</p>
+            <p class="carrito-stock">Stock disponible: ${stock}</p>
+
+            <div class="qty-stepper">
+              <button onclick="decreaseQty('${item.id}')">–</button>
+              <span>${qty}</span>
+              <button onclick="increaseQty('${item.id}', ${stock})">+</button>
+            </div>
+          </div>
+
+          <button class="carrito-remove" onclick="removeItem('${item.id}')">
+            Eliminar
+          </button>
+        </div>
+      `;
+    }).join("");
+
+    totalBox.innerHTML = `
+      <div>
+        <p class="text-sm">Total</p>
+        <p class="total-amount">$ ${total.toFixed(2)}</p>
+      </div>
+    `;
+
+    botonesBox.innerHTML = `
+      <button class="btn-outline" onclick="clearCart()">Vaciar carrito</button>
+
+      <div class="carrito-pagos">
+        ${isPeru ? `
+          <button class="btn btn-primary" onclick="sendCheckout('yape', ${total}, getCart())">Pagar con Yape</button>
+        ` : `
+          <button class="btn btn-primary" onclick="sendCheckout('stripe', ${total}, getCart())">Pagar con Stripe</button>
+          <button class="btn btn-primary" onclick="sendCheckout('paypal', ${total}, getCart())">PayPal</button>
+        `}
+      </div>
+    `;
+  }
+
+  function increaseQty(id, stock) {
+    const carrito = getCart();
+    const item = carrito.find(i => i.id === id);
+    if (!item) return;
+
+    if (item.qty >= stock) {
+      showToast("No hay más unidades disponibles");
+      return;
+    }
+
+    item.qty++;
+    saveCart(carrito);
+    renderCarrito();
+  }
+
+  function decreaseQty(id) {
+    const carrito = getCart();
+    const item = carrito.find(i => i.id === id);
+    if (!item) return;
+
+    item.qty = Math.max(1, item.qty - 1);
+    saveCart(carrito);
+    renderCarrito();
+  }
+
+  function removeItem(id) {
+    let carrito = getCart();
+    carrito = carrito.filter(i => i.id !== id);
+    saveCart(carrito);
+    renderCarrito();
+  }
+
+  document.addEventListener("DOMContentLoaded", renderCarrito);
+</script>
+
+</body>
+</html>
