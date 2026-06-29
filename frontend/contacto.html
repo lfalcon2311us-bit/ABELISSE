@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto – ABELISSE</title>
+  <meta name="description" content="Contáctanos para dudas, sugerencias o soporte.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="contacto-page">
+
+<!-- Sprite de iconos reutilizados -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="icon-star" viewBox="0 0 24 24">
+      <path d="M12 .587l3.668 7.568L24 9.748l-6 5.847L19.335 24 12 19.897 4.665 24 6 15.595 0 9.748l8.332-1.593z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="header">
+
+  <div class="header-toast" id="toast">Mensaje enviado</div>
+
+  <nav class="header-inner container">
+
+    <div class="header-left">
+      <a href="index.html" class="header-logo">ABELISSE</a>
+
+      <div class="header-search">
+        <input type="text" id="searchInput" placeholder="Buscar productos..." />
+        <button id="searchBtn">IR</button>
+      </div>
+    </div>
+
+    <button class="header-toggle" id="menuToggle">☰</button>
+
+    <div class="header-nav" id="navMenu">
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="productos.html" class="nav-link">Productos</a>
+      <a href="ofertas.html" class="nav-link">Ofertas</a>
+      <a href="contacto.html" class="nav-link active">Contacto</a>
+
+      <a href="carrito.html" class="nav-cart">
+        Carrito
+        <span class="cart-count">0</span>
+      </a>
+    </div>
+
+  </nav>
+</header>
+
+<!-- ===================== CUERPO ===================== -->
+<main class="section">
+  <div class="container">
+
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+      <a href="index.html">Inicio</a> <span>›</span> <span>Contacto</span>
+    </div>
+
+    <div class="section-head">
+      <h1>Contáctanos</h1>
+      <p>¿Tienes dudas, sugerencias o necesitas ayuda? Estamos aquí para ti.</p>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div id="contact-success" class="contact-success" style="display:none;">
+      ¡Gracias por tu mensaje! Te responderemos pronto.
+    </div>
+
+    <!-- FORMULARIO -->
+    <form id="contact-form" class="contact-form">
+
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" id="contact-nombre" required placeholder="Tu nombre">
+      </div>
+
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" id="contact-email" required placeholder="tuemail@ejemplo.com">
+      </div>
+
+      <div class="form-group">
+        <label>Mensaje</label>
+        <textarea id="contact-mensaje" required placeholder="Escribe tu mensaje aquí..." class="h-32"></textarea>
+      </div>
+
+      <button type="submit" id="contact-submit" class="btn btn-primary">
+        Enviar mensaje
+      </button>
+
+    </form>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-grid container">
+
+    <div class="footer-brand">
+      <p class="footer-logo">ABELISSE</p>
+      <p class="footer-desc">
+        Cosmética y belleza para realzar tu esencia cada día.
+      </p>
+    </div>
+
+    <div class="footer-info">
+      <p class="footer-title">Información</p>
+      <ul>
+        <li><a href="politica-de-privacidad.html">Política de privacidad</a></li>
+        <li><a href="terminos-y-condiciones.html">Términos y condiciones</a></li>
+        <li><a href="envios-y-devoluciones.html">Envíos y devoluciones</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-contact">
+      <p class="footer-title">Contacto</p>
+      <ul>
+        <li>contacto@abelisse.com</li>
+
+        <li class="footer-social">
+
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/abelisse_usa/" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <circle cx="12" cy="12" r="4"></circle>
+              <circle cx="17.5" cy="6.5" r="1.5"></circle>
+            </svg>
+            Instagram
+          </a>
+
+          <span class="footer-dot">·</span>
+
+          <!-- TikTok -->
+          <a href="https://www.tiktok.com/@abelisse_usa" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor">
+              <path d="M12.5 2c.3 0 .6.2.6.5.2 2.2 1.8 3.9 4 4 .3 0 .5.3.5.6v2.1c0 .3-.3.6-.6.6-1.7 0-3.3-.6-4.5-1.7v6.9c0 2.6-2.1 4.8-4.8 4.8S3 17.6 3 15s2.1-4.8 4.8-4.8c.3 0 .6.3.6.6v2.2c0 .3-.3.6-.6.6-1.2 0-2.2 1-2.2 2.2S6.6 18 7.8 18s2.2-1 2.2-2.2V2.5c0-.3.3-.5.5-.5h2z" />
+            </svg>
+            TikTok
+          </a>
+
+        </li>
+
+        <li>Atención al cliente 24/7</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 ABELISSE. Todos los derechos reservados.
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="js/geo.js"></script>
+<script src="js/main.js"></script>
+
+<script>
+  const API_BASE = "https://abelisse.onrender.com/api/contactar/";
+
+  document.getElementById("contact-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("contact-submit");
+    const successBox = document.getElementById("contact-success");
+
+    const nombre = document.getElementById("contact-nombre").value.trim();
+    const email = document.getElementById("contact-email").value.trim();
+    const mensaje = document.getElementById("contact-mensaje").value.trim();
+
+    btn.disabled = true;
+    btn.textContent = "Enviando...";
+
+    try {
+      const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, email, mensaje })
+      });
+
+      if (res.ok) {
+        successBox.style.display = "block";
+        document.getElementById("contact-form").reset();
+      } else {
+        alert("Hubo un error al enviar tu mensaje.");
+      }
+
+    } catch (err) {
+      alert("Error de conexión con el servidor.");
+    }
+
+    btn.disabled = false;
+    btn.textContent = "Enviar mensaje";
+  });
+</script>
+
+</body>
+</html>
