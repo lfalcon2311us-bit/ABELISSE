@@ -110,6 +110,7 @@
 <!-- SCRIPTS -->
 <script src="js/geo.js"></script>
 <script src="js/main.js"></script>
+
 <script>
   async function sendCheckout(method, total, carrito) {
     let endpoint = "";
@@ -278,13 +279,14 @@
     renderCarrito();
   }
 
-  document.addEventListener("DOMContentLoaded", renderCarrito);
-
+  /* 🔥🔥🔥 FUNCIÓN QUE FALTABA 🔥🔥🔥 */
   function clearCart() {
     localStorage.removeItem("ABELISSE_CART");
     renderCarrito();
-   showToast("Carrito vaciado");
+    showToast("Carrito vaciado");
   }
+
+  document.addEventListener("DOMContentLoaded", renderCarrito);
 
 </script>
 </body>
