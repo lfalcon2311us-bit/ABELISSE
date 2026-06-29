@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ABELISSE – Cosmética y Belleza Premium</title>
-<meta name="description" content="ABELISSE es tu tienda online de cosmética, belleza y cuidado personal.">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABELISSE – Cosmética y Belleza Premium</title>
+      <meta name="description" content="ABELISSE es tu tienda online de cosmética, belleza y cuidado personal.">
+      <link rel="stylesheet" href="css/style.css">
+      <!-- Favicon ABELISSE -->
+      <link rel="icon" type="image/png" href="img/logo.png">
+      <link rel="apple-touch-icon" href="img/logo.png">
+      <link rel="shortcut icon" href="img/logo.png">
+
 </head>
 <body>
 
@@ -23,7 +28,7 @@
 
   <nav class="header-inner container">
     <div class="header-left">
-      <a href="/" class="header-logo">ABELISSE</a>
+      <a href="index.html" class="header-logo">ABELISSE</a>
 
       <div class="header-search">
         <input type="text" id="searchInput" placeholder="Buscar productos..." />
@@ -34,7 +39,7 @@
     <button class="header-toggle" id="menuToggle">☰</button>
 
     <div class="header-nav" id="navMenu">
-      <a href="/" class="nav-link">Inicio</a>
+      <a href="index.html" class="nav-link active">Inicio</a>
       <a href="productos.html" class="nav-link">Productos</a>
       <a href="ofertas.html" class="nav-link">Ofertas</a>
       <a href="contacto.html" class="nav-link">Contacto</a>
@@ -46,8 +51,6 @@
     </div>
   </nav>
 </header>
-
-
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
@@ -72,8 +75,6 @@
   </div>
 </section>
 
-
-<!-- ===================== CATEGORÍAS ===================== -->
 <section class="section">
   <div class="container">
     <div class="section-head">
@@ -104,9 +105,6 @@
     </div>
   </div>
 </section>
-
-
-<!-- ===================== MÁS VENDIDOS ===================== -->
 <section class="section section--tight">
   <div class="container">
     <div class="section-head-row">
@@ -118,8 +116,6 @@
   </div>
 </section>
 
-
-<!-- ===================== MÁS BUSCADOS ===================== -->
 <section class="section section--tight">
   <div class="container">
     <div class="section-head-row">
@@ -131,8 +127,6 @@
   </div>
 </section>
 
-
-<!-- ===================== NUEVOS ===================== -->
 <section class="section section--tight">
   <div class="container">
     <div class="section-head-row">
@@ -144,8 +138,6 @@
   </div>
 </section>
 
-
-<!-- ===================== MEJOR CALIFICADOS ===================== -->
 <section class="section section--tight">
   <div class="container">
     <div class="section-head-row">
@@ -156,8 +148,6 @@
     <div id="top-calificados" class="product-grid"></div>
   </div>
 </section>
-
-
 <footer class="footer">
   <div class="footer-grid container">
 
@@ -181,8 +171,6 @@
         <li>contacto@abelisse.com</li>
 
         <li class="footer-social">
-
-          <!-- Instagram -->
           <a href="https://www.instagram.com/abelisse_usa/" target="_blank" rel="noopener noreferrer">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -194,14 +182,12 @@
 
           <span class="footer-dot">·</span>
 
-          <!-- TikTok -->
           <a href="https://www.tiktok.com/@abelisse_usa" target="_blank" rel="noopener noreferrer">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor">
               <path d="M12.5 2c.3 0 .6.2.6.5.2 2.2 1.8 3.9 4 4 .3 0 .5.3.5.6v2.1c0 .3-.3.6-.6.6-1.7 0-3.3-.6-4.5-1.7v6.9c0 2.6-2.1 4.8-4.8 4.8S3 17.6 3 15s2.1-4.8 4.8-4.8c.3 0 .6.3.6.6v2.2c0 .3-.3.6-.6.6-1.2 0-2.2 1-2.2 2.2S6.6 18 7.8 18s2.2-1 2.2-2.2V2.5c0-.3.3-.5.5-.5h2z" />
             </svg>
             TikTok
           </a>
-
         </li>
 
         <li>Atención al cliente 24/7</li>
@@ -214,11 +200,8 @@
     © 2026 ABELISSE. Todos los derechos reservados.
   </div>
 </footer>
-
-
-<!-- ===================== JS PARA ESTADÍSTICAS ===================== -->
 <script>
-function formatPrice(product) {
+function formatHomePrice(product) {
   const geo = window.ABELISSE_GEO || { country: "US" };
   const isPeru = geo.country === "PE";
   return isPeru ? `S/ ${product}` : `$ ${product}`;
@@ -261,7 +244,7 @@ function loadTopHome(targetId, apiUrl) {
                 <h3 class="product-title">${nombre}</h3>
 
                 <div class="product-prices">
-                  ${formatPrice(price)}
+                  ${formatHomePrice(price)}
                 </div>
               </div>
 

@@ -6,6 +6,11 @@
   <title>Checkout – ABELISSE</title>
   <meta name="description" content="Completa tus datos para continuar con el pago.">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Favicon ABELISSE -->
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="apple-touch-icon" href="img/logo.png">
+  <link rel="shortcut icon" href="img/logo.png">
+
 </head>
 
 <body class="checkout-page">
@@ -76,7 +81,6 @@
 
   </div>
 </main>
-
 <footer class="footer">
   <div class="footer-grid container">
 
@@ -135,7 +139,6 @@
     © 2026 ABELISSE. Todos los derechos reservados.
   </div>
 </footer>
-
 <!-- SCRIPTS -->
 <script src="js/main.js"></script>
 
@@ -150,14 +153,22 @@
     setTimeout(() => t.style.display = "none", 3000);
   }
 
-  function getTotalUSD() {
+  // TOTAL DINÁMICO USD/PEN
+  function getCheckoutTotal() {
     const cart = getCart();
+    const geo = window.ABELISSE_GEO || { country: "US" };
+    const isPeru = geo.country === "PE";
+
     let total = 0;
+
     cart.forEach(item => {
-      const price = Number(item.price ?? 0);
-      const qty = Number(item.qty ?? 1);
-      total += price * qty;
+      const price = isPeru
+        ? Number(item.price_pen ?? item.price_usd ?? 0)
+        : Number(item.price_usd ?? item.price_pen ?? 0);
+
+      total += price * Number(item.qty ?? 1);
     });
+
     return total.toFixed(2);
   }
 
@@ -187,7 +198,7 @@
         body: JSON.stringify({
           nombre,
           email,
-          total: getTotalUSD(),
+          total: getCheckoutTotal(),
           carrito: cart
         })
       });
@@ -224,7 +235,7 @@
         body: JSON.stringify({
           nombre,
           email,
-          total: getTotalUSD(),
+          total: getCheckoutTotal(),
           carrito: cart
         })
       });

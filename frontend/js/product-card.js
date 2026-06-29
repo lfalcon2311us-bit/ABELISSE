@@ -1,7 +1,9 @@
 /* =========================================================
-   PRODUCT CARD UNIVERSAL — ABELISSE.COM (HTML + CSS + JS)
+   PRODUCT CARD UNIVERSAL — ABELISSE.COM
+   Compatible con moneda dinámica USD/PEN
 ========================================================= */
 
+// Obtener moneda desde geo.js
 function getCurrencyFromGeo() {
   const geo = window.ABELISSE_GEO || {
     currency: { code: "USD", symbol: "$" }
@@ -9,26 +11,19 @@ function getCurrencyFromGeo() {
   return geo.currency;
 }
 
-// Conversión temporal (cuando el backend devuelva USD directo, esto se ajusta)
-const USD_RATE = 0.27; // 1 sol ≈ 0.27 USD (provisional)
+// NUEVA FUNCIÓN — precio correcto según país
+function getProductPrice(product) {
+  const geo = window.ABELISSE_GEO || { country: "US" };
+  const isPeru = geo.country === "PE";
 
-function formatProductPrice(priceInSoles) {
-  const currency = getCurrencyFromGeo();
+  const price_pen = Number(product.precio_venta_soles ?? 0);
+  const price_usd = Number(product.precio_venta_usd ?? 0);
 
-  if (currency.code === "PEN") {
-    return {
-      symbol: currency.symbol,
-      value: Number(priceInSoles).toFixed(2)
-    };
-  }
-
-  // Convertir a USD
   return {
-    symbol: currency.symbol,
-    value: (Number(priceInSoles) * USD_RATE).toFixed(2)
+    symbol: isPeru ? "S/" : "$",
+    value: isPeru ? price_pen : price_usd
   };
 }
-
 async function loadProducts(targetId, apiUrl) {
   const container = document.getElementById(targetId);
   if (!container) return;
@@ -52,11 +47,11 @@ async function loadProducts(targetId, apiUrl) {
       const {
         id,
         nombre,
-        precio_venta_soles,
-        precio_mercado_soles,
-        descuento_porcentaje,
-        imagen_principal,
         descripcion,
+        imagen_principal,
+        descuento_porcentaje,
+        precio_venta_usd,
+        precio_venta_soles,
         calificacion_promedio,
         stock
       } = product;
@@ -71,10 +66,15 @@ async function loadProducts(targetId, apiUrl) {
 
       const rating = Math.round(Number(calificacion_promedio ?? 0));
 
-      const mainPrice = formatProductPrice(precio_venta_soles ?? 0);
-      const marketPrice = precio_mercado_soles
-        ? formatProductPrice(precio_mercado_soles)
-        : null;
+      // Precio según país
+      const priceInfo = getProductPrice(product);
+      const price = priceInfo.value;
+      const symbol = priceInfo.symbol;
+
+      // Precio con descuento
+      const finalPrice = descuento_porcentaje
+        ? price * (1 - descuento_porcentaje / 100)
+        : price;
 
       return `
         <div class="product-card">
@@ -99,13 +99,10 @@ async function loadProducts(targetId, apiUrl) {
               <p class="product-desc">${shortDesc}</p>
 
               <div class="product-prices">
-                <p class="price-main">${mainPrice.symbol} ${mainPrice.value}</p>
-
-                ${marketPrice ? `
-                  <p class="price-market">${marketPrice.symbol} ${marketPrice.value}</p>
-                ` : ""}
+                <p class="price-main">${symbol} ${finalPrice.toFixed(2)}</p>
 
                 ${descuento_porcentaje ? `
+                  <p class="price-market">${symbol} ${price.toFixed(2)}</p>
                   <p class="price-off">-${descuento_porcentaje}% OFF</p>
                 ` : ""}
               </div>
@@ -117,7 +114,8 @@ async function loadProducts(targetId, apiUrl) {
             data-add-to-cart
             data-id="${id}"
             data-name="${safeName}"
-            data-price="${precio_venta_soles}"
+            data-price-usd="${precio_venta_usd ?? 0}"
+            data-price-pen="${precio_venta_soles ?? 0}"
             data-media="media-1">
             Añadir al carrito
           </button>
