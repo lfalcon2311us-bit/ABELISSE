@@ -6,6 +6,11 @@
   <title>Ofertas – ABELISSE</title>
   <meta name="description" content="Ofertas exclusivas en productos ABELISSE.">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Favicon ABELISSE -->
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="apple-touch-icon" href="img/logo.png">
+  <link rel="shortcut icon" href="img/logo.png">
+
 </head>
 
 <body class="ofertas-page">
@@ -69,7 +74,6 @@
 
   </div>
 </main>
-
 <footer class="footer">
   <div class="footer-grid container">
 
@@ -128,7 +132,6 @@
     © 2026 ABELISSE. Todos los derechos reservados.
   </div>
 </footer>
-
 <!-- SCRIPTS -->
 <script src="js/geo.js"></script>
 <script src="js/product-card.js"></script>
@@ -137,6 +140,9 @@
 <script>
   const API_BASE = "https://abelisse.onrender.com/api";
 
+  /* =========================================================
+     CARGAR OFERTAS (CON MONEDA USD/PEN)
+  ========================================================= */
   async function loadOffers() {
     const container = document.getElementById("offers-grid");
 
@@ -156,7 +162,7 @@
         return;
       }
 
-      container.innerHTML = ofertas.map(p => renderProductCardHTML(p)).join("");
+      container.innerHTML = ofertas.map(p => renderOfferCard(p)).join("");
       attachAddToCartButtons();
 
     } catch (err) {
@@ -165,32 +171,40 @@
     }
   }
 
-  function renderProductCardHTML(product) {
+  /* =========================================================
+     TARJETA DE OFERTA (COMPATIBLE USD/PEN)
+  ========================================================= */
+  function renderOfferCard(product) {
     const {
       id,
       nombre,
-      precio_venta_soles,
-      precio_mercado_soles,
-      descuento_porcentaje,
-      imagen_principal,
       descripcion,
+      imagen_principal,
+      descuento_porcentaje,
+      precio_venta_usd,
+      precio_venta_soles,
       calificacion_promedio
     } = product;
-
-    const safeName = nombre ?? "Producto sin nombre";
-    const safeDesc = descripcion ?? "";
-    const shortDesc = safeDesc.length > 120 ? safeDesc.slice(0,120) + "..." : safeDesc;
 
     const img = (imagen_principal && imagen_principal.length > 10)
       ? imagen_principal
       : "img/placeholder.png";
 
+    const safeName = nombre ?? "Producto sin nombre";
+    const safeDesc = descripcion ?? "";
+    const shortDesc = safeDesc.length > 120 ? safeDesc.slice(0,120) + "..." : safeDesc;
+
     const rating = Math.round(Number(calificacion_promedio ?? 0));
 
-    const mainPrice = formatProductPriceDetail(precio_venta_soles ?? 0);
-    const marketPrice = precio_mercado_soles
-      ? formatProductPriceDetail(precio_mercado_soles)
-      : null;
+    // Precio según país
+    const priceInfo = getProductPrice(product);
+    const price = priceInfo.value;
+    const symbol = priceInfo.symbol;
+
+    // Precio con descuento
+    const finalPrice = descuento_porcentaje
+      ? price * (1 - descuento_porcentaje / 100)
+      : price;
 
     return `
       <div class="product-card">
@@ -215,13 +229,10 @@
             <p class="product-desc">${shortDesc}</p>
 
             <div class="product-prices">
-              <p class="price-main">${mainPrice.symbol} ${mainPrice.value}</p>
-
-              ${marketPrice ? `
-                <p class="price-market">${marketPrice.symbol} ${marketPrice.value}</p>
-              ` : ""}
+              <p class="price-main">${symbol} ${finalPrice.toFixed(2)}</p>
 
               ${descuento_porcentaje ? `
+                <p class="price-market">${symbol} ${price.toFixed(2)}</p>
                 <p class="price-off">-${descuento_porcentaje}% OFF</p>
               ` : ""}
             </div>
@@ -233,8 +244,8 @@
           data-add-to-cart
           data-id="${id}"
           data-name="${safeName}"
-          data-price="${precio_venta_soles}"
-          data-media="media-1">
+          data-price-usd="${precio_venta_usd ?? 0}"
+          data-price-pen="${precio_venta_soles ?? 0}">
           Añadir al carrito
         </button>
 

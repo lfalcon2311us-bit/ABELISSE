@@ -6,6 +6,10 @@
   <title>Productos – ABELISSE</title>
   <meta name="description" content="Catálogo completo de productos ABELISSE con filtros dinámicos.">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Favicon ABELISSE -->
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="apple-touch-icon" href="img/logo.png">
+  <link rel="shortcut icon" href="img/logo.png">
 </head>
 
 <body class="productos-page">
@@ -103,7 +107,6 @@
 
   </div>
 </main>
-
 <footer class="footer">
   <div class="footer-grid container">
 
@@ -162,7 +165,6 @@
     © 2026 ABELISSE. Todos los derechos reservados.
   </div>
 </footer>
-
 <!-- SCRIPTS -->
 <script src="js/geo.js"></script>
 <script src="js/product-card.js"></script>
@@ -203,6 +205,91 @@
     return qs ? `${API_BASE}/productos/?${qs}` : `${API_BASE}/productos/`;
   }
 
+  /* =========================================================
+     RENDER DE PRODUCTOS (CON MONEDA USD/PEN)
+  ========================================================= */
+  async function loadProducts(targetId, url) {
+    const container = document.getElementById(targetId);
+    if (!container) return;
+
+    try {
+      const res = await fetch(url);
+      const products = await res.json();
+
+      container.innerHTML = products.map(product => {
+        const img = product.imagen_principal && product.imagen_principal.length > 10
+          ? product.imagen_principal
+          : "img/placeholder.png";
+
+        // Obtener precio correcto según geo
+        const priceInfo = getProductPrice(product);
+        const price = priceInfo.value;
+        const symbol = priceInfo.symbol;
+
+        // Descuento
+        const discount = Number(product.descuento_porcentaje ?? 0);
+        const hasDiscount = discount > 0;
+        const finalPrice = hasDiscount ? price * (1 - discount / 100) : price;
+
+        return `
+          <div class="product-card">
+            <a href="idproducto.html?id=${product.id}" class="product-link">
+
+              <div class="product-img">
+                <img src="${img}" alt="${product.nombre}">
+              </div>
+
+              <div class="product-body">
+                <h3 class="product-title">${product.nombre}</h3>
+
+                <p class="product-desc">${product.descripcion ?? ""}</p>
+
+                <div class="product-prices">
+                  ${
+                    hasDiscount
+                      ? `
+                        <span class="product-price product-price--discount">
+                          ${symbol} ${finalPrice.toFixed(2)}
+                        </span>
+                        <span class="product-price product-price--original">
+                          ${symbol} ${price.toFixed(2)}
+                        </span>
+                        <span class="product-discount">-${discount}%</span>
+                      `
+                      : `
+                        <span class="product-price">
+                          ${symbol} ${price.toFixed(2)}
+                        </span>
+                      `
+                  }
+                </div>
+
+                <button class="product-add"
+                  data-add-to-cart
+                  data-id="${product.id}"
+                  data-name="${product.nombre}"
+                  data-price-usd="${product.precio_venta_usd ?? 0}"
+                  data-price-pen="${product.precio_venta_soles ?? 0}">
+                  Añadir al carrito
+                </button>
+              </div>
+
+            </a>
+          </div>
+        `;
+      }).join("");
+
+      attachAddToCartButtons();
+
+    } catch (err) {
+      console.error("Error cargando productos:", err);
+      container.innerHTML = `<p>Error al cargar productos.</p>`;
+    }
+  }
+
+  /* =========================================================
+     INIT DE LA PÁGINA
+  ========================================================= */
   async function initProductosPage() {
     const selCat = document.getElementById("filter-category");
     const selSub = document.getElementById("filter-subcategory");

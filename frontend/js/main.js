@@ -1,25 +1,53 @@
 /* =========================================================
    ABELISSE — js/main.js
    Lógica de interfaz (demo). El carrito usa localStorage
-   únicamente para poder mostrar los estados de la pantalla
-   (vacío / con productos). Sustituye estas funciones por las
-   llamadas a tu backend / base de datos real cuando conectes
-   los productos.
    ========================================================= */
 
 const CART_KEY = 'abelisse_cart';
 
 /* ---------------------------------------------------------
+   GEO / MONEDA
+--------------------------------------------------------- */
+
+// Obtiene la info de geolocalización
+function getGeoInfo() {
+  return window.ABELISSE_GEO || { country: "US" };
+}
+
+// Determina si el usuario está en Perú
+function isPeru() {
+  const geo = getGeoInfo();
+  return geo.country === "PE";
+}
+
+// Devuelve el precio correcto según país a partir del objeto producto
+function getProductPrice(product) {
+  const priceUSD = Number(product.precio_venta_usd ?? product.price_usd ?? product.price ?? 0);
+  const pricePEN = Number(product.precio_venta_soles ?? product.precio_venta_pen ?? product.price_pen ?? 0);
+
+  if (isPeru()) {
+    return {
+      value: pricePEN || priceUSD,   // fallback si falta PEN
+      symbol: "S/",
+      currency: "PEN"
+    };
+  }
+
+  return {
+    value: priceUSD || pricePEN,     // fallback si falta USD
+    symbol: "$",
+    currency: "USD"
+  };
+}
+
+/* ---------------------------------------------------------
    Utilidades
 --------------------------------------------------------- */
 
-// ACTIVAR MONEDA GLOBAL DESDE GEO
+// Formatea un valor numérico según la moneda del usuario
 function formatPrice(value) {
-  const geo = window.ABELISSE_GEO || {
-    currency: { symbol: "$" }
-  };
-
-  const symbol = geo.currency.symbol || "$";
+  const peru = isPeru();
+  const symbol = peru ? "S/" : "$";
   return symbol + ' ' + Number(value).toFixed(2);
 }
 
@@ -40,8 +68,15 @@ function cartTotalItems(cart) {
   return cart.reduce((sum, item) => sum + item.qty, 0);
 }
 
+// Total mostrado al usuario (USD o PEN según geo)
 function cartTotalPrice(cart) {
-  return cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+  const peru = isPeru();
+  return cart.reduce((sum, item) => {
+    const price = peru
+      ? Number(item.price_pen ?? item.price_usd ?? item.price ?? 0)
+      : Number(item.price_usd ?? item.price_pen ?? item.price ?? 0);
+    return sum + item.qty * price;
+  }, 0);
 }
 
 /* ---------------------------------------------------------
@@ -100,6 +135,7 @@ function showToast(message) {
     toast.className = 'toast';
     document.body.appendChild(toast);
   }
+
   toast.textContent = message;
   toast.classList.add('is-visible');
   clearTimeout(toastTimeout);
@@ -113,14 +149,29 @@ function attachAddToCartButtons() {
   document.querySelectorAll('[data-add-to-cart]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const { id, name, price, media } = btn.dataset;
+      const { id, name, priceUsd, pricePen, price, media } = btn.dataset;
+
       const cart = getCart();
-      const existing = cart.find((item) => item.id === id);
+      const existing = cart.find((item) => String(item.id) === String(id));
+
+      const price_usd = parseFloat(priceUsd ?? pricePen ?? price ?? 0);
+      const price_pen = parseFloat(pricePen ?? priceUsd ?? price ?? 0);
+
       if (existing) {
         existing.qty += 1;
       } else {
-        cart.push({ id, name, price: parseFloat(price), media: media || 'media-1', qty: 1 });
+        cart.push({
+          id,
+          name,
+          price_usd,
+          price_pen,
+          // price se mantiene por compatibilidad, pero ya no se usa para mostrar
+          price: price_usd,
+          media: media || 'media-1',
+          qty: 1
+        });
       }
+
       saveCart(cart);
       showToast(`${name} añadido al carrito`);
     });
@@ -158,22 +209,32 @@ function renderCartPage() {
     emptyEl.style.display = 'none';
     filledEl.style.display = 'block';
 
-    itemsEl.innerHTML = cart.map((item) => `
-      <div class="cart-item" data-id="${item.id}">
-        <div class="cart-item__thumb ${item.media}">${svgBottleIcon()}</div>
-        <div class="cart-item__info">
-          <h4>${item.name}</h4>
-          <div class="cart-item__price">${formatPrice(item.price)}</div>
-          <div class="cart-item__stock">Stock disponible: ${item.stock ?? 10}</div>
-          <div class="qty-stepper">
-            <button type="button" data-action="decrease">–</button>
-            <span>${item.qty}</span>
-            <button type="button" data-action="increase">+</button>
+    const peru = isPeru();
+
+    itemsEl.innerHTML = cart.map((item) => {
+      const price = peru
+        ? Number(item.price_pen ?? item.price_usd ?? item.price ?? 0)
+        : Number(item.price_usd ?? item.price_pen ?? item.price ?? 0);
+
+      const stock = item.stock ?? 10;
+
+      return `
+        <div class="cart-item" data-id="${item.id}">
+          <div class="cart-item__thumb ${item.media}">${svgBottleIcon()}</div>
+          <div class="cart-item__info">
+            <h4>${item.name}</h4>
+            <div class="cart-item__price">${formatPrice(price)}</div>
+            <div class="cart-item__stock">Stock disponible: ${stock}</div>
+            <div class="qty-stepper">
+              <button type="button" data-action="decrease">–</button>
+              <span>${item.qty}</span>
+              <button type="button" data-action="increase">+</button>
+            </div>
           </div>
+          <button type="button" class="cart-item__remove" data-action="remove">Eliminar</button>
         </div>
-        <button type="button" class="cart-item__remove" data-action="remove">Eliminar</button>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     totalEl.textContent = formatPrice(cartTotalPrice(cart));
   }
@@ -184,12 +245,12 @@ function renderCartPage() {
     const itemEl = btn.closest('.cart-item');
     const id = itemEl.dataset.id;
     let cart = getCart();
-    const item = cart.find((p) => p.id === id);
+    const item = cart.find((p) => String(p.id) === String(id));
     if (!item) return;
 
     if (btn.dataset.action === 'increase') item.qty += 1;
     if (btn.dataset.action === 'decrease') item.qty = Math.max(1, item.qty - 1);
-    if (btn.dataset.action === 'remove') cart = cart.filter((p) => p.id !== id);
+    if (btn.dataset.action === 'remove') cart = cart.filter((p) => String(p.id) !== String(id));
 
     saveCart(cart);
     render();
@@ -206,7 +267,6 @@ function renderCartPage() {
 
   render();
 }
-
 /* =========================================================
    HEADER PREMIUM — BÚSQUEDA BLINDADA
 ========================================================= */
@@ -293,7 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCartPage();
   marcarPestanaActiva();
 });
-
 /* =========================================================
    HOME — TOP 5 CLASIFICACIONES
 ========================================================= */
@@ -310,6 +369,8 @@ function loadTopHome(targetId, apiUrl) {
           ? product.imagen_principal
           : "img/placeholder.png";
 
+        const priceInfo = getProductPrice(product);
+
         return `
           <div class="product-card">
             <a href="idproducto.html?id=${product.id}" class="product-link">
@@ -324,14 +385,15 @@ function loadTopHome(targetId, apiUrl) {
                 <p class="product-desc">${product.descripcion ?? ""}</p>
 
                 <div class="product-prices">
-                  ${formatPrice(product.precio_venta_soles)}
+                  ${formatPrice(priceInfo.value)}
                 </div>
 
                 <button class="product-add"
                   data-add-to-cart
                   data-id="${product.id}"
                   data-name="${product.nombre}"
-                  data-price="${product.precio_venta_soles}">
+                  data-price-usd="${product.precio_venta_usd ?? 0}"
+                  data-price-pen="${product.precio_venta_soles ?? 0}">
                   Añadir al carrito
                 </button>
               </div>

@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carrito – ABELISSE</title>
   <meta name="description" content="Tu carrito de compras en ABELISSE.">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css"><!-- Favicon ABELISSE -->
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="apple-touch-icon" href="img/logo.png">
+  <link rel="shortcut icon" href="img/logo.png">
 </head>
 
 <body class="carrito-page">
@@ -44,20 +47,20 @@
 
 <!-- ===================== CUERPO ===================== -->
 <main class="section">
-  <div class="container" id="carrito-container">
+  <div class="container carrito-premium">
 
-    <h1 class="mb-4">Tu carrito</h1>
+    <h1 class="carrito-title">Tu carrito</h1>
 
-    <p id="carrito-moneda" class="text-sm text-gray-500 mb-4"></p>
+    <p id="carrito-moneda" class="carrito-moneda"></p>
 
-    <!-- Aquí se renderiza el carrito -->
-    <div id="carrito-lista"></div>
+    <!-- LISTA -->
+    <div id="carrito-lista" class="carrito-lista"></div>
 
     <!-- TOTAL -->
-    <div id="carrito-total" class="carrito-total"></div>
+    <div id="carrito-total" class="carrito-total-box"></div>
 
     <!-- BOTONES -->
-    <div id="carrito-botones" class="carrito-botones"></div>
+    <div id="carrito-botones" class="carrito-botones-premium"></div>
 
   </div>
 </main>
@@ -87,27 +90,9 @@
         <li>contacto@abelisse.com</li>
 
         <li class="footer-social">
-
-          <!-- Instagram -->
-          <a href="https://www.instagram.com/abelisse_usa/" target="_blank" rel="noopener noreferrer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-              <circle cx="12" cy="12" r="4"></circle>
-              <circle cx="17.5" cy="6.5" r="1.5"></circle>
-            </svg>
-            Instagram
-          </a>
-
+          <a href="https://www.instagram.com/abelisse_usa/" target="_blank">Instagram</a>
           <span class="footer-dot">·</span>
-
-          <!-- TikTok -->
-          <a href="https://www.tiktok.com/@abelisse_usa" target="_blank" rel="noopener noreferrer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor">
-              <path d="M12.5 2c.3 0 .6.2.6.5.2 2.2 1.8 3.9 4 4 .3 0 .5.3.5.6v2.1c0 .3-.3.6-.6.6-1.7 0-3.3-.6-4.5-1.7v6.9c0 2.6-2.1 4.8-4.8 4.8S3 17.6 3 15s2.1-4.8 4.8-4.8c.3 0 .6.3.6.6v2.2c0 .3-.3.6-.6.6-1.2 0-2.2 1-2.2 2.2S6.6 18 7.8 18s2.2-1 2.2-2.2V2.5c0-.3.3-.5.5-.5h2z" />
-            </svg>
-            TikTok
-          </a>
-
+          <a href="https://www.tiktok.com/@abelisse_usa" target="_blank">TikTok</a>
         </li>
 
         <li>Atención al cliente 24/7</li>
@@ -186,9 +171,11 @@
 
     if (!carrito || carrito.length === 0) {
       lista.innerHTML = `
-        <h2 class="mb-4">Tu carrito está vacío</h2>
-        <p class="mb-6">Explora nuestros productos y añade tus favoritos al carrito.</p>
-        <a href="productos.html" class="btn btn-primary">Ver productos</a>
+        <div class="carrito-vacio">
+          <h2>Tu carrito está vacío</h2>
+          <p>Explora nuestros productos y añade tus favoritos.</p>
+          <a href="productos.html" class="btn btn-primary">Ver productos</a>
+        </div>
       `;
       totalBox.innerHTML = "";
       botonesBox.innerHTML = "";
@@ -198,8 +185,11 @@
     let total = 0;
 
     lista.innerHTML = carrito.map(item => {
-      const price = Number(item.price ?? 0);
-      const stock = Number(item.stock ?? 0);
+      const price = isPeru
+        ? Number(item.price_pen ?? item.price_usd ?? 0)
+        : Number(item.price_usd ?? item.price_pen ?? 0);
+
+      const stock = Number(item.stock ?? 10);
       const qty = Number(item.qty ?? 1);
 
       total += price * qty;
@@ -207,46 +197,50 @@
       const img = item.media ? item.media : "img/placeholder.png";
 
       return `
-        <div class="carrito-item">
-          <div class="carrito-img">
+        <div class="carrito-card">
+          <div class="carrito-card-img">
             <img src="${img}" alt="${item.name}">
           </div>
 
-          <div class="carrito-info">
+          <div class="carrito-card-info">
             <h3>${item.name}</h3>
-            <p class="carrito-price">$ ${price.toFixed(2)}</p>
-            <p class="carrito-stock">Stock disponible: ${stock}</p>
+            <p class="carrito-card-price">${isPeru ? "S/" : "$"} ${price.toFixed(2)}</p>
 
-            <div class="qty-stepper">
-              <button onclick="decreaseQty('${item.id}')">–</button>
+            <div class="carrito-stepper">
+              <button onclick="decreaseQty('${item.id}')">−</button>
               <span>${qty}</span>
               <button onclick="increaseQty('${item.id}', ${stock})">+</button>
             </div>
-          </div>
 
-          <button class="carrito-remove" onclick="removeItem('${item.id}')">
-            Eliminar
-          </button>
+            <button class="carrito-remove-btn" onclick="removeItem('${item.id}')">
+              ✕ Eliminar
+            </button>
+          </div>
         </div>
       `;
     }).join("");
 
     totalBox.innerHTML = `
-      <div>
-        <p class="text-sm">Total</p>
-        <p class="total-amount">$ ${total.toFixed(2)}</p>
+      <div class="carrito-total-inner">
+        <p>Total</p>
+        <h2>${isPeru ? "S/" : "$"} ${total.toFixed(2)}</h2>
       </div>
     `;
 
     botonesBox.innerHTML = `
       <button class="btn-outline" onclick="clearCart()">Vaciar carrito</button>
 
-      <div class="carrito-pagos">
+      <div class="carrito-pagos-premium">
         ${isPeru ? `
-          <button class="btn btn-primary" onclick="sendCheckout('yape', ${total}, getCart())">Pagar con Yape</button>
+          <button class="btn-yape">Pagar con Yape</button>
         ` : `
-          <button class="btn btn-primary" onclick="sendCheckout('stripe', ${total}, getCart())">Pagar con Stripe</button>
-          <button class="btn btn-primary" onclick="sendCheckout('paypal', ${total}, getCart())">PayPal</button>
+          <button class="btn-stripe" onclick="sendCheckout('stripe', ${total}, getCart())">
+            <img src="img/stripe-btn.svg" alt="Stripe">
+          </button>
+
+          <button class="btn-paypal" onclick="sendCheckout('paypal', ${total}, getCart())">
+            <img src="img/paypal-btn.svg" alt="PayPal">
+          </button>
         `}
       </div>
     `;

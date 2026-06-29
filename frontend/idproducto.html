@@ -5,6 +5,11 @@
   <title>Detalle de producto – ABELISSE</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Favicon ABELISSE -->
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="apple-touch-icon" href="img/logo.png">
+  <link rel="shortcut icon" href="img/logo.png">
+
 </head>
 <body>
 
@@ -12,11 +17,11 @@
   <nav class="header-inner container">
 
     <div class="header-left">
-      <a href="/" class="header-logo">ABELISSE</a>
+      <a href="index.html" class="header-logo">ABELISSE</a>
     </div>
 
     <div class="header-nav" id="navMenu">
-      <a href="/" class="nav-link">Inicio</a>
+      <a href="index.html" class="nav-link">Inicio</a>
       <a href="productos.html" class="nav-link">Productos</a>
       <a href="ofertas.html" class="nav-link">Ofertas</a>
       <a href="contacto.html" class="nav-link">Contacto</a>
@@ -35,7 +40,6 @@
     Cargando producto...
   </div>
 </main>
-
 <footer class="footer">
   <div class="footer-grid container">
 
@@ -94,9 +98,115 @@
     © 2026 ABELISSE. Todos los derechos reservados.
   </div>
 </footer>
-
 <script src="js/main.js"></script>
-<script src="js/idproducto.js"></script>
+
+<script>
+  const API_BASE = "https://abelisse.onrender.com/api";
+
+  async function loadProductDetail() {
+    const container = document.getElementById("product-detail");
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (!id) {
+      container.innerHTML = "<p>Error: ID de producto no encontrado.</p>";
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/productos/${id}/`);
+      if (!res.ok) {
+        container.innerHTML = "<p>Error cargando producto.</p>";
+        return;
+      }
+
+      const product = await res.json();
+
+      const {
+        nombre,
+        descripcion,
+        imagen_principal,
+        descuento_porcentaje,
+        precio_venta_usd,
+        precio_venta_soles,
+        calificacion_promedio,
+        stock
+      } = product;
+
+      const img = (imagen_principal && imagen_principal.length > 10)
+        ? imagen_principal
+        : "img/placeholder.png";
+
+      const safeName = nombre ?? "Producto sin nombre";
+      const safeDesc = descripcion ?? "";
+
+      const rating = Math.round(Number(calificacion_promedio ?? 0));
+
+      // Precio según país
+      const priceInfo = getProductPrice(product);
+      const price = priceInfo.value;
+      const symbol = priceInfo.symbol;
+
+      // Precio con descuento
+      const finalPrice = descuento_porcentaje
+        ? price * (1 - descuento_porcentaje / 100)
+        : price;
+
+      container.innerHTML = `
+        <div class="product-detail-card">
+
+          <div class="product-detail-img">
+            <img src="${img}" alt="${safeName}">
+          </div>
+
+          <div class="product-detail-body">
+
+            <h1>${safeName}</h1>
+
+            <div class="product-rating">
+              ${Array.from({length:5}).map((_,i)=>`
+                <span class="star">${i < rating ? "★" : "☆"}</span>
+              `).join("")}
+              <span class="rating-number">${rating}.0 / 5</span>
+            </div>
+
+            <p class="product-desc">${safeDesc}</p>
+
+            <div class="product-prices">
+              <p class="price-main">${symbol} ${finalPrice.toFixed(2)}</p>
+
+              ${descuento_porcentaje ? `
+                <p class="price-market">${symbol} ${price.toFixed(2)}</p>
+                <p class="price-off">-${descuento_porcentaje}% OFF</p>
+              ` : ""}
+            </div>
+
+            <p class="product-stock">Stock disponible: ${stock ?? 10}</p>
+
+            <button class="product-add"
+              data-add-to-cart
+              data-id="${id}"
+              data-name="${safeName}"
+              data-price-usd="${precio_venta_usd ?? 0}"
+              data-price-pen="${precio_venta_soles ?? 0}">
+              Añadir al carrito
+            </button>
+
+          </div>
+
+        </div>
+      `;
+
+      attachAddToCartButtons();
+
+    } catch (err) {
+      console.error("Error cargando producto:", err);
+      container.innerHTML = "<p>Error cargando producto.</p>";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", loadProductDetail);
+</script>
 
 </body>
 </html>
