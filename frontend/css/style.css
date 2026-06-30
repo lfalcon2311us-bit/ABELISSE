@@ -768,146 +768,159 @@ p{ margin: 0; }
     gap: 32px;
   }
 }
-/* ============================
-   CARRITO PREMIUM ABELISSE
-============================ */
 
-.carrito-premium {
-  max-width: 900px;
-  margin: auto;
-  padding: 40px 20px;
-}
 
-.carrito-title {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.carrito-moneda {
-  color: #777;
-  margin-bottom: 25px;
-}
-
-/* Tarjeta de producto */
-.carrito-card {
-  display: flex;
-  gap: 20px;
+/* ---------- Formulario de contacto ---------- */
+.contact-card{
+  max-width: 600px;
   background: #fff;
-  padding: 20px;
-  border-radius: 14px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-  margin-bottom: 20px;
-  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 36px;
 }
-
-.carrito-card-img img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 12px;
-}
-
-.carrito-card-info h3 {
-  font-size: 20px;
-  margin-bottom: 6px;
-}
-
-.carrito-card-price {
-  font-size: 18px;
+.form-group{ margin-bottom: 22px; }
+.form-group label{
+  display: block;
   font-weight: 600;
-  margin-bottom: 12px;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+.form-group input,
+.form-group textarea{
+  width: 100%;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 13px 16px;
+  color: var(--color-text);
+  outline: none;
+  resize: vertical;
+}
+.form-group input:focus,
+.form-group textarea:focus{ border-color: var(--color-pink); }
+.form-group textarea{ min-height: 130px; }
+.form-note{
+  font-size: 0.85rem;
+  margin-top: 16px;
+  text-align: center;
+  color: var(--color-text-soft);
 }
 
-/* Stepper */
-.carrito-stepper {
+/* ---------- Carrito ---------- */
+.cart-layout{
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 640px;
+}
+.cart-subtitle{ color: var(--color-text-soft); margin-bottom: 28px; }
+.cart-item{
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.cart-item__thumb{
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  justify-content: center;
+  color: rgba(255,255,255,0.9);
 }
-
-.carrito-stepper button {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+.cart-item__thumb svg{ width: 46%; height: 46%; }
+.cart-item__info h4{ font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+.cart-item__price{ color: var(--color-pink-dark); font-weight: 700; margin-bottom: 4px; }
+.cart-item__stock{ font-size: 0.82rem; color: var(--color-text-soft); margin-bottom: 10px; }
+.qty-stepper{
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-surface);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.qty-stepper button{
+  width: 30px;
+  height: 30px;
   border: none;
-  background: #f2f2f2;
-  font-size: 20px;
-  cursor: pointer;
-  transition: 0.2s;
+  background: transparent;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-text);
 }
-
-.carrito-stepper button:hover {
-  background: #e0e0e0;
-}
-
-.carrito-stepper span {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-/* Botón eliminar */
-.carrito-remove-btn {
+.qty-stepper button:hover{ background: var(--color-pink-soft); }
+.qty-stepper span{ width: 28px; text-align: center; font-weight: 600; }
+.cart-item__remove{
+  align-self: start;
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+  font-weight: 500;
   background: none;
   border: none;
-  color: #d33;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 5px;
+  padding: 0;
 }
+.cart-item__remove:hover{ color: var(--color-pink-dark); text-decoration: underline; }
 
-/* Total */
-.carrito-total-inner {
+.cart-summary{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 24px 0 8px;
 }
-
-.carrito-total-inner h2 {
-  font-size: 26px;
-  font-weight: 700;
-}
-
-/* Botones */
-.carrito-botones-premium {
-  margin-top: 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.btn-outline {
-  padding: 12px 20px;
-  border-radius: 10px;
-  border: 2px solid #ccc;
-  background: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-outline:hover {
-  border-color: #999;
-}
-
-/* Botones de pago */
-.carrito-pagos-premium {
-  display: flex;
-  gap: 15px;
-}
-
-.btn-stripe img,
-.btn-paypal img {
-  height: 45px;
-  cursor: pointer;
-}
-
-.btn-yape {
-  background: #7b2be0;
-  color: #fff;
-  padding: 14px 22px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
+.cart-summary .label{ font-size: 0.95rem; color: var(--color-text-muted); margin-bottom: 4px; }
+.cart-summary .total-price{ font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--color-pink-dark); }
+.clear-cart{
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+  font-weight: 500;
+  background: none;
   border: none;
+  padding: 0;
+}
+.clear-cart:hover{ color: var(--color-pink-dark); text-decoration: underline; }
+
+.cart-currency{ font-size: 0.85rem; color: var(--color-text-soft); margin-top: -18px; margin-bottom: 24px; }
+
+.payment-stack{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 28px;
+}
+.payment-caption{
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--color-text-soft);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.cart-empty{
+  text-align: center;
+  padding: 80px 20px;
+}
+.cart-empty h1{ font-size: 1.6rem; margin-bottom: 10px; }
+.cart-empty p{ color: var(--color-text-muted); margin-bottom: 28px; }
+/* ---------- Toast ---------- */
+.toast{
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translate(-50%, 20px);
+  background: var(--color-dark);
+  color: #fff;
+  padding: 13px 22px;
+  border-radius: var(--radius-pill);
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999;
+}
+.toast.is-visible{
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
