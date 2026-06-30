@@ -1276,3 +1276,147 @@ body.productos-page .footer {
   position: relative !important;
   z-index: 9999 !important;
 }
+
+/* ============================
+   CARRITO PREMIUM ABELISSE
+============================ */
+
+.carrito-premium {
+  max-width: 900px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.carrito-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.carrito-moneda {
+  color: #777;
+  margin-bottom: 25px;
+}
+
+/* Tarjeta de producto */
+.carrito-card {
+  display: flex;
+  gap: 20px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.carrito-card-img img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.carrito-card-info h3 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.carrito-card-price {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Stepper */
+.carrito-stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.carrito-stepper button {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: #f2f2f2;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.carrito-stepper button:hover {
+  background: #e0e0e0;
+}
+
+.carrito-stepper span {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Botón eliminar */
+.carrito-remove-btn {
+  background: none;
+  border: none;
+  color: #d33;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+/* Total */
+.carrito-total-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.carrito-total-inner h2 {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* Botones */
+.carrito-botones-premium {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-outline {
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-outline:hover {
+  border-color: #999;
+}
+
+/* Botones de pago */
+.carrito-pagos-premium {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-stripe img,
+.btn-paypal img {
+  height: 45px;
+  cursor: pointer;
+}
+
+.btn-yape {
+  background: #7b2be0;
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+}
