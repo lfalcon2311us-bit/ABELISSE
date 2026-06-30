@@ -1098,3 +1098,181 @@ p{ margin: 0; }
   color: #ff2e8f;      /* rosado de ABELISSE */
   font-weight: 600;
 }
+
+/* ============================
+   FILTROS — PRODUCTOS.HTML
+   ============================ */
+
+.filters-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 40px 0;
+  padding: 20px 0;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-item label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-item select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .filters-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .filters-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   AJUSTE DE ESPACIADO EN PRODUCTOS.HTML
+   ============================ */
+
+body.productos-page main.section {
+  padding-bottom: 40px !important; /* reduce el espacio */
+}
+
+body.productos-page .footer {
+  margin-top: 40px !important; /* igual que en index */
+}
+
+/* ============================
+   CARRITO — ESPACIADO PREMIUM
+============================ */
+
+/* Contenedor general */
+.carrito-page main.section .container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 20px; /* MÁS ESPACIO */
+}
+
+/* Título */
+.carrito-page h1 {
+  font-size: 28px;
+  margin-bottom: 20px; /* MÁS ESPACIO */
+}
+
+/* Texto de moneda */
+#carrito-moneda {
+  margin-bottom: 30px; /* MÁS ESPACIO */
+  line-height: 1.6; /* LÍNEAS MÁS ALTAS */
+}
+
+/* Carrito vacío */
+#carrito-lista h2 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+#carrito-lista p {
+  font-size: 16px;
+  margin-bottom: 30px; /* MÁS ESPACIO */
+  line-height: 1.7; /* LÍNEAS MÁS ALTAS */
+}
+
+/* ITEM DEL CARRITO */
+.carrito-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px; /* MÁS ESPACIO ENTRE COLUMNAS */
+  padding: 28px 0; /* MÁS ESPACIO ENTRE ITEMS */
+  border-bottom: 1px solid #e5e5e5;
+}
+
+/* Imagen */
+.carrito-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 14px;
+}
+
+/* Info */
+.carrito-info h3 {
+  font-size: 20px;
+  margin-bottom: 10px; /* MÁS ESPACIO */
+  line-height: 1.4;
+}
+
+.carrito-price {
+  margin-bottom: 8px;
+}
+
+.carrito-stock {
+  margin-bottom: 14px; /* MÁS ESPACIO */
+  line-height: 1.5;
+}
+
+/* Selector de cantidad */
+.qty-stepper {
+  padding: 8px 18px; /* MÁS ESPACIO */
+  gap: 16px; /* MÁS ESPACIO ENTRE BOTONES */
+}
+
+/* Botón eliminar */
+.carrito-remove {
+  padding: 8px 18px;
+  margin-left: auto; /* SE ALINEA A LA DERECHA */
+}
+
+/* TOTAL */
+.carrito-total {
+  margin: 40px 0; /* MÁS ESPACIO */
+}
+
+.total-amount {
+  font-size: 32px; /* MÁS GRANDE */
+}
+
+/* Botones inferiores */
+.carrito-botones {
+  margin-top: 20px; /* MÁS ESPACIO */
+  gap: 16px;
+}
+
+/* Botón “Ver productos” */
+.carrito-page .btn.btn-primary {
+  padding: 14px 30px; /* MÁS ESPACIO */
+  font-size: 16px;
+  border-radius: 40px;
+}
+
+/* FIX DEFINITIVO: evitar que el menú móvil tape el buscador */
+.header-nav{
+  position: static !important;
+  z-index: 1 !important;
+}
+
+.header-search{
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+.header-search input,
+.header-search button{
+  position: relative !important;
+  z-index: 9999 !important;
+}
