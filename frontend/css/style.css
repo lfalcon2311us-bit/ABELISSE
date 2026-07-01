@@ -1408,7 +1408,7 @@ body.productos-page .footer {
   background: #7b2be0;
   color: #fff;
   padding: 14px 22px;
-  border-radius: var(--radius-pill);
+  border-radius: 10px;
   font-size: 16px;
   cursor: pointer;
   border: none;
