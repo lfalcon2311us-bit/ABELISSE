@@ -58,8 +58,11 @@ def create_checkout_session(request):
             nombre=nombre,
         )
 
-        # 🔥 DEVOLVER checkout_url (FORMATO NUEVO)
-        return JsonResponse({"checkout_url": session.url})
+        # 🔥 DEVOLVER checkout_url y sessionId
+        return JsonResponse({
+            "checkout_url": session.url,
+            "id": session.id
+        })
 
     except Exception as e:
         print("❌ Error creando sesión Stripe:", e)
