@@ -60,13 +60,13 @@
   </div>
 </main>
 
-<footer class="footer">
-</footer>
+<footer class="footer"></footer>
 
 <script src="js/geo.js"></script>
 <script src="js/main.js"></script>
 <script>
   const stripe = Stripe("pk_live_51TEpsSHhGkA8OWISvxDr62Y9ua1OjzvUHHThTpVvMjf8vtqpsMhBn4e4kQyQx4OTF0KZQa0ZN9gVFGMmkOlM5rCQ00SP1bpIWE");
+  const elements = stripe.elements();
 
   async function pagarConStripe(total, carrito) {
     try {
@@ -102,6 +102,41 @@
     } catch (err) {
       alert("Error conectando con el servidor.");
     }
+  }
+
+  // 🔥 GENERAR BOTÓN APPLE PAY / GOOGLE PAY / LINK
+  function renderStripePaymentRequest(total) {
+    const paymentRequest = stripe.paymentRequest({
+      country: "US",
+      currency: "usd",
+      total: {
+        label: "Total",
+        amount: Math.round(total * 100)
+      },
+      requestPayerName: true,
+      requestPayerEmail: true
+    });
+
+    const prButton = elements.create("paymentRequestButton", {
+      paymentRequest: paymentRequest,
+      style: {
+        paymentRequestButton: {
+          theme: "dark",
+          height: "48px"
+        }
+      }
+    });
+
+    paymentRequest.canMakePayment().then(result => {
+      const container = document.getElementById("stripe-buttons-container");
+
+      if (result) {
+        container.style.display = "block";
+        prButton.mount("#stripe-buttons-container");
+      } else {
+        container.style.display = "none";
+      }
+    });
   }
   function renderCarrito() {
     const carrito = getCart();
@@ -174,7 +209,10 @@
         ` : `
           <div id="paypal-buttons-container"></div>
 
-          <!-- BOTÓN STRIPE REAL -->
+          <!-- BOTÓN APPLE PAY / GOOGLE PAY / LINK -->
+          <div id="stripe-buttons-container" style="margin-top: 12px; display:none;"></div>
+
+          <!-- BOTÓN TARJETA NORMAL -->
           <button class="btn-stripe" onclick="pagarConStripe(${total}, getCart())">
             Pagar con Tarjeta (Stripe)
           </button>
@@ -184,6 +222,7 @@
 
     if (!isPeru) {
       paypal.Buttons().render('#paypal-buttons-container');
+      renderStripePaymentRequest(total);
     }
   }
 
