@@ -12,8 +12,11 @@
   <link rel="apple-touch-icon" href="img/logo.png">
   <link rel="shortcut icon" href="img/logo.png">
 
-  <!-- SDK oficial de PayPal con tu Client ID -->
+  <!-- SDK oficial de PayPal -->
   <script src="https://www.paypal.com/sdk/js?client-id=AZjDiJrX6cEl9XUHSBlz9-WwFhyPSnsmzlaSCdWN_SA6XjruJlKsn_Fa9e7o9scODlXsis3ECA23FKqG&components=buttons"></script>
+
+  <!-- SDK oficial de Stripe -->
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 
 <body class="carrito-page">
@@ -58,50 +61,42 @@
 </main>
 
 <footer class="footer">
-  <!-- Mantengo todo tu footer tal cual lo tenías -->
 </footer>
 
 <script src="js/geo.js"></script>
 <script src="js/main.js"></script>
-
 <script>
-  async function sendCheckout(method, total, carrito) {
-    let endpoint = "";
+  const stripe = Stripe("pk_live_51TEpsSHhGkA8OWISvxDr62Y9ua1OjzvUHHThTpVvMjf8vtqpsMhBn4e4kQyQx4OTF0KZQa0ZN9gVFGMmkOlM5rCQ00SP1bpIWE");
 
-    if (method === "stripe") {
-      endpoint = "https://abelisse.onrender.com/api/checkout/create-session/";
-    } else if (method === "paypal") {
-      endpoint = "https://abelisse.onrender.com/api/paypal/create-order/";
-    } else if (method === "yape") {
-      alert("Yape estará disponible pronto.");
-      return;
-    }
-
-    const body = {
-      total: total,
-      carrito: carrito.map(i => ({
-        id: i.id,
-        cantidad: i.qty
-      })),
-      email: null,
-      nombre: null
-    };
-
+  async function pagarConStripe(total, carrito) {
     try {
-      const res = await fetch(endpoint, {
+      const res = await fetch("https://abelisse.onrender.com/api/checkout/create-session/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+          total: total,
+          carrito: carrito.map(i => ({
+            id: i.id,
+            cantidad: i.qty
+          })),
+          email: null,
+          nombre: null
+        })
       });
 
       const data = await res.json();
 
-      if (data.checkout_url) {
-        window.location.href = data.checkout_url;
-      } else if (data.approve_url) {
-        window.location.href = data.approve_url;
-      } else {
-        alert("Error iniciando pago.");
+      if (!data.id) {
+        alert("Error creando sesión de pago.");
+        return;
+      }
+
+      const result = await stripe.redirectToCheckout({
+        sessionId: data.id
+      });
+
+      if (result.error) {
+        alert(result.error.message);
       }
 
     } catch (err) {
@@ -178,14 +173,15 @@
           <button class="btn-yape">Pagar con Yape</button>
         ` : `
           <div id="paypal-buttons-container"></div>
-          <button class="btn-stripe" onclick="sendCheckout('stripe', ${total}, getCart())">
-            Pagar ahora
+
+          <!-- BOTÓN STRIPE REAL -->
+          <button class="btn-stripe" onclick="pagarConStripe(${total}, getCart())">
+            Pagar con Tarjeta (Stripe)
           </button>
         `}
       </div>
     `;
 
-    // Renderizamos PayPal fuera del template literal
     if (!isPeru) {
       paypal.Buttons().render('#paypal-buttons-container');
     }
@@ -229,5 +225,6 @@
 
   document.addEventListener("DOMContentLoaded", renderCarrito);
 </script>
+
 </body>
 </html>
