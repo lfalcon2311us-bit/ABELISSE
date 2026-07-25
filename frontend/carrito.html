@@ -20,8 +20,53 @@
 </head>
 
 <body class="carrito-page">
+
+<header class="header">
+  <div class="header-toast" id="toast">Producto actualizado</div>
+  <nav class="header-inner container">
+    <div class="header-left">
+      <a href="index.html" class="header-logo">ABELISSE</a>
+      <div class="header-search">
+        <input type="text" id="searchInput" placeholder="Buscar productos..." />
+        <button id="searchBtn">IR</button>
+      </div>
+    </div>
+    <button class="header-toggle" id="menuToggle">☰</button>
+    <div class="header-nav" id="navMenu">
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="productos.html" class="nav-link">Productos</a>
+      <a href="ofertas.html" class="nav-link">Ofertas</a>
+      <a href="contacto.html" class="nav-link">Contacto</a>
+      <a href="carrito.html" class="nav-cart active">
+        Carrito <span class="cart-count">0</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main class="section">
+  <div class="container carrito-premium">
+    <h1 class="carrito-title">Tu carrito</h1>
+    <p id="carrito-moneda" class="carrito-moneda"></p>
+
+    <!-- LISTA -->
+    <div id="carrito-lista" class="carrito-lista"></div>
+
+    <!-- TOTAL -->
+    <div id="carrito-total" class="carrito-total-box"></div>
+
+    <!-- BOTONES -->
+    <div id="carrito-botones" class="carrito-botones-premium"></div>
+  </div>
+</main>
+
+<footer class="footer"></footer>
+
+<script src="js/geo.js"></script>
+<script src="js/main.js"></script>
 <script>
   const stripe = Stripe("pk_live_51TEpsSHhGkA8OWISvxDr62Y9ua1OjzvUHHThTpVvMjf8vtqpsMhBn4e4kQyQx4OTF0KZQa0ZN9gVFGMmkOlM5rCQ00SP1bpIWE");
+  const elements = stripe.elements();
 
   async function pagarConStripe(total, carrito) {
     try {
@@ -58,42 +103,41 @@
       alert("Error conectando con el servidor.");
     }
   }
-</script>
 
-<style>
-  .btn-apple-google {
-    background: black;
-    color: white;
-    padding: 14px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    width: 100%;
-    margin-top: 12px;
-    cursor: pointer;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+  // 🔥 GENERAR BOTÓN APPLE PAY / GOOGLE PAY / LINK
+  function renderStripePaymentRequest(total) {
+    const paymentRequest = stripe.paymentRequest({
+      country: "US",
+      currency: "usd",
+      total: {
+        label: "Total",
+        amount: Math.round(total * 100)
+      },
+      requestPayerName: true,
+      requestPayerEmail: true
+    });
+
+    const prButton = elements.create("paymentRequestButton", {
+      paymentRequest: paymentRequest,
+      style: {
+        paymentRequestButton: {
+          theme: "dark",
+          height: "48px"
+        }
+      }
+    });
+
+    paymentRequest.canMakePayment().then(result => {
+      const container = document.getElementById("stripe-buttons-container");
+
+      if (result) {
+        container.style.display = "block";
+        prButton.mount("#stripe-buttons-container");
+      } else {
+        container.style.display = "none";
+      }
+    });
   }
-  .btn-apple-google:hover {
-    opacity: 0.85;
-  }
-  .icon-apple {
-    font-size: 20px;
-  }
-  .icon-google {
-    background: #4285F4;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: bold;
-  }
-  .icon-link {
-    font-size: 18px;
-  }
-</style>
-<script>
   function renderCarrito() {
     const carrito = getCart();
     const lista = document.getElementById("carrito-lista");
@@ -159,18 +203,18 @@
 
     botonesBox.innerHTML = `
       <button class="btn-outline" onclick="clearCart()">Vaciar carrito</button>
-
       <div class="carrito-pagos-premium">
         ${isPeru ? `
           <button class="btn-yape">Pagar con Yape</button>
         ` : `
           <div id="paypal-buttons-container"></div>
 
-          <!-- BOTÓN PREMIUM APPLE PAY / GOOGLE PAY / LINK -->
-          <button class="btn-apple-google" onclick="pagarConStripe(${total}, getCart())">
-            <span class="icon-apple"></span> Apple Pay /
-            <span class="icon-google">G</span> Google Pay /
-            <span class="icon-link">💳</span> Link
+          <!-- BOTÓN APPLE PAY / GOOGLE PAY / LINK -->
+          <div id="stripe-buttons-container" style="margin-top: 12px; display:none;"></div>
+
+          <!-- BOTÓN TARJETA NORMAL -->
+          <button class="btn-stripe" onclick="pagarConStripe(${total}, getCart())">
+            Pagar con Tarjeta (Stripe)
           </button>
         `}
       </div>
@@ -178,6 +222,7 @@
 
     if (!isPeru) {
       paypal.Buttons().render('#paypal-buttons-container');
+      renderStripePaymentRequest(total);
     }
   }
 
