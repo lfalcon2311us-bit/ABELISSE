@@ -6,35 +6,6 @@
 const CART_KEY = 'abelisse_cart';
 
 /* ---------------------------------------------------------
-   PRODUCTOS Y MARCAS GLOBALES (NUEVO)
---------------------------------------------------------- */
-
-// Se cargan una sola vez al iniciar la web
-async function cargarProductosYMarcasGlobal() {
-  try {
-    const res = await fetch("https://abelisse.onrender.com/api/productos/");
-    const productos = await res.json();
-
-    // Extraer marcas únicas
-    const marcas = [...new Set(productos.map(p => p.marca))];
-
-    // Guardar globalmente
-    window.ABELISSE_PRODUCTOS = productos;
-    window.ABELISSE_MARCAS = marcas;
-
-    console.log("Marcas cargadas:", marcas);
-
-  } catch (err) {
-    console.error("Error cargando productos/marcas globales:", err);
-    window.ABELISSE_PRODUCTOS = [];
-    window.ABELISSE_MARCAS = [];
-  }
-}
-
-// Ejecutar automáticamente al cargar main.js
-cargarProductosYMarcasGlobal();
-
-/* ---------------------------------------------------------
    GEO / MONEDA
 --------------------------------------------------------- */
 
