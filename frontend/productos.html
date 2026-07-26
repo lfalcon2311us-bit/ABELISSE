@@ -165,6 +165,7 @@
     © 2026 ABELISSE. Todos los derechos reservados.
   </div>
 </footer>
+
 <!-- SCRIPTS -->
 <script src="js/geo.js"></script>
 <script src="js/product-card.js"></script>
@@ -298,9 +299,18 @@
 
     await Promise.all([
       loadSelect(`${API_BASE}/categorias/`, selCat),
-      loadSelect(`${API_BASE}/subcategorias/`, selSub),
-      loadSelect(`${API_BASE}/marcas/`, selBrand, "nombre", "slug")
+      loadSelect(`${API_BASE}/subcategorias/`, selSub)
+      // ⛔ AQUÍ ANTES SE LLAMABA /marcas/, YA NO
     ]);
+
+    // 🔥 Cargar marcas desde main.js (window.ABELISSE_MARCAS)
+    const marcas = window.ABELISSE_MARCAS || [];
+    marcas.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m;
+      opt.textContent = m;
+      selBrand.appendChild(opt);
+    });
 
     function reloadProducts() {
       const url = buildProductsUrl();
