@@ -91,6 +91,24 @@ p{ margin: 0; }
 }
 
 /* ---------- Botones ---------- */
+
+/* Contenedor de Apple Pay / Google Pay / Link */
+#stripe-buttons-container {
+  display: block !important;      /* Mostrarlo siempre */
+  min-height: 50px;               /* Altura mínima visible */
+  padding: 10px 0;                /* Espacio interno */
+  margin-top: 12px;               /* Separación del PayPal */
+}
+
+/* Ajuste visual del botón de Stripe */
+#stripe-buttons-container .StripeElement,
+#stripe-buttons-container button {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 .btn{
   display: inline-flex;
   align-items: center;
